@@ -1,0 +1,159 @@
+@extends('MainLayout')
+
+@section('content-area')
+<div id="content-area">
+    <div class="top">
+        <h2>Classes</h2>
+        <p>Manage Classes</p>
+    </div>
+    <div class="table-container">
+        <div class="information-card">
+            <h3>Information</h3>
+            <p>Contains records of all class groups created within the platform, including class names, associated instructors, and scheduling details for organizing assessments.</p>
+        </div>
+        <h3>Classes</h3>
+        <button class="btn-add btn-add-class"><i class="fas fa-plus"></i> New Class</button>
+        <div class="search-bar">
+            <input class="search-input" type="text" id="searchInputQuestion" placeholder="Search">
+            <button class="search-btn" id="searchBtnQuestion"><i class="fas fa-search"></i></button>
+        </div>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Class Name</th>
+                    <th>Subject</th>
+                    <th>Year Level</th>
+                    <th>Enrolled Students</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody class="question-table">
+            @foreach ($classes as $class)
+                <tr data-id="{{ $class->id }}">
+                    <td class="classname-cell">{{ $class->class_name }}</td>
+                    <td class="subject-cell">{{ $class->subject }}</td>
+                    <td class="yearlevel-cell">{{ $class->year_level }}</td>
+                    <td>{{ $class->students_count }}</td>
+                    <td>
+                    <button class="btn btn-edit-class"
+                        data-id="{{ $class->id }}"
+                        data-name="{{ $class->class_name }}"
+                        data-subject="{{ $class->subject }}"
+                        data-year="{{ $class->year_level }}">
+                        <i class="fas fa-pen"></i>
+                    </button>
+                    <button class="btn delete-class-btn" data-id="{{ $class->id }}">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                    <button class="btn btn-view-students"
+                        data-url="{{ route('classes.viewStudents', $class->id) }}">
+                        View Students
+                    </button>
+                    </td>       
+                </tr>
+            @endforeach
+            </tbody>
+        </table>
+       <div id="addModalClass" class="custom-modal" style="display: none;">
+            <div class="custom-modal-content">
+                <span class="close-btn" id="closeAddModalClass">&times;</span>
+                <h2>Add New Class</h2>
+
+                <input type="hidden" id="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label>Class Name:</label>
+                    <input type="text" name="class_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Subject:</label>
+                    <input type="text" name="subject">
+                </div>
+
+                <div class="form-group">
+                    <label>Grade Level:</label>
+                    <select name="year_level" required>
+                        <option value="" disabled selected>Select Grade Level</option>
+                        <option value="Grade 7">Grade 7</option>
+                        <option value="Grade 8">Grade 8</option>
+                        <option value="Grade 9">Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
+                    </select>
+                </div>
+
+                <button id="saveNewBtnClass" class="submit-btn submit-btn-class">Add</button>
+            </div>
+        </div>
+
+        <div id="EditModalClass" class="custom-modal" style="display: none;">
+            <div class="custom-modal-content">
+                <span class="close-btn" id="closeEditModalClass">&times;</span>
+                <h2>Edit Class</h2>
+
+                <input type="hidden" id="csrf_token" value="{{ csrf_token() }}">
+
+                <input type="hidden" id="edit_class_id">
+
+                <div class="form-group">
+                    <label>Class Name:</label>
+                    <input type="text" id="edit_class_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Subject:</label>
+                    <input type="text" id="edit_subject">
+                </div>
+
+                <div class="form-group">
+                    <label>Grade Level:</label>
+                    <select id="edit_year_level" required>
+                        <option value="" disabled>Select Grade Level</option>
+                        <option value="Grade 7">Grade 7</option>
+                        <option value="Grade 8">Grade 8</option>
+                        <option value="Grade 9">Grade 9</option>
+                        <option value="Grade 10">Grade 10</option>
+                    </select>
+                </div>
+
+                <button id="editNewBtnClass" class="submit-btn edit-btn-class">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function fetchAssessments(page = 1, search = '') {
+        const pageUrl = "{{ route('classes') }}?page=" + page + "&search=" + encodeURIComponent(search);
+
+        $.ajax({
+            url: pageUrl,
+            type: 'GET',
+            success: function (response) {
+                const extracted = $(response).find('.question-table').html();
+                if (extracted) {
+                    $('.question-table').fadeOut(150, function () {
+                        $(this).html(extracted).fadeIn(150);
+                    });
+                } else {
+                    $('.question-table').html('<p>No results found.</p>');
+                }
+            },
+            error: function () {
+                $('.question-table').html('<p>Error loading assessments.</p>');
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        // Search button
+        $(document).on('click', '#searchBtnQuestion', function () {
+            const search = $('#searchInputQuestion').val();
+            fetchAssessments(1, search);
+        });
+    });
+</script>
+@endsection
+
+
+
+

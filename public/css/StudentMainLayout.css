@@ -1,0 +1,875 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100vh;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.w-container{
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    background-color: white;
+}
+.header{
+    width: 100%;
+    height: 10%;
+    display: flex;
+    background-color: #218838;
+}
+.top {
+    margin-left: 1.5%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    display: block;
+}
+.top h2 {
+    color: black;
+    margin-bottom: 5px;
+}
+.top p {
+    color: gray;
+    margin-top: 0; 
+}
+.sub-container{
+    display: flex;
+    width: 100%;
+    height: 90%;
+    background-color: #daddda ;
+}
+.nav{
+    height: 98.9%;
+    margin-top: 6px;
+    width: 17%;
+    background-color: #f4f9f4 ;
+}
+.navigation button {
+    width: 85%;
+    font-weight: 500;
+    text-align: left;
+    padding: 13px;
+    background-color: #f4f9f4 ;
+    border: none;
+    margin-top: 5px;
+    border-radius: 7px;
+    color: black;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+}
+.container{
+    margin-left: 0;
+}
+.navigation button i {
+    font-size: 18px; 
+}
+
+.nav button:hover, 
+.nav button.active {
+    background-color: #218838;
+    color: white;
+    transition: 0.3s ease-in-out;
+}
+
+.main-container{
+    height: 98.9%;
+    width: 85%;
+    margin-left: 6px;
+    margin-top: 6px;
+    background-color: #f4f9f4 ;
+    overflow-y: auto; /* This allows vertical scrolling */
+    overflow-x: hidden;
+}
+.profile{
+    width: 100%;
+    text-align: center;
+    border-radius: 5px;
+    height: 30%;
+    gap: 5px;
+    background-color: #f4f9f4 ;
+}
+.header h2{
+    color: white;
+    margin-left: 20px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.myimage{
+    min-height: 110;
+    border-radius: 50%;
+    margin-top: 10%;
+    width: 110;
+    background-color: #218838;
+    font-family: app;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    color: white;
+    text-align: center;
+    
+}
+.myimage h1{
+    padding-top: 32px ;
+}
+.profile p{
+    font-weight: 500;
+    font-size: medium;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.edit-profile-btn {
+    background-color: gainsboro;
+    color: black;
+    margin-top: 0px;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.edit-profile-btn:hover {
+    background-color: #218838;
+}
+.nav a {
+    text-decoration: none; 
+    color: black; 
+}
+.nav a:hover {
+    text-decoration: none; 
+}
+.swal2-popup {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    padding: 5px;
+    width: 450px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.swal2-icon.swal2-warning {
+    margin-top: 0.5rem;
+}
+
+.swal2-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-left: 7px;
+    color: #1f2937;
+    text-align: left;
+    margin-bottom: 5px;
+}
+.swal2-html-container {
+    color: #4b5563;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.swal2-actions {
+    display: flex !important;
+    justify-content: flex-end !important;
+    gap: 3px;
+    width: 100%;
+    padding: 10px;
+}
+
+.swal2-confirm,
+.swal2-cancel {
+    padding: 0.45rem 1.25rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+}
+
+.swal2-confirm {
+    background-color: #218838 !important; /* Red-500 */
+    color: white !important;
+    border: none !important;
+}
+
+.swal2-confirm:hover{
+    background-color: #154921 !important;
+    transition: 0.3s ease-in-out !important;
+}
+
+.swal2-cancel {
+    background-color: #f3f4f6 !important; /* Gray-100 */
+    color: #1f2937 !important;
+    border: none !important;
+}
+
+.class-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 20px;
+}
+.class-header{
+    margin-left: 1.5%;
+    margin-bottom: 0px;
+    margin-top: 0px;
+    color: #464748;
+}
+.class-card {
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 20px;
+    padding-top: 0px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    width: 94.5%;
+    margin-bottom: 20px;
+    transition: box-shadow 0.3s ease;
+}
+
+.class-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.class-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+
+.class-card h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0px;
+}
+
+.sub-name {
+    color: #6b7280;
+}
+
+.description {
+    font-size: 0.85rem;
+    color: #374151;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+.quiz-stats {
+    font-size: 0.85rem;
+    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.dot {
+    height: 10px;
+    width: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 6px;
+}
+
+.blue {
+    background-color: #3b82f6;
+}
+
+.orange {
+    background-color: #f97316;
+}
+
+.ml-4 {
+    margin-left: 1rem;
+}
+
+.teacher-info {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.teacher-info p {
+    color: #4b5563;
+    font-size: 0.85rem;
+    margin-bottom: 25px;
+}
+
+.view-btn {
+    background: linear-gradient(to right, #28a745, #218838);
+    color: white;
+    padding: 10px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+.view-btn:hover {
+    background: linear-gradient(to right, #218838, #28a745);
+}
+.quiz-cards-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding: 20px;
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.quiz-card {
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+    border-radius: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    padding-bottom: 20px;
+    padding-top: 0px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    width: 94.5%;
+    border-left: 5px #218838 solid;
+    transition: box-shadow 0.3s ease;
+}
+.quiz-card h3{
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0px;
+}
+.stats{
+    justify-content: space-between;
+    display: flex;
+    margin-top: 0px;
+    font-size: 0.85rem;
+    color: #374151;
+}
+.quiz-stats p{
+    color: #4b5563;
+    font-size: 0.85rem;
+}
+.instructions{
+    font-size: 0.85rem;
+    color: #374151;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+.quiz-actions{
+    margin-top: 0px;
+    display: flex;
+    gap: 15px;
+}
+.quiz-header{
+    display: flex;
+    justify-content: space-between;
+}
+.quiz-header p{
+    font-size: 0.85rem;
+    color: #374151;
+    margin-top: 25px;
+}
+.pends{
+    background-color: #218838;
+    color: white;
+    border-radius: 20px;
+    border: none;
+    padding: 10px;
+    font-size: small;
+}
+.pends-due{
+    background:rgb(205, 8, 8);
+    color: white;
+    border-radius: 20px;
+    border: none;
+    padding: 10px;
+    font-size: small;
+}
+.pends-completed{
+    background:rgb(18, 8, 205);
+    color: white;
+    border-radius: 20px;
+    border: none;
+    padding: 10px;
+    font-size: small;
+}
+.score-rem {
+    display: flex;
+    gap: 10px;
+    background-color: #047857;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+.score-rem p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.btn-return{
+    margin-left: 1.5%;  
+    height: 35px;
+    border-radius: 5px;
+    background-color: #daddda ;
+    border: none;
+    width: 170px; 
+}
+.btn-return:hover{
+    background-color: #218838;
+    color: white;
+    transition: 0.3s ease-in-out;
+}
+.quiz-question-card{
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    width: 65%;
+    margin-left: auto;  
+    margin-right: auto;
+    margin-top: 1.5%;
+    margin-bottom: 1.5%;
+    transition: box-shadow 0.3s ease;
+    padding: 20px;
+    align-content: center;
+}
+.quiz-question-header{
+    width: 80%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #adadae;
+    border-radius: 10px;
+    padding: 20px;
+    padding-top: 0px;
+    padding-bottom: 10px;
+    margin-left: auto;
+    display: flex;
+    margin-right: auto;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+.quiz-question-header h2{
+    margin-bottom: 0px;
+}
+.quiz-question-header p{
+    margin-top: 2px;
+}
+.questions-card{
+    width: 80%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #adadae;
+    border-radius: 10px;
+    padding: 20px;
+    padding-top: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 18px;
+}
+.quiz-form{
+    margin-top: 20px;
+    gap: 10px;
+    display: block;
+}
+.time-quiz{
+    display: flex;
+    text-align: right;
+    gap: 30px;
+}
+.time-quiz button{
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    margin-top: 30px;
+}
+.time-quiz h3{
+    margin-top: 40px;
+    color: #2563eb;
+}
+.input-for-asnwers{
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+.quiz-form textarea{
+    width: 100%;
+    border-radius: 5px;
+    padding: 10px;
+    border: 1px solid #ccc;
+}
+.submit-area{
+    width: 80%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #adadae;
+    border-radius: 10px;
+    padding: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 20px;
+    gap: 10px;
+}
+.submit-area button{
+    background: linear-gradient(to right, #28a745, #218838);
+    color: white;
+    padding: 20px;
+    padding-left: 40px;
+    padding-right: 40px;
+    font-weight: 600;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: medium;
+    border: none;
+    transition: background 0.3s ease;
+}
+
+.submit-area button:hover {
+    background: linear-gradient(to right,  #218838, #28a745);
+    transition: 0.3s ease-in-out;
+}
+.warning{
+    width: 85%;
+    padding: 2px;
+    border: 1px solid rgba(226, 226, 16, 0.499);
+    border-radius: 5px;
+    margin-top: 10px;
+    color: rgb(94, 47, 47);
+    background-color: #e8e8e8;
+}
+#overlay-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.4);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner-container {
+    text-align: center;
+}
+
+.spinner {
+    border: 6px solid #f3f3f3;
+    border-top: 6px solid #3498db;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 10px;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.submitted-message {
+    background: #ecfdf5;
+    border-left: 6px solid #10b981;
+    padding: 20px 25px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    margin-top: 30px;
+    color: #065f46;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: 'Segoe UI', sans-serif;
+    position: relative;
+    transition: all 0.3s ease-in-out;
+}
+
+.submitted-message h2 {
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.submitted-message h2 i {
+    color: #10b981;
+    font-size: 1.3rem;
+}
+
+.submitted-message p {
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+
+.submitted-message .remarks {
+    font-style: italic;
+    font-weight: 500;
+    color: #047857;
+}
+.score-rem {
+    display: flex;
+    gap: 10px;
+    background: linear-gradient(to right, #28a745, #218838);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 20px;
+}
+.score-rem p {
+    margin: 0;
+    font-size: 0.95rem;
+}
+.dashboard-containers{
+    display: flex;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    padding-top: 20px;
+    margin-left: 1.5%;
+    gap: 2%;
+}
+.stat-card{
+    height: 160px;
+    width: 22.9%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    background-color: white;
+    border-radius: 10px;
+}
+.stat-card h4{
+    margin-left: 30px;
+    font-weight: 500;
+    margin-top: 30px;
+    margin-bottom: 7px;
+}
+.con-ti{
+    display: flex;
+    justify-content: space-between;
+    margin-right: 30px;
+}
+.stat-card i{
+    color: #218838;
+    font-size: larger;
+}
+
+.stat-card h1{
+    margin-left: 30px;
+    margin-top: 0px;
+    margin-bottom: 0;
+}
+.stat-card p{
+    margin-left: 30px;
+    margin-top: 0px;
+    font-size: small;
+}
+.icon {
+    width: 15px;
+    height: 15px;
+    stroke: #1e293b; /* dark gray for clarity */
+  }
+.recent-shortcut{
+    margin-top: 30px;
+    display: flex;
+}
+.recent-activity {
+    width: 50%;
+    background-color: #fff;
+    border-radius: 12px;
+    height: 315px;
+    padding-left: 30px;
+    margin-left: 1.5%;
+    padding-right: 30px;
+    font-family: 'Segoe UI', sans-serif;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;
+    max-height: auto;
+    overflow-y: scroll;
+  }
+  
+  .recent-activity h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 0px;
+  }
+  
+  .recent-activity .subtext {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+  
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    border: 1px solid #dee2e6;
+    padding: 6.5px 0;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding-right: 6.5px;
+  }
+  
+  .icon-wrapper {
+    background-color: #ccf8cc;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+  
+  .doc-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .details {
+    flex: 1;
+    margin-left: 8px;
+  }
+  
+  .details .title {
+    font-weight: 500;
+    color: #0f172a;
+    font-size: 14;
+    margin-bottom: 2px;
+  }
+  
+  .details .type {
+    color: #64748b;
+    font-size: 14px;
+  }
+  
+  .timestamp {
+    font-size: 14px;
+    color: #64748b;
+    white-space: nowrap;
+  }
+.shortcut{
+    width: 35%;
+    background-color: #fff;
+    border-radius: 12px;
+    height: 315px;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-family: 'Segoe UI', sans-serif;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border: 1px solid #e2e8f0;  
+    margin-left: 25px;
+}
+.shortcut h2{
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 4px;
+}    
+.shortcut p{
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+.shortcut-buttons{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+}
+.shortcut-buttons button{
+    border: none;
+    text-align: left;
+    padding: 13.5px;
+    gap: 10px;
+    display: flex;
+    border-radius: 10px;
+}
+.shortcut-buttons button:hover{
+   background-color: #ccf8cc;
+   transition: 0.3 ease-in-out;
+}
+  .icon-circle i {
+    font-size: 14px;
+    color: #218838;; 
+}
+.take-btn button{
+    background: linear-gradient(to right, #28a745, #218838);
+    border: none;
+    color: white;
+    border-radius: 5px;
+    padding: 8px;
+    margin-top: 6%;
+}
+.take-btn button:hover{
+    background: linear-gradient(to right,  #218838, #28a745);
+    transition: 0.3s ease-in-out;
+}
+.custom-modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.6);
+}
+.custom-modal label{
+    font-size: small;
+    font-weight: 600;
+}
+.custom-modal h2{
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+.custom-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    margin: 100px auto;
+    position: relative;
+}
+.close-btn {
+    position: absolute;
+    top: 10px; right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+    gap: 5px;
+}
+.form-group textarea{
+    border-radius: 5px;
+    padding: 5px;
+    height: 80px;
+    border: 1px solid #9a9c9a; 
+    background-color: #f9f9f9;
+}
+.form-group input{
+    border-radius: 5px;
+    padding: 7px;
+    border: 1px solid #9a9c9a; 
+    background-color: #f9f9f9;
+}
+.form-group select{
+    border-radius: 5px;
+    padding: 7px;
+    border: 1px solid #9a9c9a; 
+    background-color: #f9f9f9;
+}
+.submit-btn {
+    padding: 12px;
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    width: 100%;
+    margin-top: 10px;
+}
+.submit-btn:hover{
+    background-color: #218838;
+    transition: 0.3 ease-in-out;
+}
+.disabled-nav {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}
