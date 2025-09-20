@@ -32,7 +32,7 @@
                         <td>{{ $assessments->title }}</td>
                         <td>{{ $assessments->teacher->fname ?? 'Unknown' }} {{ $assessments->teacher->mname ?? 'Unknown' }} {{ $assessments->teacher->lname ?? 'Unknown' }}</td>
                         <td>{{ $assessments->question_type }}</td>
-                        <td>{{ $assessments->created_at }}</td>
+                        <td>{{ $assessments->created_at->format('F d, Y') }}</td>
                         <td>
                             <button class="btn view-btn" data-id="{{ $assessments->id }}">
                                 <i class="fas fa-eye"></i>

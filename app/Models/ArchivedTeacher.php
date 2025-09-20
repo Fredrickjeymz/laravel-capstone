@@ -11,5 +11,5 @@ class ArchivedTeacher extends Authenticatable
 
     protected $table = 'archived_teachers'; // Important!
 
-    protected $fillable = [ 'id', 'fname', 'mname', 'lname', 'email', 'phone', 'age', 'position', 'gender', 'username', 'password'];
+    protected $fillable = [ 'id', 'fname', 'mname', 'lname', 'email', 'phone', 'birthdate', 'position', 'gender', 'username', 'password'];
 }

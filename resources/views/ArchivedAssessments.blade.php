@@ -40,7 +40,7 @@
                         <td>{{ $assessments->title }}</td>
                         <td>{{ $assessments->teacher->name ?? 'Archived' }}</td>
                         <td>{{ $assessments->question_type }}</td>
-                        <td>{{ $assessments->created_at }}</td>
+                        <td>{{ $assessments->created_at->format('F d, Y') }}</td>
                         <td>
                         <button class="btn restore restore-btn" data-id="{{ $assessments->id }}"> <i class="fas fa-undo"></i> </button>
                         <button class="btn delete delete-btn" data-id="{{ $assessments->id }}"> <i class="fas fa-trash"></i> </button>

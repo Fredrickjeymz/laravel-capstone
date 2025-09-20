@@ -16,10 +16,14 @@ class TeacherController extends Controller
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+                $q->whereRaw("CONCAT(fname, ' ', mname, ' ', lname) LIKE ?", ["%{$search}%"])
                 ->orWhere('id', 'like', "%{$search}%")
                 ->orWhere('username', 'like', "%{$search}%")
-                ->orWhere('position', 'like', "%{$search}%");
+                ->orWhere('position', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('position', 'like', "%{$search}%")
+                ->orWhere('gender', 'like', "%{$search}%")
+                ->orWhere('birthdate', 'like', "%{$search}%");
             });
         }
 
@@ -36,10 +40,14 @@ class TeacherController extends Controller
         if ($request->has('search')) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
+                $q->whereRaw("CONCAT(fname, ' ', mname, ' ', lname) LIKE ?", ["%{$search}%"])
                 ->orWhere('id', 'like', "%{$search}%")
                 ->orWhere('username', 'like', "%{$search}%")
-                ->orWhere('position', 'like', "%{$search}%");
+                ->orWhere('position', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%")
+                ->orWhere('position', 'like', "%{$search}%")
+                ->orWhere('gender', 'like', "%{$search}%")
+                ->orWhere('birthdate', 'like', "%{$search}%");
             });
         }
 

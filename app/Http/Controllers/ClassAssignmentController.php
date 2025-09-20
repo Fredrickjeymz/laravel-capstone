@@ -6,31 +6,64 @@ use Illuminate\Http\Request;
 use App\Models\Student;
 use App\Models\SchoolClass;
 use App\Models\Teacher;
+use Illuminate\Support\Facades\Log;
 
 class ClassAssignmentController extends Controller
 {
-    public function index()
-    {
-        $teacher = auth()->guard('web')->user();
+public function index(Request $request)
+{
+    // make sure user is present
+    $teacher = auth()->guard('web')->user();
+    if (!$teacher) {
+        if ($request->ajax()) {
+            return response('Unauthenticated', 401);
+        }
+        return redirect()->route('login');
+    }
 
-        // Get all classes of this teacher
-        $classes = $teacher->classes()->get(); // used for the <select> in modal
+    try {
+        $classes = $teacher->classes()->get();
+        $classIds = $classes->pluck('id')->toArray();
 
-        // Get class IDs
-        $classIds = $classes->pluck('id');
+        // if teacher has no classes, return empty set quickly
+        if (empty($classIds)) {
+            $students = collect([]);
+            $allStudents = Student::all();
+            return view('Students', compact('students', 'classes', 'allStudents'));
+        }
 
-        // Get students enrolled in these classes
-        $students = Student::whereHas('classes', function ($query) use ($classIds) {
-            $query->whereIn('school_class_id', $classIds);
+        $studentsQuery = Student::whereHas('classes', function ($q) use ($classIds) {
+            $q->whereIn('school_class_id', $classIds);
         })->with(['classes' => function ($q) use ($classIds) {
             $q->whereIn('school_class_id', $classIds);
-        }])->get();
+        }]);
 
-        // Also get ALL students for dropdown (optional: filter by school or something)
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $studentsQuery->where(function ($q) use ($search) {
+                $q->where('fname', 'like', "%{$search}%")
+                  ->orWhere('mname', 'like', "%{$search}%")
+                  ->orWhere('lname', 'like', "%{$search}%")
+                  ->orWhere('lrn', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('gender', 'like', "%{$search}%")
+                  // safe date search: format date to string
+                  ->orWhereRaw("DATE_FORMAT(birthdate, '%Y-%m-%d') LIKE ?", ["%{$search}%"]);
+            });
+        }
+
+        $students = $studentsQuery->get();
         $allStudents = Student::all();
 
         return view('Students', compact('students', 'classes', 'allStudents'));
+    } catch (\Throwable $e) {
+        Log::error('Students#index error: '.$e->getMessage()."\n".$e->getTraceAsString());
+        if ($request->ajax()) {
+            return response('Server error: '.$e->getMessage(), 500);
+        }
+        abort(500);
     }
+}
 
 
     public function store(Request $request)

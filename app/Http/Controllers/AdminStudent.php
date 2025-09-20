@@ -8,11 +8,26 @@ use Illuminate\Support\Facades\Hash;
 
 class AdminStudent extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $students = Student::all();
+        $query = Student::query(); // start a query builder, not all()
+
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('fname', 'like', "%{$search}%")
+                ->orWhere('lrn', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('gender', 'like', "%{$search}%")
+                ->orWhere('birthdate', 'like', "%{$search}%");
+            });
+        }
+
+        $students = $query->latest()->get(); // run the query
+
         return view('Admin-Students', compact('students'));
     }
+    
     public function store(Request $request)
     {
         $validated = $request->validate([

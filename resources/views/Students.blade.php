@@ -14,8 +14,8 @@
         <h3>Classes</h3>
         <button class="btn-add btn-add-stud-class"><i class="fas fa-plus"></i> New Student to a Class</button>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputQuestion" placeholder="Search">
-            <button class="search-btn" id="searchBtnQuestion"><i class="fas fa-search"></i></button>
+            <input class="search-input" type="text" id="searchInputStudent" placeholder="Search">
+            <button class="search-btn" id="searchBtnStudent"><i class="fas fa-search"></i></button>
         </div>
         <table class="styled-table">
             <thead>
@@ -28,13 +28,13 @@
                     <th>Classes Enrolled</th>
                 </tr>
             </thead>
-            <tbody class="question-table">
+            <tbody class="student-table">
             @foreach ($students as $student)
                 <tr data-id="{{ $student->id }}">
                     <td>{{ $student->lrn }}</td>
                     <td>{{ $student->fname }} {{ $student->mname }} {{ $student->lname }}</td>
                     <td>{{ $student->email }}</td>
-                    <td>{{ $student->birthdate }}</td>
+                    <td>{{ \Carbon\Carbon::parse($student->birthdate)->format('F d, Y') }}</td>
                     <td>{{ ucfirst($student->gender) }}</td>
                     <td>
                         @if ($student->classes->isEmpty())
@@ -121,34 +121,35 @@
 </div>
 <script>
     function fetchAssessments(page = 1, search = '') {
-        const pageUrl = "{{ route('students.classes') }}?page=" + page + "&search=" + encodeURIComponent(search);
+        const pageUrl = "{{ route('students') }}?page=" + page + "&search=" + encodeURIComponent(search);
 
         $.ajax({
             url: pageUrl,
             type: 'GET',
             success: function (response) {
-                const extracted = $(response).find('.question-table').html();
+                const extracted = $(response).find('.student-table').html();
                 if (extracted) {
-                    $('.question-table').fadeOut(150, function () {
+                    $('.student-table').fadeOut(150, function () {
                         $(this).html(extracted).fadeIn(150);
                     });
                 } else {
-                    $('.question-table').html('<p>No results found.</p>');
+                    $('.student-table').html('<p>No results found.</p>');
                 }
             },
             error: function () {
-                $('.question-table').html('<p>Error loading assessments.</p>');
+                $('.student-table').html('<p>Error loading assessments.</p>');
             }
         });
     }
 
     $(document).ready(function () {
         // Search button
-        $(document).on('click', '#searchBtnQuestion', function () {
-            const search = $('#searchInputQuestion').val();
+        $(document).on('click', '#searchBtnStudent', function () {
+            const search = $('#searchInputStudent').val();
             fetchAssessments(1, search);
         });
     });
+    
 </script>
 
 @endsection

@@ -78,7 +78,7 @@ $(document).ready(function () {
         };
 
         $.ajax({
-            url: '/edit-profile-student',
+            url: '/edit-profile',
             type: 'POST',
             data: formData,
             success: function (response) {

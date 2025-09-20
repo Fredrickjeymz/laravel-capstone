@@ -83,7 +83,7 @@ class ArchiveTeacherController extends Controller
                 'lname' => $archivedTeacher->lname,
                 'email' => $archivedTeacher->email,
                 'phone' => $archivedTeacher->phone,
-                'age' => $archivedTeacher->age,
+                'birthdate' => $archivedTeacher->birthdate,
                 'position' => $archivedTeacher->position,
                 'gender' => $archivedTeacher->gender,
                 'username' => $archivedTeacher->username,

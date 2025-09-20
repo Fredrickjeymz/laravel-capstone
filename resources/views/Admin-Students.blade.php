@@ -14,8 +14,8 @@
         <h3>Students</h3>
         <button class="btn-add btn-add-stud"><i class="fas fa-plus"></i> New Student</button>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputQuestion" placeholder="Search">
-            <button class="search-btn" id="searchBtnQuestion"><i class="fas fa-search"></i></button>
+            <input class="search-input" type="text" id="searchInputStudent" placeholder="Search">
+            <button class="search-btn" id="searchBtnStudent"><i class="fas fa-search"></i></button>
         </div>
         <table class="styled-table">
             <thead>
@@ -25,22 +25,16 @@
                     <th>Email</th>
                     <th>Gender</th>
                     <th>Birthdate</th>
-                    <th>Action</th>
                 </tr>
             </thead>
-            <tbody class="question-table">
+            <tbody class="student-table">
             @foreach ($students as $stud)
                 <tr data-id="{{ $stud->id }}">
                     <td class="lrn-cell">{{ $stud->lrn }}</td>
                     <td class="fullname-cell">{{ $stud->fname }} {{ $stud->mname }} {{ $stud->lname }}</td>
                     <td class="email-cell">{{ $stud->email }}</td>
                     <td class="gender-cell">{{ $stud->gender }}</td>
-                    <td class="birthdate-cell">{{ $stud->birthdate }}</td>
-                    <td>
-                    <button class="btn">
-                        Archive
-                    </button>
-                    </td>       
+                    <td class="birthdate-cell">{{ \Carbon\Carbon::parse($stud->birthdate)->format('F d, Y') }}</td>    
                 </tr>
             @endforeach
             </tbody>
@@ -128,32 +122,34 @@
     </div>
 </div>
 <script>
-    function fetchAssessments(page = 1, search = '') {
-        const pageUrl = "{{ route('students') }}?page=" + page + "&search=" + encodeURIComponent(search);
+function fetchAssessments(page = 1, search = '') {
+    const pageUrl = "{{ route('students') }}?page=" + page + "&search=" + encodeURIComponent(search);
 
-        $.ajax({
-            url: pageUrl,
-            type: 'GET',
-            success: function (response) {
-                const extracted = $(response).find('.question-table').html();
-                if (extracted) {
-                    $('.question-table').fadeOut(150, function () {
-                        $(this).html(extracted).fadeIn(150);
-                    });
-                } else {
-                    $('.question-table').html('<p>No results found.</p>');
-                }
-            },
-            error: function () {
-                $('.question-table').html('<p>Error loading assessments.</p>');
+    $.ajax({
+        url: pageUrl,
+        type: 'GET',
+        success: function (response) {
+            const extracted = $(response).find('.student-table').html();
+            if (extracted) {
+                $('.student-table').fadeOut(150, function () {
+                    $(this).html(extracted).fadeIn(150);
+                });
+            } else {
+                $('.student-table').html('<tr><td colspan="6" class="text-center">No results found.</td></tr>');
             }
-        });
-    }
+        },
+        error: function (xhr, status, error) {
+            console.error('AJAX error — status:', xhr.status, 'error:', error);
+            console.log('responseText:', xhr.responseText);
+            $('.student-table').html('<tr><td colspan="6" class="text-center">Error loading content — check console.</td></tr>');
+        }
+    });
+}
 
     $(document).ready(function () {
         // Search button
-        $(document).on('click', '#searchBtnQuestion', function () {
-            const search = $('#searchInputQuestion').val();
+        $(document).on('click', '#searchBtnStudent', function () {
+            const search = $('#searchInputStudent').val();
             fetchAssessments(1, search);
         });
     });

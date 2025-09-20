@@ -40,7 +40,7 @@
                             <td>{{ $assessment->question_type }}</td>
                             <td>{{ $assessment->subject }}</td>
                             <td>{{ $assessment->questions->count() }}</td>
-                            <td>{{ $assessment->created_at->format('Y-m-d H:i') }}</td>
+                            <td>{{ $assessment->created_at->format('F d, Y') }}</td>
                             <td>
                                 <button class="btn view-btn" data-id="{{ $assessment->id }}">
                                     <i class="fas fa-eye"></i>

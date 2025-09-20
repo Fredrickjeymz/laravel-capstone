@@ -14,7 +14,7 @@
         <h3>Educators</h3>
         <button class="btn-add btn-add-teacher"><i class="fas fa-plus"></i> New Educator</button>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputTeacher" placeholder="Search assessments">
+            <input class="search-input" type="text" id="searchInputTeacher" placeholder="Search">
             <button class="search-btn" id="searchBtnTeacher"><i class="fas fa-search"></i></button>
         </div>
         <table id="teachers-table" class="styled-table">
@@ -38,7 +38,7 @@
                             <td>{{ $teacher->position }}</td>
                             <td>{{ $teacher->phone }}</td>
                             <td>{{ $teacher->gender }}</td>
-                            <td>{{ $teacher->birthdate }}</td>
+                            <td>{{ \Carbon\Carbon::parse($teacher->birthdate)->format('F d, Y') }}</td>
                             <td><div class="active-stat">Active</div></td>
                             <td>
                                 <button class="btn archive-teacher-btn" data-id="{{ $teacher->id }}">
@@ -122,17 +122,17 @@
             url: pageUrl,
             type: 'GET',
             success: function (response) {
-                const extracted = $(response).find('.teacher-table').html();
+                const extracted = $(response).find('#teachers-table').html();
                 if (extracted) {
-                    $('.teacher-table').fadeOut(150, function () {
+                    $('#teachers-table').fadeOut(150, function () {
                         $(this).html(extracted).fadeIn(150);
                     });
                 } else {
-                    $('.teacher-table').html('<p>No results found.</p>');
+                    $('#teachers-table').html('<p>No results found.</p>');
                 }
             },
             error: function () {
-                $('.teacher-table').html('<p>Error loading assessments.</p>');
+                $('#teachers-table').html('<p>Error loading assessments.</p>');
             }
         });
     }

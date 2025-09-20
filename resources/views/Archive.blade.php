@@ -45,7 +45,7 @@
                             <td>{{ $teacher->position }}</td>
                             <td>{{ $teacher->phone }}</td>
                             <td>{{ $teacher->gender }}</td>
-                            <td>{{ $teacher->birthdate }}</td>
+                            <td>{{ \Carbon\Carbon::parse($teacher->birthdate)->format('F d, Y') }}</td>
                         <td><div class="inactive-stat">Inactive</div></td>
                         <td>
                         <!-- Restore Button -->
