@@ -43,4 +43,6 @@
    
 </body>
 <script src="{{ asset('js/outsidenav.js') }}"></script>
+<script src="{{ asset('js/change-pass-teacher.js') }}"></script>
+<script src="{{ asset('js/change-pass-student.js') }}"></script>
 </html>

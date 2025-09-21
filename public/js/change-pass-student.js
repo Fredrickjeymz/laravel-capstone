@@ -15,7 +15,7 @@ $(document).ready(function () {
         $('#ChangePassModal').fadeOut();
     });
 
-    $(document).on('click', '#saveNewPass', function () {
+    $(document).on('click', '#studentsaveNewPass', function () {
         let formData = {
             _token: $('#csrf_token').val(),
             current_pass: $('input[name="current_pass"]').val(),

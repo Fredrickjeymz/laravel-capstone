@@ -111,7 +111,7 @@
                     <input type="password" name="new_pass_confirmation" required>
                 </div>
 
-                <button id="saveNewPass" class="submit-btn submit-btn-change">Save</button>
+                <button id="studentsaveNewPass" class="submit-btn submit-btn-change">Save</button>
             </div>
         </div>
         @php

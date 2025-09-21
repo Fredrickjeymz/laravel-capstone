@@ -16,80 +16,101 @@ class AuthController extends Controller
     }
 
     // Handle login
-public function login(Request $request)
-{
-    $request->validate([
-        'username' => 'required|string',
-        'password' => 'required|string|min:6',
-        'role'     => 'required|in:teacher,student,admin',
-    ]);
+    public function login(Request $request)
+    {
+        $request->validate([
+            'username' => 'required|string',
+            'password' => 'required|string|min:6',
+            'role'     => 'required|in:teacher,student,admin',
+        ]);
 
-    $credentials = $request->only('username', 'password');
+        $credentials = $request->only('username', 'password');
 
-    $guard = null;
-    $redirect = null;
+        $guard = null;
+        $redirect = null;
 
-    switch ($request->role) {
-        case 'teacher':
-            $guard = 'web'; // teacher guard
-            $redirect = route('teacherdashboard');
-            break;
+        switch ($request->role) {
+            case 'teacher':
+                $guard = 'web'; // teacher guard
+                $redirect = route('teacherdashboard');
 
-        case 'student':
-            $guard = 'student';
-            $redirect = route('stud-dash');
-            break;
+                // 🔹 Check if still using default password
+                $user = \App\Models\Teacher::where('username', $request->username)->first();
+                if ($user) {
+                    $birthYear = \Carbon\Carbon::parse($user->birthdate)->year;
+                    $defaultPassword = $user->lname . '_' . $birthYear;
 
-        case 'admin':
-            $guard = 'admin';
-            $redirect = route('admindashboard');
-            break;
-    }
+                    if (Hash::check($defaultPassword, $user->password)) {
+                        // ✅ Force redirect to change password page
+                        $redirect = route('teacher.change-password');
+                    }
+                }
+                break;
 
-    if (Auth::guard($guard)->attempt($credentials)) {
-        // 🔹 Save which guard is used, so logout can use it
-        session(['auth_guard' => $guard]);
+            case 'student':
+                $guard = 'student';
+                $redirect = route('stud-dash');
+                $user = \App\Models\Student::where('username', $request->username)->first();
+                if ($user) {
+                    $birthYear = \Carbon\Carbon::parse($user->birthdate)->year;
+                    $defaultPassword = $user->lname . '_' . $birthYear;
 
-        if ($request->ajax()) {
-            return response()->json([
-                'success'  => true,
-                'redirect' => $redirect,
-            ]);
+                    if (Hash::check($defaultPassword, $user->password)) {
+                        // ✅ Force redirect to change password page
+                        $redirect = route('student.change-password');
+                    }
+                }
+                break;
+
+            case 'admin':
+                $guard = 'admin';
+                $redirect = route('admindashboard');
+                break;
         }
 
-        return redirect($redirect)->with('success', 'Login successful!');
-    }
+        if (Auth::guard($guard)->attempt($credentials)) {
+            // 🔹 Save which guard is used, so logout can use it
+            session(['auth_guard' => $guard]);
 
-    // If login fails
-    if ($request->ajax()) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Invalid username or password.'
-        ], 401);
-    }
+            if ($request->ajax()) {
+                return response()->json([
+                    'success'  => true,
+                    'redirect' => $redirect,
+                ]);
+            }
 
-    return back()->withErrors(['username' => 'Invalid credentials.']);
-}
+            return redirect($redirect)->with('success', 'Login successful!');
+        }
+
+        // If login fails
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid username or password.'
+            ], 401);
+        }
+
+        return back()->withErrors(['username' => 'Invalid credentials.']);
+    }
 
 
     // Logout function
-public function logout(Request $request)
-{
-    $guard = session('auth_guard', 'web'); // default to teacher/web if missing
+    public function logout(Request $request)
+    {
+        $guard = session('auth_guard', 'web'); // default to teacher/web if missing
 
-    Auth::guard($guard)->logout();
+        Auth::guard($guard)->logout();
 
-    $request->session()->forget('auth_guard');
-    $request->session()->invalidate();
-    $request->session()->regenerateToken();
+        $request->session()->forget('auth_guard');
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
-    if ($request->ajax()) {
-        return response()->json(['redirect' => route('login')]);
+        if ($request->ajax()) {
+            return response()->json(['redirect' => route('login')]);
+        }
+
+        return redirect()->route('login')->with('success', 'You have been logged out.');
     }
-
-    return redirect()->route('login')->with('success', 'You have been logged out.');
-}
-
 
     public function store(Request $request)
     {

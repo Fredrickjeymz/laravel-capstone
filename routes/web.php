@@ -112,6 +112,7 @@ Route::middleware(['teacher'])->group(function () {
     Route::post('/classes/remove-student', [AssignedAssController::class, 'removeStudent'])->name('classes.remove-student');
     Route::post('/change-pass', [ChangePassController::class, 'changePassword'])->name('teacher.changePassword');
     Route::post('/edit-profile', [ChangePassController::class, 'updateProfile'])->name('teacher.updateProfile');
+    Route::get('/teacher/change-password', function (){return view('teacher-change-password');})->name('teacher.change-password');
 });
 
 //Admin
@@ -151,6 +152,7 @@ Route::middleware(['student'])->group(function () {
     Route::get('/student/dashboard', [DashboardController::class, 'dashboard'])->name('stud-dash');
     Route::post('/change-pass-student', [ChangePassController::class, 'StudentchangePassword'])->name('student.changePassword');
     Route::post('/edit-profile-student', [ChangePassController::class, 'StudentupdateProfile'])->name('student.updateProfile');
+    Route::get('/student/change-password', function (){return view('student-change-password');})->name('student.change-password');
 });
 
 
