@@ -145,8 +145,10 @@
                 total += parseInt(slider.value) || 0;
             });
 
-            // Update total accommodated percentage
-            totalOutput.textContent = total + "%";
+            // ✅ Only update totalOutput if it exists
+            if (totalOutput) {
+                totalOutput.textContent = total + "%";
+            }
 
             sliders.forEach(slider => {
                 const current = parseInt(slider.value) || 0;
@@ -154,16 +156,22 @@
                 slider.max = remaining < 0 ? 0 : remaining;
 
                 const output = slider.nextElementSibling;
-                output.textContent = slider.value + "%";
+                if (output) {
+                    output.textContent = slider.value + "%";
+                }
             });
         }
 
         sliders.forEach(slider => {
             const output = slider.nextElementSibling;
-            output.textContent = slider.value + "%";
+            if (output) {
+                output.textContent = slider.value + "%";
+            }
 
             slider.addEventListener('input', () => {
-                output.textContent = slider.value + "%";
+                if (output) {
+                    output.textContent = slider.value + "%";
+                }
                 updateSliderLimits();
             });
         });
