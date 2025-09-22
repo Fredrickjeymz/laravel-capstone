@@ -61,12 +61,13 @@
 
                         <div class="blooms-config">
                             <p class="config-title">Bloom's Taxonomy Percentage Configuration</p>
+                            <p>Total Allocated Percentage: <span id="total-bloom">0%</span></p>
                             <div class="blooms-inputs">
                                 <div class="bloom-group" data-key="remember">
                                     <label>Remembering</label><br>
                                     <div class="bloom-slider">
                                         <input type="range" name="bloom[remember]" class="bloom-input" value="0" min="0" max="100" required>
-                                        <output class="bloom-value">0</output>
+                                        <output class="bloom-value">0%</output>
                                     </div>
                                 </div>
 
@@ -74,7 +75,7 @@
                                     <label>Understanding</label><br>
                                     <div class="bloom-slider">
                                         <input type="range" name="bloom[understand]" class="bloom-input" value="0" min="0" max="100" required>
-                                        <output class="bloom-value">0</output>
+                                        <output class="bloom-value">0%</output>
                                     </div>
                                 </div>
 
@@ -82,7 +83,7 @@
                                     <label>Applying</label><br>
                                     <div class="bloom-slider">
                                         <input type="range" name="bloom[apply]" class="bloom-input" value="0" min="0" max="100" required>
-                                        <output class="bloom-value">0</output>
+                                        <output class="bloom-value">0%</output>
                                     </div>
                                 </div>
 
@@ -90,7 +91,7 @@
                                     <label>Analyzing</label><br>
                                     <div class="bloom-slider">
                                         <input type="range" name="bloom[analyze]" class="bloom-input" value="0" min="0" max="100" required>
-                                        <output class="bloom-value">0</output>
+                                        <output class="bloom-value">0%</output>
                                     </div>
                                 </div>
 
@@ -98,7 +99,7 @@
                                     <label>Evaluating</label><br>
                                     <div class="bloom-slider">
                                         <input type="range" name="bloom[evaluate]" class="bloom-input" value="0" min="0" max="100" required>
-                                        <output class="bloom-value">0</output>
+                                        <output class="bloom-value">0%</output>
                                     </div>
                                 </div>
 
@@ -106,7 +107,7 @@
                                     <label>Creating</label><br>
                                     <div class="bloom-slider">
                                         <input type="range" name="bloom[create]" class="bloom-input" value="0" min="0" max="100" required>
-                                        <output class="bloom-value">0</output>
+                                        <output class="bloom-value">0%</output>
                                     </div>
                                 </div>
                             </div>
@@ -135,36 +136,43 @@
 <script>
     function initializeBloomSliders() {
         const sliders = document.querySelectorAll('.bloom-input');
+        const totalOutput = document.getElementById('total-bloom');
 
         function updateSliderLimits() {
             let total = 0;
 
             sliders.forEach(slider => {
-                total += parseInt(slider.value);
+                total += parseInt(slider.value) || 0;
             });
 
+            // Update total accommodated percentage
+            totalOutput.textContent = total + "%";
+
             sliders.forEach(slider => {
-                const current = parseInt(slider.value);
+                const current = parseInt(slider.value) || 0;
                 const remaining = 100 - (total - current);
-                slider.max = remaining;
+                slider.max = remaining < 0 ? 0 : remaining;
 
                 const output = slider.nextElementSibling;
-                output.textContent = slider.value;
+                output.textContent = slider.value + "%";
             });
         }
 
         sliders.forEach(slider => {
             const output = slider.nextElementSibling;
-            output.textContent = slider.value;
+            output.textContent = slider.value + "%";
 
             slider.addEventListener('input', () => {
-                output.textContent = slider.value;
+                output.textContent = slider.value + "%";
                 updateSliderLimits();
             });
         });
 
         updateSliderLimits();
     }
+
+    // Initialize after DOM is ready
+    document.addEventListener('DOMContentLoaded', initializeBloomSliders);
 </script>
 
 @endsection

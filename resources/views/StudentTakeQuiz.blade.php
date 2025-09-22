@@ -92,7 +92,7 @@
                  <div id="overlay-spinner" style="display:none;">
                     <div class="spinner-container">
                         <div class="spinner"></div>
-                             <p>⏳ Submitting you answers, Please wait.</p>
+                             <p>⏳ Submitting your answers, Please wait.</p>
                         </div>
                 </div>
             </form>

@@ -15,7 +15,7 @@ class AdminStudent extends Controller
         if ($request->has('search') && !empty($request->search)) {
             $search = $request->input('search');
             $query->where(function ($q) use ($search) {
-                $q->where('fname', 'like', "%{$search}%")
+                $q->whereRaw("CONCAT(fname, ' ', mname, ' ', lname) LIKE ?", ["%{$search}%"])
                 ->orWhere('lrn', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%")
                 ->orWhere('gender', 'like', "%{$search}%")

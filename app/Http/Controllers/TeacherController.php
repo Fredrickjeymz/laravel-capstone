@@ -21,7 +21,6 @@ class TeacherController extends Controller
                 ->orWhere('username', 'like', "%{$search}%")
                 ->orWhere('position', 'like', "%{$search}%")
                 ->orWhere('phone', 'like', "%{$search}%")
-                ->orWhere('position', 'like', "%{$search}%")
                 ->orWhere('gender', 'like', "%{$search}%")
                 ->orWhere('birthdate', 'like', "%{$search}%");
             });

@@ -3,7 +3,7 @@
 @section('main-area')
 <div class="form-container">
     <div class="form-card">
-        <h2 class="form-title"><i class="fa-solid fa-lock"></i> Change Password</h2>
+        <h2 class="form-title">Change Password</h2>
         <p class="form-subtitle">Enter your current password and choose a new one</p>
 
         <input type="hidden" id="csrf_token" value="{{ csrf_token() }}">
@@ -16,7 +16,7 @@
         <div class="form-group">
             <label>New Password</label>
             <input type="password" name="new_pass" placeholder="Enter your new password" required>
-            <small class="helper-text">Must contain at least 8 characters, including uppercase, lowercase, and numbers</small>
+            <small class="helper-text">Must contain at least 8 characters, including numbers.</small>
         </div>
 
         <div class="form-group">
