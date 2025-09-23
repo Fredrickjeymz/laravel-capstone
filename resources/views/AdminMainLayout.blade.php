@@ -53,9 +53,9 @@
                     <button id="btn-archive" data-url="{{ route('archivedteachers') }}">
                         <i class="fas fa-box-archive"></i> Archive
                     </button>
-
-                    <br><br><br><br><br>
-
+                    <button id="btn-logs" data-url="{{ route('admin.activity-log') }}">
+                        <i class="fa-solid fa-history"></i> Activity Log
+                    </button><br>
                     <form method="POST" action="{{ route('logout') }}" id="logout-form">
                         @csrf
                         <button type="button" id="logout-button">

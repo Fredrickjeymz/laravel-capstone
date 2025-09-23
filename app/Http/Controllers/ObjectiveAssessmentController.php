@@ -13,6 +13,7 @@ use PhpOffice\PhpPresentation\IOFactory as PptIOFactory;
 use thiagoalessio\TesseractOCR\TesseractOCR;
 use App\Models\Assessment;
 use App\Models\AssessmentQuestion;
+use App\Helpers\ActivityLogger;
 class ObjectiveAssessmentController extends Controller
 {
     public function generateAssessment(Request $request)
@@ -181,6 +182,15 @@ class ObjectiveAssessmentController extends Controller
         'question_type' => $questionType,
         'rubric' => $rubric,
     ]);
+
+    $teacher = $assessment->teacher;
+    $creatorName = "{$teacher->fname} {$teacher->mname} {$teacher->lname}";
+
+    // Log activity
+    ActivityLogger::log(
+        "Generated Assessment",
+        "Assessment Title: {$assessment->title}, Created by: {$creatorName}"
+    );
 
     $questions = preg_split('/\n(?=\d+\.\s)/', trim($allContent));
     $sequence = 1;

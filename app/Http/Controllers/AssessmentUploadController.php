@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Assessment;
 use App\Models\SchoolClass;
+use App\Helpers\ActivityLogger;
+use App\Notifications\QuizUploaded;
 
 class AssessmentUploadController extends Controller
 {
@@ -17,6 +19,9 @@ class AssessmentUploadController extends Controller
             'due_date'          => 'required|date|after:now',
         ]);
 
+        $teacher = auth('web')->user();
+        $class = \App\Models\SchoolClass::find($validated['school_class_id']);
+
         $assessment = Assessment::findOrFail($validated['assessment_id']);
 
         $assessment->assignedClasses()->syncWithoutDetaching([
@@ -25,6 +30,16 @@ class AssessmentUploadController extends Controller
                 'due_date' => $validated['due_date'], // ✅ Include due_date
             ]
         ]);
+
+        $class->students->each(function($student) use ($class, $teacher, $assessment) {
+            $student->notify(new QuizUploaded($class, $teacher, $assessment));
+        });
+
+        // ✅ Log activity
+        ActivityLogger::log(
+            "Uploaded Assessment",
+            "Assessment '{$assessment->title}' uploaded to Class ID {$validated['school_class_id']} with Due Date: {$validated['due_date']}"
+        );
 
         return response()->json([
             'success' => true,

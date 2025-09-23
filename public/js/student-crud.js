@@ -32,7 +32,7 @@ $(document).ready(function () {
             url: '/students', // your actual route
             type: 'POST',
             data: formData,
-            success: function (response) {
+            success: function(response) {
                 $('#addModalStudent').fadeOut();
 
                 Swal.fire({
@@ -43,24 +43,28 @@ $(document).ready(function () {
                     showConfirmButton: false
                 });
 
-                let s = response.data; // ✅ this is the student object
+                let s = response.data; // ✅ match your controller
+
+                let birthdateFormatted = new Date(s.birthdate).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: '2-digit',
+                    year: 'numeric'
+                });
+
+                let fullname = `${s.fname} ${s.mname ?? ''} ${s.lname}`;
+                let genderFormatted = s.gender.charAt(0).toUpperCase() + s.gender.slice(1);
 
                 let newRow = `
                     <tr data-id="${s.id}">
                         <td class="lrn-cell">${s.lrn}</td>
-                        <td class="fullname-cell">${s.fname} ${s.mname ?? ''} ${s.lname}</td>
+                        <td class="fullname-cell">${fullname}</td>
                         <td class="email-cell">${s.email}</td>
-                        <td class="gender-cell">${s.gender}</td>
-                        <td class="birthdate-cell">${s.birthdate}</td>
-                        <td>
-                            <button class="btn">
-                                Archive
-                            </button>
-                        </td>       
+                        <td class="gender-cell">${genderFormatted}</td>
+                        <td class="birthdate-cell">${birthdateFormatted}</td>
                     </tr>
                 `;
 
-                $(".question-table").prepend(newRow); // add at top of table
+                $(newRow).hide().prependTo(".student-table").fadeIn(300);
             },
 
             error: function (xhr) {

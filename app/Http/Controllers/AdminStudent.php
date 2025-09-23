@@ -5,6 +5,7 @@ use Carbon\Carbon;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use App\Helpers\ActivityLogger;
 
 class AdminStudent extends Controller
 {
@@ -58,6 +59,8 @@ class AdminStudent extends Controller
             'gender'    => $validated['gender'],
             'birthdate' => $validated['birthdate'],
         ]);
+
+        ActivityLogger::log("Created Student", "Student Name: {$request->fname} {$request->mname} {$request->lname}");
 
         return response()->json([
             'success'            => true,

@@ -11,6 +11,7 @@ use App\Models\StudentAssessmentQuestionScore;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityLogger;
 
 class QuizViewController extends Controller
 {
@@ -169,6 +170,12 @@ public function evaluateAnswers(Request $request)
                 ]);
             }
 
+            ActivityLogger::log(
+                'Submitted Answer',
+                "{$student->full_name} submitted answers for '{$assessment->title}' 
+                - Score: {$score->total_score}/{$score->max_score} ({$score->percentage}%)."
+            );
+
             return response()->json([
                 'message' => 'Quiz submitted successfully.',
                 'score' => $score,
@@ -192,6 +199,7 @@ public function evaluateAnswers(Request $request)
         Log::info('Building AI evaluation prompt');
 
         $prompt = "Evaluate student answers against the following assessment:\n\n";
+        $prompt .= "- For multiple choice questions, answer_key must complete (e.g. A. Laravel).\n";
         $prompt .= "ASSESSMENT TITLE: {$data['assessment']->title}\n";
         $prompt .= "QUESTION TYPE: {$data['question_type']}\n\n";
 
@@ -212,6 +220,7 @@ public function evaluateAnswers(Request $request)
         $prompt .= "\nINSTRUCTIONS:\n";
         $prompt .= "- Return JSON with total_score, max_score, percentage, question_results, and overall_feedback.\n";
         $prompt .= "- Each question_results[] must have student_answer, score, max_score, feedback.\n";
+        $prompt .= "- For multiple choice questions, student_answer must complete (e.g. A. Laravel).\n";
         $prompt .= "- For subjective: include rubric-based criteria_scores.\n";
         $prompt .= "- Also return an overall_feedback summarizing the student's performance.\n";
         $prompt .= "- JSON only. No extra explanation. Do NOT include markdown like ```json.\n\n";

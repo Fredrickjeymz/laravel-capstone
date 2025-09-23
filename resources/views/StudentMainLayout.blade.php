@@ -57,10 +57,19 @@
                             data-url="{{ route('student.all-quizzes') }}"
                             class="nav-btn {{ request()->routeIs('student.all-quizzes') ? 'active' : '' }}">
                             <i class="fas fa-question-circle"></i> Quizzes
+                        </button>  
+
+                        <button id="btn-logs"
+                            data-url="{{ route('student.activity-log') }}"
+                            class="nav-btn {{ request()->routeIs('student.activity-log') ? 'active' : '' }}">
+                            <i class="fa-solid fa-history"></i> Activity Log
                         </button>
 
-                        <br><br><br><br><br>
-
+                        <button id="btn-notif"
+                            data-url="{{ route('student.notifications') }}"
+                            class="nav-btn {{ request()->routeIs('student.notifications') ? 'active' : '' }}">
+                            <i class="fa-solid fa-bell" aria-hidden="true"></i> Notifications
+                        </button><br>
                         <form method="POST" action="{{ route('logout') }}" id="logout-form">
                             @csrf
                             <button type="button" id="logout-button" class="nav-btn">

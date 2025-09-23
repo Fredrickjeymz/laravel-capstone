@@ -1,7 +1,7 @@
 $(document).ready(function () {
     console.log("✅ Navigation script loaded!");
 
-    $(document).on("click", "#btn-dashboard, #btn-class, #btn-student, #btn-generate, #btn-saved", function (e) {
+    $(document).on("click", "#btn-dashboard, #btn-class, #btn-student, #btn-generate, #btn-saved, #btn-logs", function (e) {
         e.preventDefault();
         let pageUrl = $(this).data("url");
 

@@ -1,4 +1,4 @@
-$(document).on("click", "#btn-dashboard, #btn-class, #btn-quiz", function (e) {
+$(document).on("click", "#btn-dashboard, #btn-class, #btn-quiz, #btn-logs, #btn-notif", function (e) {
     e.preventDefault();
     let pageUrl = $(this).data("url");
 

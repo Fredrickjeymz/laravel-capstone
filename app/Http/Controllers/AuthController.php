@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Teacher;
+use App\Helpers\ActivityLogger;
 
 class AuthController extends Controller
 {
@@ -144,6 +145,8 @@ class AuthController extends Controller
             'username'  => $username,
             'password'  => $hashedPassword,
         ]);
+
+        ActivityLogger::log("Created Educator", "Educator Name: {$request->fname} {$request->mname} {$request->lname}");
 
         // Return full teacher data + generated password (for dev/demo)
         return response()->json([

@@ -9,6 +9,7 @@ use App\Models\Assessment;
 use App\Models\ArchivedAssessment;
 use App\Models\ArchivedAssessmentQuestion;
 use Illuminate\Support\Facades\DB;
+use App\Helpers\ActivityLogger;
 class ArchiveTeacherController extends Controller 
 {
     public function archive($id)
@@ -65,9 +66,18 @@ class ArchiveTeacherController extends Controller
 
             // Finally, delete teacher
             $teacher->delete();
+
+            // Log the activity here (inside transaction ensures teacher still exists when logging name)
+            ActivityLogger::log(
+                "Archived Educator",
+                "Educator Name: {$teacher->fname} {$teacher->mname} {$teacher->lname}"
+            );
         });
 
-        return response()->json(['success' => true, 'message' => 'Teacher and related assessments archived successfully.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Teacher and related assessments archived successfully.'
+        ]);
     }
 
     // Restore Teacher
@@ -76,7 +86,7 @@ class ArchiveTeacherController extends Controller
         DB::transaction(function () use ($id) {
             $archivedTeacher = ArchivedTeacher::findOrFail($id);
 
-            Teacher::create([
+            $teacher = Teacher::create([
                 'id' => $archivedTeacher->id, // 🛠 force same id
                 'fname' => $archivedTeacher->fname,
                 'mname' => $archivedTeacher->mname,
@@ -90,10 +100,20 @@ class ArchiveTeacherController extends Controller
                 'password' => $archivedTeacher->password,
             ]);
 
+            // Delete the archived teacher record
             $archivedTeacher->delete();
+
+            // Log the restore action
+            ActivityLogger::log(
+                "Restored Educator",
+                "Educator Name: {$teacher->fname} {$teacher->mname} {$teacher->lname}"
+            );
         });
 
-        return response()->json(['success' => true, 'message' => 'Teacher restored successfully.']);
+        return response()->json([
+            'success' => true,
+            'message' => 'Teacher restored successfully.'
+        ]);
     }
 
     // Delete Teacher Permanently

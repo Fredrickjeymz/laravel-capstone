@@ -56,8 +56,9 @@
                         <button id="btn-student" data-url="{{ route('students.classes') }}">
                             <i class="fas fa-user-graduate"></i> Students
                         </button>
-                        <br><br>
-
+                        <button id="btn-logs" data-url="{{ route('teacher.activity-log') }}">
+                             <i class="fa-solid fa-history"></i> Activity Log
+                        </button><br>
                         <form method="POST" action="{{ route('logout') }}" id="logout-form">
                             @csrf
                             <button type="button" id="logout-button">

@@ -15,6 +15,7 @@ use App\Models\StudentAssessmentScore;
 use App\Models\StudentAssessmentQuestionScore;
 use App\Models\SavedStudentAssessmentScore;
 use App\Models\SavedStudentAssessmentQuestionScore;
+use App\Helpers\ActivityLogger;
   use Illuminate\Support\Facades\View;
 
 class AssessmentController extends Controller
@@ -143,11 +144,18 @@ class AssessmentController extends Controller
             ], 404);
         }
 
+         $title = $assessment->title;
+
         // Delete related questions first
         $assessment->questions()->delete();
 
         // Now delete the assessment
         $assessment->delete();
+
+        ActivityLogger::log(
+            "Deleted Assessment",
+            "Assessment '{$title}' deleted with all related questions."
+        );
 
         return response()->json([
             'message' => 'Assessment deleted successfully!'
@@ -186,11 +194,18 @@ class AssessmentController extends Controller
                 ], 404);
             }
 
+            $title = $assessment->title;
+
             // Delete related questions first
             $assessment->questions()->delete();
 
             // Then delete the assessment
             $assessment->delete();
+
+            ActivityLogger::log(
+                "Deleted Assessment",
+                "Assessment '{$title}' deleted with all related questions."
+            );
 
             return response()->json([
                 'message' => 'Assessment deleted successfully!'
@@ -295,6 +310,11 @@ class AssessmentController extends Controller
         $assignment->time_limit = $request->time_limit;
         $assignment->save();
 
+        ActivityLogger::log(
+            "Updated Assessment Assignment",
+            "Updated Assignment ID {$assignment->id} → New Due Date: {$request->due_date}, Time Limit: {$request->time_limit} mins"
+        );
+
         return response()->json([
             'message' => 'Updated successfully.',
             'due_date_formatted' => $assignment->due_date ? $assignment->due_date->format('F d, Y') : 'N/A',
@@ -315,6 +335,11 @@ class AssessmentController extends Controller
 
         try {
             $assignment->delete();
+
+            ActivityLogger::log(
+                "Deleted Assigned Assessment",
+                "Assignment ID {$id} deleted."
+            );
 
             return response()->json([
                 'message' => 'Assigned assessment deleted successfully.'

@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Assessment;
 use App\Models\AssessmentQuestion;
 use Illuminate\Http\Request;
+use App\Helpers\ActivityLogger;
 
 class ArchiveAssessment extends Controller
 {
@@ -43,6 +44,10 @@ class ArchiveAssessment extends Controller
 
             // Then delete parent assessment
             $assessment->delete();
+            ActivityLogger::log(
+                "Archived Assessment",
+                "Assessment Title: {$assessment->title}"
+        );
         });
 
         return response()->json(['success' => true, 'message' => 'Assessment archived successfully.']);
@@ -81,6 +86,10 @@ class ArchiveAssessment extends Controller
             // Now safe to delete archived after restoring
             $archived->questions()->delete();
             $archived->delete();
+            ActivityLogger::log(
+                "Restored Assessment",
+                "Assessment Title: {$assessment->title}"
+        );
         });
     
         return response()->json(['success' => true, 'message' => 'Assessment restored successfully.']);
@@ -92,15 +101,25 @@ class ArchiveAssessment extends Controller
         DB::transaction(function () use ($id) {
             $archived = ArchivedAssessment::with('questions')->findOrFail($id);
 
+            // Keep title before deleting
+            $title = $archived->title;
+
             // Delete all archived questions
             $archived->questions()->delete();
 
             // Delete the archived assessment
             $archived->delete();
+
+            // Log the action
+            ActivityLogger::log(
+                "Deleted Archived Assessment",
+                "Assessment Title: {$title}"
+            );
         });
 
         return response()->json(['success' => true, 'message' => 'Archived assessment deleted successfully.']);
     }
 
 
+    
 }

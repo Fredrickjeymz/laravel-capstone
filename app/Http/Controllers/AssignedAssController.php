@@ -6,6 +6,7 @@ use App\Models\Assessment;
 use App\Models\AssessmentClass;
 use App\Models\SchoolClass;
 use Illuminate\Http\Request;
+use App\Helpers\ActivityLogger;
 
 class AssignedAssController extends Controller
 {
@@ -63,6 +64,14 @@ class AssignedAssController extends Controller
 
         // ✅ Detach the student from this class (pivot: class_student)
         $class->students()->detach($request->input('student_id'));
+
+        // 📝 Log
+        $student = \App\Models\Student::find($request->input('student_id'));
+        ActivityLogger::log(
+            "Removed Student from Class",
+            "Student: {$student->fname} {$student->lname}, Class: {$class->class_name} ({$class->year_level})"
+        );
+
 
         return response()->json(['success' => true]);
     }

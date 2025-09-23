@@ -29,36 +29,35 @@ $(document).ready(function () {
             type: 'POST',
             data: formData,
             success: function (response) {
-            $('#addModalClassStudent').fadeOut();
+                $('#addModalClassStudent').fadeOut();
 
-            Swal.fire({
-                icon: 'success',
-                title: 'Added!',
-                text: response.message,
-                timer: 2000,
-                showConfirmButton: false
-            });
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added!',
+                    text: response.message,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
 
-            let s = response.student;
-            let c = response.class;
+                let s = response.student;
 
-            let newRow = `
-                <tr data-id="${s.id}">
-                    <td>${s.lrn}</td>
-                    <td>${s.fname} ${s.mname ?? ''} ${s.lname}</td>
-                    <td>${s.email}</td>
-                    <td>${s.age}</td>
-                    <td>${s.gender.charAt(0).toUpperCase() + s.gender.slice(1)}</td>
-                    <td>
-                        <ul style="margin:0; padding-left:20px;">
-                            ${s.classes.map(cls => `<li>${cls.class_name} (${cls.year_level})</li>`).join('')}
-                        </ul>
-                    </td>
-                </tr>
-            `;
+                let classesHtml = s.classes.length
+                    ? `<ul style="margin:0; padding-left:20px;">${s.classes.map(cls => `<li>${cls.class_name} (${cls.year_level})</li>`).join('')}</ul>`
+                    : '<span class="text-muted">No classes assigned</span>';
 
-            $(".question-table").prepend(newRow); // insert on top
-        },
+                let newRow = `
+                    <tr data-id="${s.id}">
+                        <td>${s.lrn}</td>
+                        <td>${s.fname} ${s.mname ?? ''} ${s.lname}</td>
+                        <td>${s.email}</td>
+                        <td>${s.birthdate}</td> <!-- or format if sent -->
+                        <td>${s.gender.charAt(0).toUpperCase() + s.gender.slice(1)}</td>
+                        <td>${classesHtml}</td>
+                    </tr>
+                `;
+
+                $(".student-table").prepend(newRow); // ✅ correct selector
+            },
 
             error: function (xhr) {
                 Swal.fire({

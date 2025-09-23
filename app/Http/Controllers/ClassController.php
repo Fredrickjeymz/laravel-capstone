@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SchoolClass;
+use App\Helpers\ActivityLogger;
 
 class ClassController extends Controller
 {
@@ -42,6 +43,11 @@ class ClassController extends Controller
             'teacher_id'  => $teacher->id,
         ]);
 
+        ActivityLogger::log(
+            "Created Class",
+            "Class: {$class->class_name} ({$class->year_level}), Subject: {$class->subject}, Teacher: {$teacher->fname} {$teacher->lname}"
+        );
+
         return response()->json([
             'success' => true,
             'data'    => $class,
@@ -64,6 +70,11 @@ class ClassController extends Controller
             'year_level' => $request->year_level,
         ]);
 
+        ActivityLogger::log(
+            "Updated Class",
+            "Class: {$class->class_name} ({$class->year_level}), Subject: {$class->subject}"
+        );
+
         return response()->json([
             'success' => true,
             'redirect' => url()->previous()
@@ -74,6 +85,11 @@ class ClassController extends Controller
     {
         $type = SchoolClass::findOrFail($id);
         $type->delete();
+        
+        ActivityLogger::log(
+            "Deleted Class",
+            "Class: {$type->class_name} ({$type->year_level}), Subject: {$type->subject}"
+        );
 
         return response()->json(['success' => true]);
     }
