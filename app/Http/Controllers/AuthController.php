@@ -7,6 +7,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Teacher;
 use App\Helpers\ActivityLogger;
+use App\Mail\TeacherCredentialsMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -126,34 +129,85 @@ class AuthController extends Controller
             'gender'    => 'required|string|in:Male,Female,Other',
         ]);
 
-        // Generate username and password
-        $username = $validated['email'];
-        $birthYear = Carbon::parse($validated['birthdate'])->year;
-        $rawPassword = $validated['lname'] . '_' . $birthYear;   // e.g. Santos_1990
+        // OPTIONAL: quick MX check (uncomment to enable)
+        // $domain = substr(strrchr($validated['email'], "@"), 1);
+        // if (!checkdnsrr($domain, 'MX')) {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Email domain does not accept mail. Please verify the email.'
+        //     ], 422);
+        // }
+
+        // Generate a secure random password (includes symbols)
+        $rawPassword = $this->generateSecurePassword(12); // length 12 (change if you want)
         $hashedPassword = Hash::make($rawPassword);
 
         // Save teacher
         $teacher = Teacher::create([
-            'fname'     => $validated['fname'],
-            'mname'     => $validated['mname'] ?? null,
-            'lname'     => $validated['lname'],
-            'email'     => $validated['email'],
-            'phone'     => $validated['phone'],
-            'birthdate' => $validated['birthdate'],
-            'position'  => $validated['position'],
-            'gender'    => $validated['gender'],
-            'username'  => $username,
-            'password'  => $hashedPassword,
+            'fname'               => $validated['fname'],
+            'mname'               => $validated['mname'] ?? null,
+            'lname'               => $validated['lname'],
+            'email'               => $validated['email'],
+            'phone'               => $validated['phone'],
+            'birthdate'           => $validated['birthdate'],
+            'position'            => $validated['position'],
+            'gender'              => $validated['gender'],
+            'username'            => $validated['email'],
+            'password'            => $hashedPassword,
         ]);
 
-        ActivityLogger::log("Created Educator", "Educator Name: {$request->fname} {$request->mname} {$request->lname}");
+        ActivityLogger::log(
+            "Created Educator",
+            "Educator Name: {$teacher->fname} {$teacher->mname} {$teacher->lname}"
+        );
 
-        // Return full teacher data + generated password (for dev/demo)
+        // Send email with credentials (synchronous). If you set up queues, use ->queue(...) instead of ->send(...)
+        try {
+            Mail::to($teacher->email)->send(new TeacherCredentialsMail($teacher->username, $rawPassword));
+        } catch (\Exception $e) {
+            // Log error, but still return created teacher (do not expose raw password)
+            return response()->json([
+                'success' => true,
+                'teacher' => $teacher,
+                'warning' => 'Teacher created but email delivery failed. Check mail configuration.',
+            ], 201);
+        }
+
+        // Success response (do NOT return raw password in production)
         return response()->json([
-            'teacher'   => $teacher,
-            'username'  => $username,
-            'password'  => $rawPassword, // ⚠️ only return this for demo/dev
-        ]);
+            'success' => true,
+            'teacher' => $teacher,
+            'message' => 'Teacher account created and credentials sent via email.',
+        ], 201);
+    }
+
+    /**
+     * Generate a secure random password containing upper, lower, digits and symbols.
+     *
+     * @param int $length
+     * @return string
+     */
+    private function generateSecurePassword(int $length = 12): string
+    {
+        $upper = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // avoid ambiguous letters if you want
+        $lower = 'abcdefghijkmnopqrstuvwxyz';
+        $digits = '23456789';
+        $symbols = '!@#$%^&*()-_=+[]{}<>?';
+
+        // ensure at least one of each category
+        $password = [];
+        $password[] = $upper[random_int(0, strlen($upper) - 1)];
+        $password[] = $lower[random_int(0, strlen($lower) - 1)];
+        $password[] = $digits[random_int(0, strlen($digits) - 1)];
+        $password[] = $symbols[random_int(0, strlen($symbols) - 1)];
+
+        $all = $upper . $lower . $digits . $symbols;
+        for ($i = 4; $i < $length; $i++) {
+            $password[] = $all[random_int(0, strlen($all) - 1)];
+        }
+
+        shuffle($password);
+        return implode('', $password);
     }
 
 }
