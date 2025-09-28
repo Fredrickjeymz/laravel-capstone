@@ -9,6 +9,7 @@ use App\Models\Teacher;
 use App\Helpers\ActivityLogger;
 use App\Mail\TeacherCredentialsMail;
 use Illuminate\Support\Facades\Mail;
+use App\Helpers\BrevoMailer;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -162,23 +163,29 @@ class AuthController extends Controller
         );
 
         // Send email with credentials (synchronous). If you set up queues, use ->queue(...) instead of ->send(...)
+        // Send email with credentials via Brevo API
         try {
-            Mail::to($teacher->email)->send(new TeacherCredentialsMail($teacher->username, $rawPassword));
+            $mailer = new BrevoMailer();
+            $mailer->send(
+                $teacher->email,
+                "{$teacher->fname} {$teacher->lname}",
+                "Your Educator Account Credentials",
+                "<p>Hello <b>{$teacher->fname}</b>,</p>
+                <p>Your account has been created successfully.</p>
+                <p><b>Username(email):</b> {$teacher->username}<br>
+                <b>Password:</b> {$rawPassword}</p>
+                <p>You can now log in to the system.</p>
+                <p>For security, please log in and change your password immediately. This temporary password will only be valid until you reset it.</p>
+                <p>Best regards,<br>Admin Team</p>"
+            );
         } catch (\Exception $e) {
-            // Log error, but still return created teacher (do not expose raw password)
             return response()->json([
                 'success' => true,
                 'teacher' => $teacher,
-                'warning' => 'Teacher created but email delivery failed. Check mail configuration.',
+                'warning' => 'Teacher created but email delivery failed. Check Brevo configuration.',
+                'error'   => $e->getMessage(), // Optional, remove in prod
             ], 201);
         }
-
-        // Success response (do NOT return raw password in production)
-        return response()->json([
-            'success' => true,
-            'teacher' => $teacher,
-            'message' => 'Teacher account created and credentials sent via email.',
-        ], 201);
     }
 
     /**
