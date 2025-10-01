@@ -15,15 +15,15 @@
                 linear-gradient(rgba(200, 200, 200, 0.9), rgba(200, 200, 200, 0.9)), 
                 url("{{ asset('image/image2.jpg') }}") no-repeat center center;
             background-size: cover;
-            width: 100%;
-            height: 87%;
+            width: 100vw;
+            height: 87vh;
         }
         input::placeholder {
-            color: #808080; /* Grey color for placeholder text */
+            color: #808080;
         }
         
         select::placeholder {
-            color: #808080; /* Grey color for placeholder text in select dropdown */
+            color: #808080; 
         }
     </style>
 </head>

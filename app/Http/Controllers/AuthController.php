@@ -172,7 +172,7 @@ class AuthController extends Controller
                 "Your Educator Account Credentials",
                 "<p>Hello <b>{$teacher->fname}</b>,</p>
                 <p>Your account has been created successfully.</p>
-                <p><b>Username(email):</b> {$teacher->username}<br>
+                <p><b>Username:</b> {$teacher->username}<br>
                 <b>Password:</b> {$rawPassword}</p>
                 <p>You can now log in to the system.</p>
                 <p>For security, please log in and change your password immediately. This temporary password will only be valid until you reset it.</p>
