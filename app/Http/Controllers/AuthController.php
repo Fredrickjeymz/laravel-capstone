@@ -282,7 +282,7 @@ class AuthController extends Controller
         ]);
 
         // Get reset record
-        $reset = DB::table('password_resets')->where('email', $request->email)->first();
+        $reset = DB::table('password_reset_tokens')->where('email', $request->email)->first();
 
         if (!$reset || !Hash::check($request->token, $reset->token)) {
             return back()->withErrors(['email' => 'Invalid or expired reset token.']);
@@ -301,7 +301,7 @@ class AuthController extends Controller
         $user->save();
 
         // Delete reset token
-        DB::table('password_resets')->where('email', $request->email)->delete();
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
         return redirect()->route('login')->with('status', 'Password has been reset successfully!');
     }
