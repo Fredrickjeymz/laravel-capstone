@@ -26,3 +26,56 @@ $(document).on("click", "#btn-return-home, #btn-createaccount, #btn-adminlogin, 
         }
     });
 });
+
+$(document).ready(function () {
+    // Open modal
+    $(document).on('click', '#openForgotPasswordModal', function (e) {
+        e.preventDefault();
+        $('#forgotPasswordModal').fadeIn();
+    });
+
+    // Close modal
+    $(document).on('click', '#closeForgotPasswordModal', function () {
+        $('#forgotPasswordModal').fadeOut();
+    });
+
+    // Handle reset request
+    $(document).on('click', '#resetPasswordBtn', function () {
+        let email = $('#forgotEmail').val();
+        let token = $('#csrf_token').val();
+
+        if (!email) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Missing Email',
+                text: 'Please enter your email before requesting a reset.'
+            });
+            return;
+        }
+
+        $.ajax({
+            url: '/forgot-password',
+            type: 'POST',
+            data: {
+                _token: token,
+                email: email
+            },
+            success: function (response) {
+                $('#forgotPasswordModal').fadeOut();
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Email Sent!',
+                    text: response.message || 'A password reset link has been sent to your email.'
+                });
+            },
+            error: function (xhr) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Request Failed',
+                    text: xhr.responseJSON?.message || 'We could not send the reset link. Try again.'
+                });
+                console.log("🚨 AJAX ERROR:", xhr.responseText);
+            }
+        });
+    });
+});

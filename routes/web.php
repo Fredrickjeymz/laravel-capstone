@@ -79,6 +79,9 @@ Route::get('/teachers', function () {
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/forgot-password', [AuthController::class, 'sendResetLink']);
+Route::get('/reset-password/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('password.update');
 
 //Educator 
 Route::middleware(['teacher'])->group(function () {

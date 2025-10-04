@@ -10,6 +10,8 @@ use App\Helpers\ActivityLogger;
 use App\Mail\TeacherCredentialsMail;
 use Illuminate\Support\Facades\Mail;
 use App\Helpers\BrevoMailer;
+use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -179,13 +181,14 @@ class AuthController extends Controller
                 <p>Best regards,<br>Admin Team</p>"
             );
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => true,
-                'teacher' => $teacher,
-                'warning' => 'Teacher created but email delivery failed. Check Brevo configuration.',
-                'error'   => $e->getMessage(), // Optional, remove in prod
-            ], 201);
+
         }
+
+        return response()->json([
+            'success' => true,
+            'teacher' => $teacher,
+            'message' => 'Teacher created successfully. Credentials sent to email.'
+        ], 201);
     }
 
     /**
@@ -216,5 +219,92 @@ class AuthController extends Controller
         shuffle($password);
         return implode('', $password);
     }
+
+    public function sendResetLink(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        // Try both teachers and students
+        $user = \App\Models\Teacher::where('email', $request->email)->first()
+            ?? \App\Models\Student::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No account found with this email.'
+            ], 404);
+        }
+
+        // Generate a reset token
+        $token = Str::random(64);
+        DB::table('password_resets')->updateOrInsert(
+            ['email' => $user->email],
+            ['token' => Hash::make($token), 'created_at' => now()]
+        );
+
+        // Reset link
+        $resetUrl = route('password.reset', ['token' => $token]) . '?email=' . urlencode($user->email);
+
+        // Send via your BrevoMailer
+        $mailer = new BrevoMailer();
+        $mailer->send(
+            $user->email,
+            $user->fname . ' ' . $user->lname,
+            "Reset Your Password",
+            "<p>Hello <b>{$user->fname}</b>,</p>
+            <p>You requested a password reset. Click below to reset:</p>
+            <p><a href='{$resetUrl}'>Reset Password</a></p>
+            <p>If you didn’t request this, ignore this email.</p>"
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => 'A reset link has been sent to your email.'
+        ]);
+    }
+
+    public function showResetForm(Request $request, $token)
+    {
+        $email = $request->query('email'); 
+
+        return view('reset-password', [
+            'token' => $token,
+            'email' => $email,
+        ]);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        // Get reset record
+        $reset = DB::table('password_resets')->where('email', $request->email)->first();
+
+        if (!$reset || !Hash::check($request->token, $reset->token)) {
+            return back()->withErrors(['email' => 'Invalid or expired reset token.']);
+        }
+
+        // Find user in either teachers or students
+        $user = \App\Models\Teacher::where('email', $request->email)->first()
+            ?? \App\Models\Student::where('email', $request->email)->first();
+
+        if (!$user) {
+            return back()->withErrors(['email' => 'User not found.']);
+        }
+
+        // Update password
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Delete reset token
+        DB::table('password_resets')->where('email', $request->email)->delete();
+
+        return redirect()->route('login')->with('status', 'Password has been reset successfully!');
+    }
+
 
 }

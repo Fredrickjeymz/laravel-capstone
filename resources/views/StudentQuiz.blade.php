@@ -4,7 +4,7 @@
 <div id="content-area">
     <div class="top">
         <h2>Quizzes</h2>
-        <p>Welcome to Sepnas Assessment Generator, Your formative assessment creation tool.</p>
+        <p>Take you pending quizzes and review those completed quizzes.</p>
     </div>
         @foreach ($classes as $class)
     <h3 class="class-header">{{ $class->year_level }} {{ $class->class_name }} - {{ $class->subject }}</h3>

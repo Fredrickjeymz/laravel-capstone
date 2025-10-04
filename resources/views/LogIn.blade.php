@@ -29,7 +29,25 @@
                     <button class="submit-btn" type="submit">Login</button>
 
                     <div id="error-message" style="color: red; display: none; margin-top: 10px;"></div>
+                    <div class="forgot-password-link">
+                        <a href="#" id="openForgotPasswordModal">Forgot Password?</a>
+                </div>
             </form>
+        </div>
+        <div id="forgotPasswordModal" class="custom-modal" style="display: none;">
+            <div class="custom-modal-content">
+                <span class="close-btn" id="closeForgotPasswordModal">&times;</span>
+                <h2>Forgot Password</h2>
+
+                <input type="hidden" id="csrf_token" value="{{ csrf_token() }}">
+
+                <div class="form-group">
+                    <label>Email Address:</label>
+                    <input type="email" id="forgotEmail" name="email" placeholder="Enter your email" required>
+                </div>
+
+                <button id="resetPasswordBtn" class="submit-btn">Send Reset Link</button>
+            </div>
         </div>
     </div>
 <script>

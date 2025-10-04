@@ -48,7 +48,7 @@
                         </tr>
                     @endforeach
                 </tbody>
-            </table>
+        </table>
     </div>
         <div id="addModalTeacher" class="custom-modal" style="display: none;">
             <div class="custom-modal-content">
