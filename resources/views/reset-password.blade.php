@@ -15,11 +15,12 @@
         }
 
         body {
-            background: linear-gradient(135deg, #4f46e5, #3b82f6);
+            background: linear-gradient(135deg, #218838, #34a853);
             height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 1rem;
         }
 
         .reset-password-container {
@@ -39,13 +40,33 @@
             font-weight: 600;
         }
 
+        /* Alert Styles */
         .alert {
-            background-color: #fee2e2;
-            color: #b91c1c;
-            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.85rem 1rem;
             border-radius: 8px;
             margin-bottom: 1rem;
             font-size: 0.95rem;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .alert svg {
+            flex-shrink: 0;
+        }
+
+        .alert-danger {
+            background-color: #fde8e8;
+            color: #b91c1c;
+            border-left: 5px solid #b91c1c;
+        }
+
+        .alert-success {
+            background-color: #d1e7dd;
+            color: #0f5132;
+            border-left: 5px solid #218838;
         }
 
         .form-group {
@@ -69,14 +90,14 @@
         }
 
         input[type="password"]:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.25);
+            border-color: #218838;
+            box-shadow: 0 0 0 3px rgba(33, 136, 56, 0.25);
             outline: none;
         }
 
         .btn {
             width: 100%;
-            background-color: #3b82f6;
+            background-color: #218838;
             color: white;
             font-size: 1rem;
             font-weight: 500;
@@ -88,7 +109,7 @@
         }
 
         .btn:hover {
-            background-color: #2563eb;
+            background-color: #1a672a;
             transform: translateY(-1px);
         }
 
@@ -99,10 +120,6 @@
 
         /* Mobile Responsive */
         @media (max-width: 480px) {
-            body {
-                padding: 1rem;
-            }
-
             .reset-password-container {
                 padding: 2rem 1.5rem;
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
@@ -120,7 +137,21 @@
         <h2>Reset Your Password</h2>
 
         @if($errors->any())
-            <div class="alert alert-danger">{{ $errors->first() }}</div>
+            <div class="alert alert-danger">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5Zm0 14.75a.875.875 0 1 1 .875-.875A.876.876 0 0 1 10 15.25Zm.875-3.875H9.125V5.25h1.75Z"/>
+                </svg>
+                {{ $errors->first() }}
+            </div>
+        @endif
+
+        @if (session('success'))
+            <div class="alert alert-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM8.25 14.25l-3-3 1.06-1.06L8.25 12.13l5.44-5.44L14.75 7.75Z"/>
+                </svg>
+                {{ session('success') }}
+            </div>
         @endif
 
         <form method="POST" action="{{ route('password.update') }}">
