@@ -303,7 +303,7 @@ class AuthController extends Controller
         // Delete reset token
         DB::table('password_reset_tokens')->where('email', $request->email)->delete();
 
-        return redirect()->route('login')->with('status', 'Password has been reset successfully!');
+        return with('succes', 'Password has been reset successfully!');
     }
 
 

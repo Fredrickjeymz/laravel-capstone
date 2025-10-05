@@ -46,7 +46,6 @@ $(document).ready(function () {
 
         if (!email) {
             Swal.fire({
-                icon: 'warning',
                 title: 'Missing Email',
                 text: 'Please enter your email before requesting a reset.'
             });
@@ -70,7 +69,6 @@ $(document).ready(function () {
             },
             error: function (xhr) {
                 Swal.fire({
-                    icon: 'error',
                     title: 'Request Failed',
                     text: xhr.responseJSON?.message || 'We could not send the reset link. Try again.'
                 });
