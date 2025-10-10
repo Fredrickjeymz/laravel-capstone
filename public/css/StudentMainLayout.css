@@ -1197,3 +1197,125 @@ body, html {
         margin-top: 8px;
     }
 }
+
+/* ========== RESPONSIVE FIXES (phones & tablets) ========== */
+@media (max-width: 768px) {
+
+  /* ---- General layout adjustments ---- */
+  body {
+    padding-bottom: 70px; /* space for bottom nav */
+  }
+
+  .container, .content-wrapper, main, section {
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  /* ---- Sidebar (.nav) becomes bottom bar ---- */
+  .nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 60px;
+    background: var(--nav-bg, #fff); /* keeps your theme */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+    z-index: 999;
+  }
+
+  .nav a, .nav button {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 14px;
+    border: none;
+    background: none;
+  }
+
+  .nav a i, .nav button i {
+    display: block;
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  /* Hide sidebar styles that apply to large screens */
+  .nav ul, .nav li {
+    flex-direction: row !important;
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+  }
+
+  /* ---- Header adjustments ---- */
+  header, .topbar, .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 998;
+  }
+
+  main {
+    margin-top: 70px; /* space for top header */
+    margin-bottom: 70px; /* space for bottom nav */
+  }
+
+  /* ---- Cards, modals, and tables ---- */
+  .card, .panel, .box {
+    width: 100%;
+    margin-bottom: 15px;
+  }
+
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  /* ---- Modals ---- */
+  .modal-dialog {
+    width: 95% !important;
+    margin: 20px auto;
+  }
+
+  .modal-content {
+    border-radius: 10px;
+  }
+
+  /* ---- Forms ---- */
+  form {
+    width: 100%;
+  }
+
+  input, select, textarea, button {
+    width: 100%;
+    font-size: 16px;
+  }
+
+  /* ---- Dashboard grid ---- */
+  .dashboard-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  /* ---- Hide or resize large-only UI ---- */
+  .sidebar-title, .logo-text {
+    display: none;
+  }
+
+  /* Optional: smaller text for long nav labels */
+  .nav a span {
+    font-size: 12px;
+  }
+}
