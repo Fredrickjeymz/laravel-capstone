@@ -46,17 +46,17 @@
                             <td>{{ $teacher->phone }}</td>
                             <td>{{ $teacher->gender }}</td>
                             <td>{{ \Carbon\Carbon::parse($teacher->birthdate)->format('F d, Y') }}</td>
-                        <td><div class="inactive-stat">Inactive</div></td>
+                            <td><!--<div class="inactive-stat">-->Inactive</td>
                         <td>
                         <!-- Restore Button -->
                         <button class="btn restore restore-teacher-btn" data-id="{{ $teacher->id }}">
                             <i class="fas fa-undo"></i> 
                         </button>
 
-                        <!-- Delete Button -->
+                        <!-- Delete Button 
                         <button class="btn delete delete-teacher-btn" data-id="{{ $teacher->id }}">
                             <i class="fas fa-trash"></i>
-                        </button>
+                        </button> -->
                     </td>       
                     </tr>
                 @endforeach

@@ -25,7 +25,7 @@ body, html {
 }
 .nav{
     height: 98.9%;
-    margin-top: 6px;
+    margin-top: 0px;
     width: 17%;
     background-color: #f4f9f4 ;
 }
@@ -71,7 +71,6 @@ body, html {
     text-align: center;
     border-radius: 5px;
     height: 30%;
-    gap: 5px;
     background-color: #f4f9f4 ;
 }
 .header h2{
@@ -466,8 +465,8 @@ body, html {
 }
 .generated-actions{
     width: 27%;
-    margin-left: 35px;
-    height: 590px;
+    margin-left: 3%;
+    height: 540px;
     background-color: white;
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.2), 0 6px 15px 0 rgba(0, 0, 0, 0.19);
     border-radius: 10px;
@@ -771,11 +770,12 @@ input:disabled {
 
 .styled-table {
     width: 100%;
-    font-family: system-ui, sans-serif;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     border-collapse: collapse;
     background-color: #ffffff;
     margin-bottom: 20px;
-    font-size: small;
+    margin-top: 15px;
+    font-size: 0.85rem;
     border-radius: 5px;
     overflow: hidden;
 }
@@ -785,14 +785,19 @@ input:disabled {
     color: #4d4d4d ;
     font-weight: 600;
     letter-spacing: 0.03em;
+    text-transform: uppercase;
 }
 
 .styled-table th,
 .styled-table td {
-    padding: 16px 18px;
+    padding: 12px 16px;
     text-align: left;
     border-bottom: 1px solid #dee2e6;
-    font-size: 0.95rem;
+}
+
+.styled-table th {
+    font-size: 0.85rem;
+    color: #4a4a4a;
 }
 
 .styled-table tbody tr:nth-child(even) {
@@ -845,554 +850,7 @@ input:disabled {
     color: #218838;
 }
 
-#word-options-modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.95);
-    width: 320px;
-    background: #ffffff;
-    padding: 25px 30px;
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    z-index: 1000;
-    
-}
 
-.word-bg{
-    width: 100%;
-    height: 100%;
-    background-color: rgba(255,255,255,0.4);
-}
-
-#word-options-modal.show {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-#word-options-modal h3 {
-    margin: 0 0 20px;
-    font-size: 22px;
-    text-align: left;
-    color: #222;
-    font-weight: 600;
-    padding-bottom: 10px;
-}
-
-#image-options-modal label {
-    display: block;
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: word444;
-    font-weight: 500;
-}
-
-#word-options-modal input,
-#word-options-modal select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #f9f9f9;
-    box-sizing: border-box;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-}
-
-#word-options-modal button {
-    height: 40px;
-    width: 48%;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-#generate-word {
-    background-color: #218838;
-    color: white;
-}
-
-#generate-word:hover {
-      background-color: #218838;
-    transition: 0.3s ease-in-out;
-}
-
-#cancel-word-export {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-#cancel-word-export:hover {
-    background-color: #e0e0e0;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-}
-
-#image-options-modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.95);
-    width: 320px;
-    background: #ffffff;
-    padding: 25px 30px;
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    z-index: 1000;
-}
-
-#image-options-modal.show {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-#image-options-modal h2 {
-    margin: 0 0 20px;
-    font-size: 22px;
-    color: #222;
-}
-
-#image-options-modal label {
-    display: block;
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: #444;
-    font-weight: 500;
-}
-
-#image-options-modal input,
-#image-options-modal select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #f9f9f9;
-    box-sizing: border-box;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-}
-
-#image-options-modal button {
-    height: 40px;
-    width: 48%;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-#generate-image {
-    background-color: #218838;
-    color: white;
-    font-weight: lighter;
-    font-size: small;
-}
-
-#generate-image:hover {
-    background-color: #218838;
-    transition: 0.3s ease-in-out;
-}
-
-#cancel-image-export {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-#cancel-image-export:hover {
-    background-color: #e0e0e0;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-}
-
-
-#pdf-options-modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.95);
-    width: 320px;
-    background: #ffffff;
-    padding: 25px 30px;
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    z-index: 1000;
-}
-
-#pdf-options-modal.show {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-#pdf-options-modal h2 {
-    margin: 0 0 20px;
-    font-size: 22px;
-    text-align: center;
-    color: #222;
-    font-weight: 600;
-    border-bottom: 1px solid #e5e5e5;
-    padding-bottom: 10px;
-}
-
-#pdf-options-modal label {
-    display: block;
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: #444;
-    font-weight: 500;
-}
-
-#pdf-options-modal input,
-#pdf-options-modal select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #f9f9f9;
-    box-sizing: border-box;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-}
-
-#pdf-options-modal button {
-    height: 40px;
-    width: 48%;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-#generate-pdf{
-    background-color: #218838;
-    color: white;
-}
-
-#generate-pdf:hover {
-    background-color: #218838;
-    transition: 0.3s ease-in-out;
-}
-
-#cancel-pdf-export {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-#cancel-pdf-export:hover {
-    background-color: #e0e0e0;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-}
-
-
-
-
-#saved-word-options-modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.95);
-    width: 320px;
-    background: #ffffff;
-    padding: 25px 30px;
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    z-index: 1000;
-}
-
-#saved-word-options-modal.show {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-#saved-word-options-modal h3 {
-    margin: 0 0 20px;
-    font-size: 22px;
-    text-align: left;
-    color: #222;
-    font-weight: 600;
-    padding-bottom: 10px;
-}
-
-#saved-image-options-modal label {
-    display: block;
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: word444;
-    font-weight: 500;
-}
-
-#saved-word-options-modal input,
-#saved-word-options-modal select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #f9f9f9;
-    box-sizing: border-box;
-}
-
-.saved-modal-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-}
-
-#saved-word-options-modal button {
-    height: 40px;
-    width: 48%;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-#saved-generate-word {
-    background-color: #218838;
-    color: white;
-}
-
-#saved-generate-word:hover {
-    background-color: #218838;
-    transition: 0.3s ease-in-out;
-}
-
-#saved-cancel-word-export {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-#saved-cancel-word-export:hover {
-    background-color: #e0e0e0;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-}
-
-
-
-
-#saved-image-options-modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.95);
-    width: 320px;
-    background: #ffffff;
-    padding: 25px 30px;
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    z-index: 1000;
-}
-
-#saved-image-options-modal.show {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-#saved-image-options-modal h2 {
-    margin: 0 0 20px;
-    font-size: 22px;
-    color: #222;
-}
-
-#saved-image-options-modal label {
-    display: block;
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: #444;
-    font-weight: 500;
-}
-
-#saved-image-options-modal input,
-#saved-image-options-modal select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #f9f9f9;
-    box-sizing: border-box;
-}
-
-.saved-modal-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-}
-
-#saved-image-options-modal button {
-    height: 40px;
-    width: 48%;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-#saved-generate-image {
-    background-color: #218838;
-    color: white;
-    font-weight: lighter;
-    font-size: small;
-}
-
-#saved-generate-image:hover {
-    background-color: #218838;
-    transition: 0.3s ease-in-out;
-}
-
-#saved-cancel-image-export {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-#saved-cancel-image-export:hover {
-    background-color: #e0e0e0;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-}
-
-
-#saved-pdf-options-modal {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.95);
-    width: 320px;
-    background: #ffffff;
-    padding: 25px 30px;
-    border-radius: 12px;
-    opacity: 0;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    z-index: 1000;
-}
-
-#saved-pdf-options-modal.show {
-    display: block;
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-}
-
-#saved--options-modal h2 {
-    margin: 0 0 20px;
-    font-size: 22px;
-    text-align: center;
-    color: #222;
-    font-weight: 600;
-    border-bottom: 1px solid #e5e5e5;
-    padding-bottom: 10px;
-}
-
-#saved-pdf-options-modal label {
-    display: block;
-    margin-bottom: 15px;
-    font-size: 14px;
-    color: #444;
-    font-weight: 500;
-}
-
-#saved-pdf-options-modal input,
-#saved-pdf-options-modal select {
-    width: 100%;
-    padding: 10px;
-    margin-top: 6px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background: #f9f9f9;
-    box-sizing: border-box;
-}
-
-.saved-modal-actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 25px;
-}
-
-#saved-pdf-options-modal button {
-    height: 40px;
-    width: 48%;
-    font-size: 14px;
-    font-weight: 500;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease, box-shadow 0.3s ease;
-}
-
-#saved-generate-pdf{
-    background-color: #218838;
-    color: white;
-}
-
-#saved-generate-pdf:hover {
-    background-color: #218838;
-    transition: 0.3s ease-in-out;
-}
-
-#saved-cancel-pdf-export {
-    background-color: #f0f0f0;
-    color: #333;
-}
-
-#saved-cancel-pdf-export:hover {
-    background-color: #e0e0e0;
-    box-shadow: 0 0 6px rgba(0, 0, 0, 0.1);
-}
 .delprev{
     background-color: #f32d2d;
 }
@@ -1587,7 +1045,8 @@ input:disabled {
 .information-card p{
     margin-top: 5px;
 }
-/* Overlay */
+
+/* Overlay 
 .evaluation-modal {
     display: none;
     position: fixed;
@@ -1634,7 +1093,6 @@ input:disabled {
     color: #e74c3c;
 }
 
-/* Text */
 .evaluation-modal-content h3 {
     margin-top: 0;
     font-size: 22px;
@@ -1648,7 +1106,6 @@ input:disabled {
     margin-bottom: 20px;
 }
 
-/* Inputs */
 .form-group {
     margin-bottom: 20px;
 }
@@ -1705,7 +1162,6 @@ input:disabled {
     background-color: #c0392b;
 }
 
-/* Animations */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -1733,7 +1189,6 @@ input:disabled {
     animation: fadeIn 0.3s ease forwards;
 }
 
-/* Modal Content */
 .saved-evaluation-modal-content {
     background: #ffffff;
     width: 100%;
@@ -1748,7 +1203,6 @@ input:disabled {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Close button */
 .saved-close-btn {
     position: absolute;
     top: 15px; right: 20px;
@@ -1762,7 +1216,6 @@ input:disabled {
     color: #e74c3c;
 }
 
-/* Text */
 .saved-evaluation-modal-content h3 {
     margin-top: 0;
     font-size: 22px;
@@ -1776,7 +1229,6 @@ input:disabled {
     margin-bottom: 20px;
 }
 
-/* Inputs */
 .saved-form-group {
     margin-bottom: 20px;
 }
@@ -1832,6 +1284,7 @@ input:disabled {
     background-color: #c0392b;
 }
 
+*/
 
 .text-icon{
     justify-content: space-between;
@@ -2106,72 +1559,141 @@ input:disabled {
     display: none;
     position: fixed;
     z-index: 1000;
-    left: 0; top: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.6);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6); /* keep original */
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
-.custom-modal label{
-    font-size: small;
-    font-weight: 600;
-}
-.custom-modal h2{
-    margin-bottom: 10px;
-    margin-top: 10px;
-}
+
+/* Main Modal Box */
 .custom-modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
+    background-color: #ffffff;
+    padding: 25px 28px;
+    border-radius: 10px;
+    width: 420px;
     max-width: 90%;
+    max-height: 500px; 
+    min-height: auto;
+    overflow-y: auto; /* scroll if content too long */
     margin: 100px auto;
     position: relative;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    border-top: 4px solid #4CAF50; /* adds a professional accent line */
+    transition: all 0.3s ease;
+    animation: popIn 0.25s ease-in-out;
 }
+
+/* Entry animation */
+@keyframes popIn {
+    from {
+        transform: scale(0.97);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Scrollbar */
+.custom-modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-modal-content::-webkit-scrollbar-thumb {
+    background-color: #bfbfbf;
+    border-radius: 5px;
+}
+.custom-modal-content::-webkit-scrollbar-thumb:hover {
+    background-color: #9a9a9a;
+}
+
+/* Title */
+.custom-modal h2 {
+    margin: 10px 0 15px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 8px;
+}
+
+/* Close button */
 .close-btn {
     position: absolute;
-    top: 10px; right: 15px;
-    font-size: 20px;
+    top: 12px;
+    right: 16px;
+    font-size: 22px;
+    color: #888;
     cursor: pointer;
+    transition: color 0.2s ease;
 }
+.close-btn:hover {
+    color: #333;
+}
+
+/* Form styling */
 .form-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     gap: 5px;
 }
-.form-group textarea{
-    border-radius: 5px;
-    padding: 5px;
-    height: 80px;
-    border: 1px solid #9a9c9a; 
-    background-color: #f9f9f9;
+
+.custom-modal label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
 }
-.form-group input{
-    border-radius: 5px;
-    padding: 7px;
-    border: 1px solid #9a9c9a; 
-    background-color: #f9f9f9;
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    border-radius: 6px;
+    padding: 8px 10px;
+    border: 1px solid #c5c5c5;
+    background-color: #fafafa;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
 }
-.form-group select{
-    border-radius: 5px;
-    padding: 7px;
-    border: 1px solid #9a9c9a; 
-    background-color: #f9f9f9;
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #4CAF50;
+    background-color: #ffffff;
+    outline: none;
 }
+
+/* Button */
 .submit-btn {
-    padding: 12px;
+    padding: 11px;
     background-color: #4CAF50;
     border: none;
     color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 6px;
     width: 100%;
     margin-top: 10px;
+    transition: all 0.2s ease;
 }
-.submit-btn:hover{
-    background-color: #218838;
-    transition: 0.3 ease-in-out;
+
+.submit-btn {
+    width: 100% !important;
+    display: block;
+}
+
+.submit-btn:hover {
+    background-color: #3f9242;
+    transform: translateY(-1px);
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
 }
 .btn-add{
     padding: 12px;
@@ -2297,12 +1819,14 @@ input:disabled {
 
 /*logs*/
     .logs-container {
-        max-width: 980px;
-        margin: 28px auto;
+        max-width: 100%;
+        margin-left: 5% auto;
+        margin-right: 5% auto;
         padding: 0 16px;
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         color: #1f2937;
     }
+
 
     .logs-scroll {
         max-height: 500px;  /* or any fixed height you want */

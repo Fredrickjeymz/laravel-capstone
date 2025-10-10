@@ -801,72 +801,141 @@ body, html {
     display: none;
     position: fixed;
     z-index: 1000;
-    left: 0; top: 0;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.6);
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.6); /* keep original */
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
-.custom-modal label{
-    font-size: small;
-    font-weight: 600;
-}
-.custom-modal h2{
-    margin-bottom: 10px;
-    margin-top: 10px;
-}
+
+/* Main Modal Box */
 .custom-modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    width: 400px;
+    background-color: #ffffff;
+    padding: 25px 28px;
+    border-radius: 10px;
+    width: 420px;
     max-width: 90%;
+    max-height: 500px; 
+    min-height: auto;
+    overflow-y: auto; /* scroll if content too long */
     margin: 100px auto;
     position: relative;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    border-top: 4px solid #4CAF50; /* adds a professional accent line */
+    transition: all 0.3s ease;
+    animation: popIn 0.25s ease-in-out;
 }
+
+/* Entry animation */
+@keyframes popIn {
+    from {
+        transform: scale(0.97);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Scrollbar */
+.custom-modal-content::-webkit-scrollbar {
+    width: 6px;
+}
+.custom-modal-content::-webkit-scrollbar-thumb {
+    background-color: #bfbfbf;
+    border-radius: 5px;
+}
+.custom-modal-content::-webkit-scrollbar-thumb:hover {
+    background-color: #9a9a9a;
+}
+
+/* Title */
+.custom-modal h2 {
+    margin: 10px 0 15px 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+    text-align: left;
+    border-bottom: 1px solid #eaeaea;
+    padding-bottom: 8px;
+}
+
+/* Close button */
 .close-btn {
     position: absolute;
-    top: 10px; right: 15px;
-    font-size: 20px;
+    top: 12px;
+    right: 16px;
+    font-size: 22px;
+    color: #888;
     cursor: pointer;
+    transition: color 0.2s ease;
 }
+.close-btn:hover {
+    color: #333;
+}
+
+/* Form styling */
 .form-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
     gap: 5px;
 }
-.form-group textarea{
-    border-radius: 5px;
-    padding: 5px;
-    height: 80px;
-    border: 1px solid #9a9c9a; 
-    background-color: #f9f9f9;
+
+.custom-modal label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
 }
-.form-group input{
-    border-radius: 5px;
-    padding: 7px;
-    border: 1px solid #9a9c9a; 
-    background-color: #f9f9f9;
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    border-radius: 6px;
+    padding: 8px 10px;
+    border: 1px solid #c5c5c5;
+    background-color: #fafafa;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
 }
-.form-group select{
-    border-radius: 5px;
-    padding: 7px;
-    border: 1px solid #9a9c9a; 
-    background-color: #f9f9f9;
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #4CAF50;
+    background-color: #ffffff;
+    outline: none;
 }
+
+/* Button */
 .submit-btn {
-    padding: 12px;
+    padding: 11px;
     background-color: #4CAF50;
     border: none;
     color: white;
+    font-weight: 600;
+    font-size: 0.9rem;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: 6px;
     width: 100%;
     margin-top: 10px;
+    transition: all 0.2s ease;
 }
-.submit-btn:hover{
-    background-color: #218838;
-    transition: 0.3 ease-in-out;
+
+.submit-btn {
+    width: 100% !important;
+    display: block;
+}
+
+.submit-btn:hover {
+    background-color: #3f9242;
+    transform: translateY(-1px);
+}
+
+.submit-btn:active {
+    transform: scale(0.98);
 }
 .disabled-nav {
     opacity: 0.5;
@@ -876,8 +945,9 @@ body, html {
 
 /*logs*/
     .logs-container {
-        max-width: 980px;
-        margin: 28px auto;
+        max-width: 100%;
+        margin-left: 5% auto;
+        margin-right: 5% auto;
         padding: 0 16px;
         font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         color: #1f2937;
@@ -1011,12 +1081,13 @@ body, html {
     }
 
 .notifications-container {
-    max-width: 980px;
-    margin: 28px auto;
-    padding: 0 16px;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    color: #1f2937;
-}
+        max-width: 100%;
+        margin-left: 5% auto;
+        margin-right: 5% auto;
+        padding: 0 16px;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        color: #1f2937;
+    }
 
 .notifications-scroll {
     max-height: 500px;

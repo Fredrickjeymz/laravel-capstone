@@ -58,27 +58,34 @@
                 <input type="hidden" id="csrf_token" value="{{ csrf_token() }}">
 
                     <div class="form-group">
+                        <label for="">First Name:</label>
                         <input type="text" name="fname" id="fname" placeholder="First Name" required>
                     </div>
                     <div class="form-group">
-                        <input type="text" name="mname" id="mname" placeholder="Middle Name/Initial" required>
+                        <label for="">Middle Name:</label>
+                        <input type="text" name="mname" id="mname" placeholder="Middle Name" required>
                     </div>
                     <div class="form-group">
+                        <label for="">Last Name:</label>
                         <input type="text" name="lname" id="lname" placeholder="Last Name" required>
                     </div>
                     <div class="form-group">
+                        <label for="">Email:</label>
                         <input type="email" name="email" id="email" placeholder="Email" required>
                     </div>
                
                     <div class="form-group">
+                        <label for="">Phone:</label>
                         <input type="text" name="phone" id="phone" placeholder="Phone" required>
                     </div>
 
                     <div class="form-group">
+                        <label for="">Birthdate:</label>
                         <input type="date" name="birthdate" id="birthdate" placeholder="Birthdate" required>
                     </div>
             
                     <div class="form-group">
+                        <label for="">Title/Position:</label>
                         <select name="position" id="position" required>
                             <option value="" disabled selected>Title</option>
                             <option value="Teacher I">Teacher I</option>
@@ -102,11 +109,11 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="">Sex:</label>
                         <select name="gender" id="gender" required>
-                            <option value="" disabled selected>Select gender</option>
+                            <option value="" disabled selected>Select Sex</option>
                             <option value="Male">Male</option>
                             <option value="Female">Female</option>
-                            <option value="Other">Other</option>
                         </select>
                     </div>
               

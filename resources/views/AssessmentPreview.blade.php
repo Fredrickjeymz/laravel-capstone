@@ -171,106 +171,85 @@
                     <button class="pdf" id="download-pdf"><i class="fas fa-file-pdf"></i> PDF</button>
                     <button class="word" id="download-word"><i class="fas fa-file-word"></i> Word</button>
                     <button class="img" id="download-image"><i class="fas fa-image"></i> Image</button>
-                    <div id="pdf-options-modal" style="display:none;">
-                        <h3>Export to PDF</h3>
-                        <label>Font Size:
-                            <input type="number" id="pdf-font-size" value="12">
-                        </label>
-                        <label>Font Style:
-                            <select id="pdf-font-style">
-                                <option value="Arial">Arial</option>
-                                <option value="Helvetica">Helvetica</option>
-                                <option value="Times New Roman">Times New Roman</option>
-                                <option value="Georgia">Georgia</option>
-                                <option value="Courier New">Courier New</option>
-                                <option value="Verdana">Verdana</option>
-                                <option value="Trebuchet MS">Trebuchet MS</option>
-                                <option value="Lucida Console">Lucida Console</option>
-                                <option value="Tahoma">Tahoma</option>
-                                <option value="Palatino Linotype">Palatino Linotype</option>
-                                <option value="Garamond">Garamond</option>
-                                <option value="Comic Sans MS">Comic Sans MS</option>
-                                <option value="Impact">Impact</option>
-                                <option value="Segoe UI">Segoe UI</option>
-                                <option value="Candara">Candara</option>
-                            </select>
-                        </label>
-                        <label>Paper Size:
-                            <select id="pdf-paper-size">
-                                <option value="a4">A4</option>
-                                <option value="letter">Letter</option>
-                                <option value="legal">Legal</option>
-                            </select>
-                        </label>
-                        <div class="modal-actions">
-                            <button id="generate-pdf">Generate PDF</button>
-                            <button id="cancel-pdf-export" class="cancel-btn">Cancel</button>
+                    <div id="pdf-options-modal" class="custom-modal">
+                        <div class="custom-modal-content">
+                            <span class="close-btn" id="closePdfModal">&times;</span>
+                            <h2>Export to PDF</h2>
+                            <div class="form-group">
+                                <label>Font Size:</label>
+                                <input type="number" id="pdf-font-size" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label>Font Style:</label>
+                                <select id="pdf-font-style">
+                                    <option value="Arial">Arial</option>
+                                    <option value="Helvetica">Helvetica</option>
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Verdana">Verdana</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Paper Size:</label>
+                                <select id="pdf-paper-size">
+                                    <option value="a4">A4</option>
+                                    <option value="letter">Letter</option>
+                                    <option value="legal">Legal</option>
+                                </select>
+                            </div>
+                            <button id="generate-pdf" class="submit-btn">Generate PDF</button>
                         </div>
                     </div>
-                    <div id="image-options-modal" style="display:none;">
-                        <div class="texts">
-                            <h3>Export to Image</h3>
-                        </div>
-                        <label>Font Size:
-                            <input type="number" id="image-font-size" value="12">
-                        </label>
-                        <label>Font Style:
-                            <select id="image-font-style">
-                                <option value="Arial">Arial</option>
-                                <option value="Helvetica">Helvetica</option>
-                                <option value="Times New Roman">Times New Roman</option>
-                                <option value="Georgia">Georgia</option>
-                                <option value="Courier New">Courier New</option>
-                                <option value="Verdana">Verdana</option>
-                                <option value="Trebuchet MS">Trebuchet MS</option>
-                                <option value="Lucida Console">Lucida Console</option>
-                                <option value="Tahoma">Tahoma</option>
-                                <option value="Palatino Linotype">Palatino Linotype</option>
-                                <option value="Garamond">Garamond</option>
-                                <option value="Comic Sans MS">Comic Sans MS</option>
-                                <option value="Impact">Impact</option>
-                                <option value="Segoe UI">Segoe UI</option>
-                                <option value="Candara">Candara</option>
-                            </select>
-                        </label>
-                        <div class="modal-actions">
-                            <button id="generate-image">Generate Image</button>
-                            <button id="cancel-image-export" class="cancel-btn">Cancel</button>
+
+                    <!-- ====== Image Export Modal ====== -->
+                    <div id="image-options-modal" class="custom-modal">
+                        <div class="custom-modal-content">
+                            <span class="close-btn" id="closeImageModal">&times;</span>
+                            <h2>Export to Image</h2>
+                            <div class="form-group">
+                                <label>Font Size:</label>
+                                <input type="number" id="image-font-size" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label>Font Style:</label>
+                                <select id="image-font-style">
+                                    <option value="Arial">Arial</option>
+                                    <option value="Helvetica">Helvetica</option>
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Verdana">Verdana</option>
+                                </select>
+                            </div>
+                            <button id="generate-image" class="submit-btn">Generate Image</button>
                         </div>
                     </div>
-                    <div id="word-options-modal" style="display: none;">
-                        <h4>Export to Word</h4>
-                        <label>Font Size:
-                            <input type="number" id="word-font-size" value="12">
-                        </label>
-                        <label>Font Style:
-                            <select id="word-font-style">
-                                <option value="Arial">Arial</option>
-                                <option value="Helvetica">Helvetica</option>
-                                <option value="Times New Roman">Times New Roman</option>
-                                <option value="Georgia">Georgia</option>
-                                <option value="Courier New">Courier New</option>
-                                <option value="Verdana">Verdana</option>
-                                <option value="Trebuchet MS">Trebuchet MS</option>
-                                <option value="Lucida Console">Lucida Console</option>
-                                <option value="Tahoma">Tahoma</option>
-                                <option value="Palatino Linotype">Palatino Linotype</option>
-                                <option value="Garamond">Garamond</option>
-                                <option value="Comic Sans MS">Comic Sans MS</option>
-                                <option value="Impact">Impact</option>
-                                <option value="Segoe UI">Segoe UI</option>
-                                <option value="Candara">Candara</option>
-                            </select>
-                        </label>
-                        <div class="modal-actions">
-                            <button id="generate-word">Generate Word</button>
-                            <button id="cancel-word-export" class="cancel-btn">Cancel</button>
+
+                    <!-- ====== Word Export Modal ====== -->
+                    <div id="word-options-modal" class="custom-modal">
+                        <div class="custom-modal-content">
+                            <span class="close-btn" id="closeWordModal">&times;</span>
+                            <h2>Export to Word</h2>
+                            <div class="form-group">
+                                <label>Font Size:</label>
+                                <input type="number" id="word-font-size" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label>Font Style:</label>
+                                <select id="word-font-style">
+                                    <option value="Arial">Arial</option>
+                                    <option value="Helvetica">Helvetica</option>
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Verdana">Verdana</option>
+                                </select>
+                            </div>
+                            <button id="generate-word" class="submit-btn">Generate Word</button>
                         </div>
                     </div>
                 </div>
                 <div class="save-del">
                 <button 
-                    class="saved-eval btn-open-upload-modal"
+                    class="eval btn-open-upload-modal"
                     data-assessment-id="{{ $assessment->id }}">
                     <i class="fas fa-upload"></i> Upload Assessment
                 </button>
@@ -295,47 +274,10 @@
                             <p>Date Created:</p>
                             <p class="v">{{ $assessment->created_at }}</p>
                         </div>
-                </div>
-                    <div id="evaluateModal" class="evaluation-modal">
-                        <div id="overlay-spinner" style="display:none;">
-                            <div class="spinner-container">
-                                <div class="spinner"></div>
-                                <p>⏳ Evaluating, Please wait.</p>
-                            </div>
-                        </div>
-                        <div class="evaluation-modal-content">
-                            <span class="close-btn" id="closeEvaluate">&times;</span>
-
-                            <h3>Evaluate Answers</h3>
-                            <p>
-                                <span class="note">Note:</span> The system only accepts answer-only answer sheets. 
-                                Please ensure that the document adheres strictly to the required format, 
-                                as only properly formatted submissions will be accepted for accurate and fair evaluation. <br><br>
-                                <strong>Correct Format:</strong><br>
-                                1. A<br>2. True<br>3. Laravel<br>4. C<br>5. False
-                            </p>
-
-                            <input type="hidden" id="evaluation_assessment_id" value="{{ $assessment->id }}">
-
-                        <div class="form-group">
-                            <label>Student Name</label>
-                            <input type="text" id="evaluation_student_name" required>
-
-                            <label>Answer Sheet</label>
-                            <input type="file" id="answer_file_input" accept=".pdf,.docx,.txt" required>
-                        </div>
-                        <div class="eval-btns">
-                            <button id="evaluate-btn">
-                                <i class="fas fa-check-circle"></i> Evaluate Answers
-                            </button>
-                            <button id="cancel-eval">
-                                <i class="fas fa-xmark"></i> cancel
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
-                          <div id="AssessmentUploadModal" class="custom-modal" style="display: none;">
+                <div id="AssessmentUploadModal" class="custom-modal" style="display: none;">
                     <div class="custom-modal-content">
                         <span class="close-btn" id="closeAssessmentUploadModal">&times;</span>
                         <h2>Upload Assessment</h2>

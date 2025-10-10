@@ -38,7 +38,7 @@
                                 <i class="fas fa-eye"></i>
                             </button>
                             <button class="btn archive-btn" data-id="{{ $assessments->id }}">
-                                <i class="fas fa-box-archive"></i>
+                                Archive
                             </button>
                         </td>                 
                     </tr>

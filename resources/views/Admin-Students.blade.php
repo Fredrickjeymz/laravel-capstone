@@ -9,7 +9,7 @@
     <div class="table-container">
         <div class="information-card">
             <h3>Information</h3>
-            <p>Manage Students accross all classes.</p>
+            <p>This table shows all the students' accounts, along with their information. Please take responsibility for managing them.</p>
         </div>
         <h3>Students</h3>
         <button class="btn-add btn-add-stud"><i class="fas fa-plus"></i> New Student</button>
@@ -77,9 +77,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Gender:</label>
+                    <label>Sex:</label>
                     <select name="gender" required>
-                        <option value="" disabled selected>Select Gender</option>
+                        <option value="" disabled selected>Select Sex</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
