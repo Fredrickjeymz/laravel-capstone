@@ -24,8 +24,7 @@
 
                             <div class="log-main">
                                 <div class="log-title">
-                                    <strong>{{ $log->action }}</strong>
-                                    <span class="log-meta"> • {{ $log->user_type ?? 'User' }}</span>
+                                    <strong>You have submitted your quiz.</strong>
                                 </div>
 
                                 <div class="log-desc">{{ $log->description }}</div>

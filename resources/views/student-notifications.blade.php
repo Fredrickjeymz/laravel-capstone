@@ -31,18 +31,6 @@
                             <div class="notification-desc">
                                 {{ $notification->data['message'] }}
                             </div>
-
-                            <div class="notification-sub">
-                                @if(isset($notification->data['class_name']))
-                                    <span>Class: {{ $notification->data['class_name'] }} ({{ $notification->data['year_level'] }})</span>
-                                @endif
-                                @if(isset($notification->data['subject']))
-                                    <span>Subject: {{ $notification->data['subject'] }}</span>
-                                @endif
-                                @if(isset($notification->data['teacher']))
-                                    <span>By: {{ $notification->data['teacher'] }}</span>
-                                @endif
-                            </div>
                         </div>
 
                         <!-- Right side: relative time -->

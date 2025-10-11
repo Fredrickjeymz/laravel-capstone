@@ -196,6 +196,10 @@ public function evaluateAnswers(Request $request)
 
     private function callEvaluationAI($data)
     {
+        ini_set('max_execution_time', 300); // 300 seconds = 5 minutes
+        ini_set('memory_limit', '512M');    // optional, increase if needed
+        set_time_limit(300);  
+
         Log::info('Building AI evaluation prompt');
 
         $prompt = "Evaluate student answers against the following assessment:\n\n";
@@ -222,7 +226,7 @@ public function evaluateAnswers(Request $request)
         $prompt .= "- Each question_results[] must have student_answer, score, max_score, feedback.\n";
         $prompt .= "- For multiple choice questions, student_answer must complete (e.g. A. Laravel).\n";
         $prompt .= "- For subjective: include rubric-based criteria_scores.\n";
-        $prompt .= "- Also return an overall_feedback summarizing the student's performance.\n";
+        $prompt .= "- Also return a short (1 sentence) overall_feedback summarizing the student's performance.\n";
         $prompt .= "- JSON only. No extra explanation. Do NOT include markdown like ```json.\n\n";
         $prompt .= "JSON ONLY OUTPUT:";
 
@@ -230,7 +234,10 @@ public function evaluateAnswers(Request $request)
             $response = Http::withHeaders([
                 'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
                 'Content-Type' => 'application/json',
-            ])->post('https://api.openai.com/v1/chat/completions', [
+            ])
+            ->timeout(120)        
+            ->connectTimeout(30)  
+            ->post('https://api.openai.com/v1/chat/completions', [
                 'model' => 'gpt-4-turbo',
                 'messages' => [
                     ['role' => 'system', 'content' => 'You are a strict but fair teacher evaluating student work.'],

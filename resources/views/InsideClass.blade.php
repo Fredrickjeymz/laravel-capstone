@@ -2,14 +2,13 @@
 
 @section('content-area')
 <div id="content-area">
-    <br>
-    <button  class="btn-return" id="btn-return-class" data-url="{{ route('student.classes') }}">
-        Return
-    </button>
     <div class="top">
         <h2>Quizzes for {{ $class->class_name }}</h2>
         <p>{{ $class->subject }}, {{ $class->teacher->lname }}, {{ $class->teacher->fname }} {{ $class->teacher->mname }}., {{ $class->teacher->position }}</p>
     </div>
+    <button  class="btn-return" id="btn-return-class" data-url="{{ route('student.classes') }}">
+        <i class="fas fa-rotate-left"></i> Return
+    </button>
     <div class="quiz-cards-container">
         @forelse ($class->assessments as $assessment)
             @php
@@ -23,20 +22,14 @@
 
             <div class="quiz-card">
                 <div class="quiz-header">
-                    <h3><i class="fas fa-file-alt"></i> {{ $assessment->title }}</h3>
-                    <p><i class="fas fa-calendar-day"></i> Date: {{ $assessment->pivot->created_at->format('M d, Y') }}</p>
+                    <h3><i class="fas fa-file-alt"></i> {{ $assessment->title }} - {{ $assessment->pivot->created_at->format('M d, Y') }}</h3>
                 </div>
-
-                <p class="instructions">{{ $assessment->instructions }}</p>
-
                 <div class="stats">
-                    <p class="meta"><i class="fas fa-clock"></i> Time Limit: {{ $assessment->pivot->time_limit }} mins</p>
-                    <p class="meta"><i class="fas fa-question-circle"></i> {{ $assessment->questions_count }} Questions</p>
-                    <p class="meta"><i class="fas fa-toggle-on"></i> {{ $assessment->question_type }}</p>
+                    <p class="meta"><i class="fas fa-clock"></i> Time Limit: {{ $assessment->pivot->time_limit }} mins - {{ $alreadyTaken ? '1/1' : '0/1' }} Attempts</p>
+                    <p class="meta"><i class="fas fa-toggle-on"></i> {{ $assessment->question_type }} - {{ $assessment->questions_count }} Questions</p>
                     <p><i class="fas fa-calendar-xmark"></i> Due: 
                         {{ $dueDate ? $dueDate->format('M d, Y h:i A') : 'N/A' }}
                     </p>
-                    <p><i class="fas fa-pen-to-square"></i> {{ $alreadyTaken ? '1/1' : '0/1' }} Attempts</p>
                 </div>
 
                 <div class="quiz-actions">
@@ -54,10 +47,10 @@
                             <p class="overdue-msg">⏰ Your quiz deadline has passed. Please contact your teacher if you need to retake it.</p>
                         </div>
                     @else
+                        <button class="pends" disabled>Pending</button>
                         <button class="view-btn take-quiz-btn" data-id="{{ $assessment->id }}">
                             <i class="fas fa-play-circle"></i> Take Quiz
                         </button>
-                        <button class="pends" disabled>Pending</button>
                     @endif
                 </div>
             </div>

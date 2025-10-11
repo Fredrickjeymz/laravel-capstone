@@ -9,7 +9,7 @@
     <div class="dashboard-containers">
             <div class="stat-card">
                 <div class="con-ti">
-                    <h4>Completed Quizzes</h4>
+                    <h4>Completed</h4>
                     <h4><i class="fas fa-check-circle"></i></h4>
                 </div>
                 <h1>{{ $completedQuizzes }}</h1>
@@ -17,11 +17,11 @@
             </div>
             <div class="stat-card">
                 <div class="con-ti">
-                    <h4>Average Score </h4>
+                    <h4>Average Score</h4>
                     <h4><i class="fas fa-chart-line"></i></h4>
                 </div>
                 <h1>{{ $averageScore }}%</h1>
-                <p>Accross all completed quizzes</p>
+                <p>Accross all quizzes</p>
             </div>
             <div class="stat-card">
                 <div class="con-ti">

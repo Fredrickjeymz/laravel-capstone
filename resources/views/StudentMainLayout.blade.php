@@ -24,7 +24,13 @@
 <body>
     <div class="w-container">
         <div class="header">
-            <h2>Speaker Eugenio Perez National Agricultural School</h2>
+            <h2>Sepnas FAG</h2>
+            <form method="POST" action="{{ route('logout') }}" id="logout-form">
+                @csrf
+                <button type="button" id="logout-button">
+                    <i class="fas fa-sign-out-alt"></i> Sign Out
+                </button>
+            </form>
         </div>
         <div class="sub-container">
             <div class="nav">
@@ -44,38 +50,32 @@
                         <button id="btn-dashboard"
                             data-url="{{ route('stud-dash') }}"
                             class="nav-btn {{ request()->routeIs('stud-dash') ? 'active' : '' }}">
-                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                            <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
                         </button>
 
                         <button id="btn-class"
                             data-url="{{ route('student.classes') }}"
                             class="nav-btn {{ request()->routeIs('student.classes') || request()->is('student/quiz/*') ? 'active' : '' }}">
-                            <i class="fas fa-chalkboard"></i> My Classes
+                            <i class="fas fa-chalkboard"></i> <span>Classes</span>
                         </button>
 
                         <button id="btn-quiz"
                             data-url="{{ route('student.all-quizzes') }}"
                             class="nav-btn {{ request()->routeIs('student.all-quizzes') ? 'active' : '' }}">
-                            <i class="fas fa-question-circle"></i> Quizzes
+                            <i class="fas fa-question-circle"></i> <span>Quizzes</span>
                         </button>  
 
                         <button id="btn-logs"
                             data-url="{{ route('student.activity-log') }}"
                             class="nav-btn {{ request()->routeIs('student.activity-log') ? 'active' : '' }}">
-                            <i class="fa-solid fa-history"></i> Activity Log
+                            <i class="fa-solid fa-history"></i> <span>Logs</span>
                         </button>
 
                         <button id="btn-notif"
                             data-url="{{ route('student.notifications') }}"
                             class="nav-btn {{ request()->routeIs('student.notifications') ? 'active' : '' }}">
-                            <i class="fa-solid fa-bell" aria-hidden="true"></i> Notifications
+                            <i class="fa-solid fa-bell" aria-hidden="true"></i> <span>Notifications</span>
                         </button><br>
-                        <form method="POST" action="{{ route('logout') }}" id="logout-form">
-                            @csrf
-                            <button type="button" id="logout-button" class="nav-btn">
-                                <i class="fas fa-sign-out-alt"></i> Sign Out
-                            </button>
-                        </form>
                     </div>
                 </center>
             </div>

@@ -37,7 +37,7 @@
                             <input type="text" name="instruction" placeholder=" e.g., Answer all the following questions.">
                         </div> 
                     </div>
-                    <label for="fileInput" class="file-label">Upload Learning Material</label>
+                    <label for="fileInput" class="file-label">Upload Learning Material (.Docx, .PDF, .PPT)</label>
                         <input type="file" class="file-input" id="fileInput" accept=".pdf,.docx,.pptx" required>
                     <div class="ti-in">
                         <div class="ti">

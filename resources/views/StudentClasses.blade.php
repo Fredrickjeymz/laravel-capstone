@@ -11,9 +11,9 @@
             <div class="class-card">
                 <div class="class-card-header">
                     <div>
-                        <h3><i class="fas fa-layer-group"></i> {{ $class->year_level }} {{ $class->class_name }} <span class="sub-name">- {{ $class->subject }}</span></h3>
+                        <h3><i class="fas fa-layer-group"></i> {{ $class->year_level }} {{ $class->class_name }}</h3>
                         <p class="description">
-                            📖 Please access the class to see your available quizzes.
+                            {{ $class->subject }}
                         </p>
                         <div class="quiz-stats">
                             <span class="dot blue"></span> 
@@ -24,7 +24,7 @@
                         </div>
                     </div>
                     <div class="teacher-info">
-                        <p><i class="fas fa-chalkboard-teacher"></i>{{ $class->teacher->lname }}, {{ $class->teacher->fname }} {{ $class->teacher->mname }}., {{ $class->teacher->position }}</p>
+                        <p><i class="fas fa-chalkboard-teacher"></i> {{ $class->teacher->lname }}, {{ $class->teacher->fname }} {{ $class->teacher->mname }}. {{ $class->teacher->position }}</p>
                             <button class="view-btn view-quizzes-btn" data-id="{{ $class->id }}">
                                 <i class="fas fa-book-reader"></i> View Quizzes
                             </button>

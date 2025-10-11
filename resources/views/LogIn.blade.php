@@ -4,34 +4,39 @@
     <div class="form-container">
         <div class="form-card">
             <h2 class="form-title">Welcome Back!</h2>
-            <p class="form-subtitle">Sign in to Sepnas Assessment Generator.</p>
+            <p class="form-subtitle">Sign in to Sepnas Assessment Generator</p>
+
             <form id="login-form">
             @csrf
-                <div class="form-group">
-                    <label>Username</label>
-                    <input type="text" id="username" name="username" placeholder="Username" required>
-                </div>
-                <div class="form-group">
-                    <label>Password</label>
-                    <input type="password" id="password" name="password" placeholder="Password" required>
-                    <small class="helper-text">Must contain at least 8 characters, including numbers.</small>
-                </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" placeholder="Enter your username" required>
+            </div>
 
-                <div class="form-group">
-                    <label>Login As</label>
-                        <select class="role" name="role" id="role" required>
-                            <option value="teacher"><i class="fas fa-chalkboard-teacher"></i> Teacher</option>
-                            <option value="student"><i class="fas fa-user-graduate"></i> Student</option>
-                            <option value="admin"><i class="fas fa-user-shield"></i> Admin</option>
-                        </select>
-                        <small class="helper-text">Choose your role.</small>
-                </div>
-                    <button class="submit-btn" type="submit">Login</button>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                <small class="helper-text">Must be at least 8 characters, including numbers.</small>
+            </div>
 
-                    <div id="error-message" style="color: red; display: none; margin-top: 10px;"></div>
-                    <div class="forgot-password-link">
-                        <a href="#" id="openForgotPasswordModal">Forgot Password?</a>
-                </div>
+            <div class="form-group">
+                <label for="role">Login As</label>
+                <select name="role" id="role" required>
+                <option value="" disabled selected>Select your role</option>
+                <option value="teacher">👩‍🏫 Teacher</option>
+                <option value="student">🎓 Student</option>
+                <option value="admin">🛡️ Admin</option>
+                </select>
+                <small class="helper-text">Choose your role.</small>
+            </div>
+
+            <button class="submit-btn" type="submit">Login</button>
+
+            <div id="error-message" style="color: red; display: none; margin-top: 10px;"></div>
+
+            <div class="forgot-password-link">
+                <a href="#" id="openForgotPasswordModal">Forgot Password?</a>
+            </div>
             </form>
         </div>
         <div id="forgotPasswordModal" class="custom-modal" style="display: none;">
