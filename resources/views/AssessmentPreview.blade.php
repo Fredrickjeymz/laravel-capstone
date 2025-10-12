@@ -160,46 +160,30 @@
                 </div>
             @endif
         </div>
-        {{-- Smart auto-refresh --}}
         @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
-        function checkAssessmentStatus() {
-            fetch('/api/assessment/{{ $assessment->id }}/status')
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Status check:', data);
-                    
-                    if (data.status === 'completed' || data.status === 'failed') {
-                        // Stop refreshing when done
-                        console.log('✅ Assessment completed, stopping refresh');
-                        return;
-                    }
-                    
-                    // Continue refreshing
-                    console.log('🔄 Still generating, refreshing in 3 seconds...');
-                    setTimeout(() => {
-                        location.reload();
-                    }, 3000);
-                })
-                .catch(error => {
-                    console.error('Status check failed:', error);
-                    // Fallback: refresh anyway
-                    setTimeout(() => {
-                        location.reload();
-                    }, 3000);
-                });
+        // Only refresh if we're actually on the preview page
+        const isPreviewPage = window.location.pathname.includes('preview') || 
+                            window.location.href.includes('assessment');
+
+        if (isPreviewPage) {
+            console.log('🔄 Auto-refresh enabled for preview page');
+            
+            setTimeout(function() {
+                console.log('🔄 Refreshing preview page...');
+                location.reload();
+            }, 5000);
+            
+            // Show loading indicator
+            document.addEventListener('DOMContentLoaded', function() {
+                const questionList = document.querySelector('.question-list');
+                if (questionList) {
+                    questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating questions... (page will auto-refresh in 5 seconds)</li>';
+                }
+            });
+        } else {
+            console.log('❌ Not on preview page, skipping auto-refresh');
         }
-
-        // Start checking
-        checkAssessmentStatus();
-
-        // Show loading indicator
-        document.addEventListener('DOMContentLoaded', function() {
-            const questionList = document.querySelector('.question-list');
-            if (questionList) {
-                questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating questions... (auto-refreshing)</li>';
-            }
-        });
         </script>
         @endif
         </div>
