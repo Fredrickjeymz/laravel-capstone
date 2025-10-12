@@ -42,17 +42,11 @@ class GenerateAssessmentJob implements ShouldQueue
         // optionally set large timeouts/tries here
         $this->tries = 3;
         $this->timeout = 600;
-
-        $this->onQueue('assessments');
     }
 
     public function handle()
     {
-        Log::info('GenerateAssessmentJob processing on Railway Redis', [
-            'assessment_id' => $this->assessmentId,
-            'queue' => 'assessments',
-            'redis_url' => env('REDIS_URL') ? 'set' : 'not set'
-        ]);
+        Log::info('GenerateAssessmentJob started for assessment ' . $this->assessmentId);
         $assessment = Assessment::find($this->assessmentId);
         if (!$assessment) {
             Log::error("GenerateAssessmentJob: assessment not found (id {$this->assessmentId})");
