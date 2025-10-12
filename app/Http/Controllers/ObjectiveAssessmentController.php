@@ -17,6 +17,7 @@ use App\Helpers\ActivityLogger;
 use App\Jobs\GenerateAssessmentJob;
 class ObjectiveAssessmentController extends Controller
 {
+
     public function generateAssessment(Request $request)
     {
         $teacher = auth()->guard('web')->user();
