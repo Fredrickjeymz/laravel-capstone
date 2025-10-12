@@ -20,72 +20,96 @@ class ObjectiveAssessmentController extends Controller
 
     public function generateAssessment(Request $request)
     {
-        $teacher = auth()->guard('web')->user();
-        // validation (same as your original)
-        $request->validate([
-            'learning_material' => 'required|file|mimes:pdf,docx,pptx',
-            'question_type' => 'required|string',
-            'num_items' => 'required|integer|min:1|max:1000',
-            'num_options' => 'nullable|integer|min:2|max:10',
-            'title' => 'nullable|string|max:255',
-            'instruction' => 'nullable|string|max:1000',
-            'subject' => 'nullable|string|max:255',
-            'bloom_taxonomy' => 'required|json',
-        ]);
+        try {
+            $teacher = auth()->guard('web')->user();
 
-        // extract bloom taxonomy and file text (use your helper)
-        $bloomTaxonomy = json_decode($request->input('bloom_taxonomy'), true);
+            $request->validate([
+                'learning_material' => 'required|file|mimes:pdf,docx,pptx',
+                'question_type' => 'required|string',
+                'num_items' => 'required|integer|min:1|max:1000',
+                'num_options' => 'nullable|integer|min:2|max:10',
+                'title' => 'nullable|string|max:255',
+                'instruction' => 'nullable|string|max:1000',
+                'subject' => 'nullable|string|max:255',
+                'bloom_taxonomy' => 'required|json',
+            ]);
 
-        // extract text from uploaded file - use your real implementation here
-        $file = $request->file('learning_material');
-        $text = $this->extractTextFromFile($file); // must return string
+            $bloomTaxonomy = json_decode($request->input('bloom_taxonomy'), true);
+            $file = $request->file('learning_material');
+            $text = $this->extractTextFromFile($file);
 
-        if (!$text || trim($text) === '') {
-            return response()->json(['error' => '❌ Failed to extract text from file or file is empty.'], 400);
+            if (!$text || trim($text) === '') {
+                return response()->json([
+                    'success' => false,
+                    'error' => '❌ Failed to extract text from file or file is empty.'
+                ], 400);
+            }
+
+            $payload = [
+                'bloom_taxonomy' => $request->input('bloom_taxonomy'),
+                'question_type' => $request->input('question_type'),
+                'num_items' => (int) $request->input('num_items'),
+                'num_options' => $request->input('num_options'),
+                'title' => $request->input('title'),
+                'subject' => $request->input('subject'),
+                'instruction' => $request->input('instruction'),
+            ];
+
+            $assessment = Assessment::create([
+                'teacher_id' => Auth::id(),
+                'title' => $payload['title'] ?? 'Untitled Assessment',
+                'subject' => $payload['subject'] ?? null,
+                'instructions' => $payload['instruction'] ?? null,
+                'question_type' => $payload['question_type'],
+                'rubric' => null,
+                'status' => 'pending',
+            ]);
+
+            $teacher = $assessment->teacher;
+            $creatorName = "{$teacher->fname} {$teacher->mname} {$teacher->lname}";
+            ActivityLogger::log(
+                "Generated Assessment",
+                "Assessment Title: {$assessment->title}, Created by: {$creatorName}"
+            );
+
+            // 🔥 Try dispatching the job, catch errors
+            try {
+                GenerateAssessmentJob::dispatch($assessment->id, $text, $payload, Auth::id());
+            } catch (\Throwable $e) {
+                Log::error("❌ Failed to dispatch GenerateAssessmentJob: " . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Job dispatch failed — please check your queue configuration (Redis/Worker).',
+                    'details' => $e->getMessage()
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => '✅ Assessment generation started. You will be notified when it is ready.',
+                'assessment_id' => $assessment->id,
+                'redirect' => route('preview', ['id' => $assessment->id])
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error("Validation failed: " . json_encode($e->errors()));
+            return response()->json([
+                'success' => false,
+                'error' => 'Validation failed.',
+                'details' => $e->errors()
+            ], 422);
+
+        } catch (\Throwable $e) {
+            Log::error("Unexpected error in generateAssessment(): " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'error' => 'Unexpected server error.',
+                'details' => $e->getMessage(),
+                'line' => $e->getLine(),
+                'file' => $e->getFile()
+            ], 500);
         }
-
-        // Prepare request payload to pass to Job (only the necessary fields)
-        $payload = [
-            'bloom_taxonomy' => $request->input('bloom_taxonomy'),
-            'question_type' => $request->input('question_type'),
-            'num_items' => (int) $request->input('num_items'),
-            'num_options' => $request->input('num_options'),
-            'title' => $request->input('title'),
-            'subject' => $request->input('subject'),
-            'instruction' => $request->input('instruction'),
-        ];
-
-        // Create a pending assessment so job can update it as it saves questions
-        $assessment = Assessment::create([
-            'teacher_id' => Auth::id(),
-            'title' => $payload['title'] ?? 'Untitled Assessment',
-            'subject' => $payload['subject'] ?? null,
-            'instructions' => $payload['instruction'] ?? null,
-            'question_type' => $payload['question_type'],
-            'rubric' => null,
-            'status' => 'pending',
-        ]);
-
-        $teacher = $assessment->teacher;
-        $creatorName = "{$teacher->fname} {$teacher->mname} {$teacher->lname}";
-
-        // Log activity
-        ActivityLogger::log(
-            "Generated Assessment",
-            "Assessment Title: {$assessment->title}, Created by: {$creatorName}"
-        );
-
-        // Dispatch job: pass assessment id and extracted text and payload
-        GenerateAssessmentJob::dispatch($assessment->id, $text, $payload, Auth::id());
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Assessment generation started. You will be notified when it is ready.',
-            'assessment_id' => $assessment->id,
-            'redirect' => route('preview', ['id' => $assessment->id])
-        ]);
     }
-
 
     public function preview()
     {

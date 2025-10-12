@@ -105,20 +105,26 @@ $(document).ready(function () {
             },            
             error: function (error) {
                 console.error("❌ Error response:", error);
-                $("#overlay-spinner").hide(); // ✅ Stop spinner
+                $("#overlay-spinner").hide();
+
+                let errMsg = "⚠️ An unknown error occurred while generating the assessment.";
+
+                if (error.responseJSON) {
+                    const data = error.responseJSON;
+                    errMsg = data.error || data.message || JSON.stringify(data);
+                    console.error("📋 Server details:", data);
+                } else {
+                    console.error("📋 Raw error:", error);
+                }
 
                 Swal.fire({
                     icon: 'error',
                     title: 'An error occurred',
-                    text: '⚠️ Please check your internet connection and try again.',
+                    html: `<p>${errMsg}</p>`,
                     confirmButtonText: 'OK'
                 });
 
-                if (error.status === 422) {
-                    $(".generated-area").html("<p style='color:red;'>⚠️ Validation failed. Check your inputs.</p>");
-                } else {
-                    $(".generated-area").html("<p style='color:red;'>⚠️ An error occurred while generating the assessment.</p>");
-                }
+                $(".generated-area").html(`<p style='color:red;'>${errMsg}</p>`);
             }
         });
     });
