@@ -160,6 +160,22 @@
                 </div>
             @endif
         </div>
+        @if($assessment->status === 'in-progress')
+        <script>
+        // Auto-refresh every 3 seconds while assessment is generating
+        setTimeout(function() {
+            location.reload();
+        }, 3000);
+
+        // Show a loading indicator
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionList = document.querySelector('.question-list');
+            if (questionList) {
+                questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating more questions... (auto-refreshing)</li>';
+            }
+        });
+        </script>
+        @endif
         </div>
             <div class="generated-actions">
                 <div class="actions-txt">
