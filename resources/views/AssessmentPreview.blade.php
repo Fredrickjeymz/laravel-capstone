@@ -160,18 +160,44 @@
                 </div>
             @endif
         </div>
-        @if($assessment->status === 'in-progress')
+        {{-- Smart auto-refresh --}}
+        @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
-        // Auto-refresh every 3 seconds while assessment is generating
-        setTimeout(function() {
-            location.reload();
-        }, 3000);
+        function checkAssessmentStatus() {
+            fetch('/api/assessment/{{ $assessment->id }}/status')
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Status check:', data);
+                    
+                    if (data.status === 'completed' || data.status === 'failed') {
+                        // Stop refreshing when done
+                        console.log('✅ Assessment completed, stopping refresh');
+                        return;
+                    }
+                    
+                    // Continue refreshing
+                    console.log('🔄 Still generating, refreshing in 3 seconds...');
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+                })
+                .catch(error => {
+                    console.error('Status check failed:', error);
+                    // Fallback: refresh anyway
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000);
+                });
+        }
 
-        // Show a loading indicator
+        // Start checking
+        checkAssessmentStatus();
+
+        // Show loading indicator
         document.addEventListener('DOMContentLoaded', function() {
             const questionList = document.querySelector('.question-list');
             if (questionList) {
-                questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating more questions... (auto-refreshing)</li>';
+                questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating questions... (auto-refreshing)</li>';
             }
         });
         </script>
