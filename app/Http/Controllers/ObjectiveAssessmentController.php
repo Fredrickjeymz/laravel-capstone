@@ -75,7 +75,7 @@ class ObjectiveAssessmentController extends Controller
         );
 
         // Dispatch job: pass assessment id and extracted text and payload
-        GenerateAssessmentJob::dispatch($assessment->id, $text, $payload, Auth::id());
+        GenerateAssessmentJob::dispatchSync($assessment->id, $text, $payload, Auth::id());
 
         return response()->json([
             'success' => true,
