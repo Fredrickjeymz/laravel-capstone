@@ -111,22 +111,30 @@ class ObjectiveAssessmentController extends Controller
         }
     }
 
-    public function preview()
+    public function preview($id = null)
     {
-        $assessment = Assessment::with('questions')
-            ->where('teacher_id', Auth::id())
-            ->latest()
-            ->first();
+        // If no ID provided, get the latest assessment
+        if (!$id) {
+            $assessment = Assessment::with('questions')
+                ->where('teacher_id', Auth::id())
+                ->latest()
+                ->first();
+        } else {
+            $assessment = Assessment::with('questions')
+                ->where('id', $id)
+                ->where('teacher_id', Auth::id())
+                ->first();
+        }
 
         if (!$assessment) {
             return redirect()->route('home')->with('error', 'Assessment not found.');
         }
-            $teacher = auth()->guard('web')->user(); // or use the correct guard
-            $classes = $teacher->classes; // assuming you have a 'classes' relationship on Teacher model
+
+        $teacher = auth()->guard('web')->user();
+        $classes = $teacher->classes;
 
         return view('AssessmentPreview', compact('assessment', 'classes'));
     }
-
 
     private function extractTextFromFile($file)
     {

@@ -211,3 +211,288 @@
         'redirect' => route('preview', ['id' => $assessment->id])
     ]);
 }
+
+
+Please generate the questions in the same language as the provided material. Do not change the language, whether it's Filipino, English, or any other language.
+
+class GenerateAssessmentJob implements ShouldQueue
+{
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    public $assessmentId;
+    public $fileText;
+    public $payload;
+    public $teacherId;
+    public $tries;
+    public $timeout;
+
+    /**
+     * Create a new job instance.
+     *
+     * @param int $assessmentId - DB id (so job can update it)
+     * @param string $fileText - extracted plain text from learning material
+     * @param array $payload - associative payload (bloom_taxonomy, question_type, etc.)
+     * @param int $teacherId
+     */
+    public function __construct(int $assessmentId, string $fileText, array $payload, int $teacherId)
+    {
+        $this->assessmentId = $assessmentId;
+        $this->fileText = $fileText;
+        $this->payload = $payload;
+        $this->teacherId = $teacherId;
+        // optionally set large timeouts/tries here
+        $this->tries = 3;
+        $this->timeout = 600;
+    }
+
+    public function handle()
+    {
+        Log::info('GenerateAssessmentJob started for assessment ' . $this->assessmentId);
+        $assessment = Assessment::find($this->assessmentId);
+        if (!$assessment) {
+            Log::error("GenerateAssessmentJob: assessment not found (id {$this->assessmentId})");
+            return;
+        }
+
+        // mark in-progress
+        $assessment->update(['status' => 'in-progress']);
+
+        // decode bloom taxonomy as array
+        $bloomTaxonomy = json_decode($this->payload['bloom_taxonomy'], true);
+
+        $questionType = $this->payload['question_type'];
+        $numItems = (int) $this->payload['num_items'];
+        $numOptions = $this->payload['num_options'] ?? null;
+
+        // create base prompt builder closure (keeps your original wording)
+        $buildBasePrompt = function(int $count) use ($bloomTaxonomy, $questionType, $numOptions) {
+            $basePrompt = "You are an expert teacher. Based on the learning material below, generate exactly :count questions. ";
+            $basePrompt .= "Follow this Bloom's Taxonomy distribution:\n";
+            foreach ($bloomTaxonomy as $level => $percent) {
+                $basePrompt .= ucfirst($level) . ": {$percent}%, ";
+            }
+            $basePrompt .= "\nUse appropriate verbs per level (e.g., remember → list, define; apply → solve, implement).\n";
+            $basePrompt .= "Do NOT label each question by Bloom level, just follow the distribution in structure and style.\n\n";
+
+            switch ($questionType) {
+                case 'Multiple Choice':
+                    $maxOpt = max(2, min((int)$numOptions ?: 4, 10));
+                    $basePrompt .= "multiple choice questions. Each should have {$maxOpt} options labeled A to " . chr(64 + $maxOpt) . " and one correct answer. Format like:\n1. Question?\nA) Option\n...\nAnswer: B, Please don't provide a rubric, just obey what i told you in the format.";
+                    break;
+                case 'True Or False':
+                    $basePrompt .= "True or False questions. Format like:\n1. Statement?\nAnswer: True, Please don't provide a rubric, just obey what i told you in the format.";
+                    break;
+                case 'Fill In The Blanks':
+                    $basePrompt .= "fill in the blanks questions. Format like:\n1. This is a ___ question.\nAnswer: the missing word, Please don't provide a rubric, just obey what i told you in the format.";
+                    break;
+                case 'Identification':
+                    $basePrompt .= "identification questions. Format like:\n1. This is a question.\nAnswer: the correct term, Please don't provide a rubric, just obey what i told you in the format.";
+                    break;
+                case 'Enumeration':
+                    $basePrompt .= "enumeration questions. Format like:\n1. List 5 examples...\nAnswer: item 1, item 2, item 3, Please don't provide a rubric, just obey what i told you in the format.";
+                    break;
+                case 'Matching Type':
+                    $basePrompt .= " matching type questions. Format strictly like:\n1. [Matching term or phrase]\nAnswer: A: [Correct match for item 1]\n2. [Matching term or phrase]\nAnswer: B: [Correct match for item 2]\n\nDo not provide any list of options, rubric, or additional explanations. Only provide exactly one matching pair per item as shown.";
+                    break;
+                case 'Essay':
+                    $basePrompt .= "essay questions. provide a scoring rubric with the following:
+            - 5 criteria such as content and development, organization, grammar & mechanics, critical thinking, and clarity & coherence.
+            - Each criterion should have a description and percentage weight.
+              Format like:\n1. Describe a significant life experience that has shaped your perspective. 
+              \n2. Is social media a net positive or negative for society?
+              \nRubric:
+              \nCriteria | Weight |\tExcellent (100%) | Proficient (75%) | Basic (50%) |\tNeeds Improvement (25%)
+              \nContent & Development | 30% | Demonstrates deep understanding; insightful, original ideas; strong supporting evidence | text | text | text
+              \nOrganization | 20% | text | text | text | text 
+              \nGrammar and Mechanics | 20% | text | text | text | text 
+              \nCritical Thinking | 20% | text | text | text | text 
+              \nClarity & Coherence | 10% | | text | text | text | text 
+              note: please don't include arterisk, dash hasgtags or etc.";
+                    break;
+                case 'Short Answer Questions':
+                    $basePrompt .= "short answer questions. provide a scoring rubric with the following:
+            - 5 criteria such as content and development, organization, grammar & mechanics, critical thinking, and clarity & coherence.
+            - Each criterion should have a description and percentage weight.
+              Format like:\n1. What is the chemical symbol for water? 
+              \n2. In what year did World War II begin? ?
+              \nCriteria | Weight |\tExcellent (100%) | Proficient (75%) | Basic (50%) | \tNeeds Improvement (25%)
+              \nContent & Development | 30% | Demonstrates deep understanding; insightful, original ideas; strong supporting evidence | text | text | text
+              \nOrganization | 20% | text | text | text | text 
+              \nGrammar and Mechanics | 20% | text | text | text | text 
+              \nCritical Thinking | 20% | text | text | text | text 
+              \nClarity & Coherence | 10% | | text | text | text | text 
+              note: please don't include arterisk, dash or etc.";
+                    break;
+                case 'Critically Thought-out Opinions':
+                    $basePrompt .= "critical thinking questions. provide a scoring rubric with the following:
+            - 5 criteria such as content and development, organization, grammar & mechanics, critical thinking, and clarity & coherence.
+            - Each criterion should have a description and percentage weight.
+              Format like:\n1. What problem or issue is being addressed?
+              \n2. What evidence or data supports this claim or argument?
+              \nCriteria | Weight |\tExcellent (100%) | Proficient (75%) | Basic (50%) | \tNeeds Improvement (25%)
+              \nContent & Development | 30% | Demonstrates deep understanding; insightful, original ideas; strong supporting evidence | text | text | text
+              \nOrganization | 20% | text | text | text | text 
+              \nGrammar and Mechanics | 20% | text | text | text | text 
+              \nCritical Thinking | 20% | text | text | text | text 
+              \nClarity & Coherence | 10% | | text | text | text | text 
+              note: please don't include arterisk, dash or etc.";
+                    break;
+                default:
+                    $basePrompt .= "{$questionType} questions.  Format like: (\n1. Question .\nAnswer: Answer.) Please don't provide a rubric, just obey what i told you in the format.";
+            }
+
+            $basePrompt .= "\n\nDo not include instructions. Only output the questions and answers. If applicable, add the rubric at the end.
+                    \n\nPlease generate the questions in the same language as the provided material. Do not change the language, whether it's Filipino, English, or any other language.\n\nMaterial:\n" . $this->fileText;
+
+            // replace :count with actual count
+            $basePrompt = str_replace(':count', (string)$count, $basePrompt);
+
+            return $basePrompt;
+        };
+
+        // batch settings
+        $batchSize = 10;
+        $chunks = (int) ceil($numItems / $batchSize);
+        $sequence = 1;
+        $rubricCaptured = null;
+
+        for ($i = 0; $i < $chunks; $i++) {
+            $remaining = $numItems - ($i * $batchSize);
+            $count = ($remaining >= $batchSize) ? $batchSize : $remaining;
+
+            $prompt = $buildBasePrompt($count);
+
+            // retry/backoff
+            $attempts = 0;
+            $maxAttempts = 3;
+            $responseContent = null;
+
+            while ($attempts < $maxAttempts) {
+                $attempts++;
+                try {
+                    $resp = Http::withHeaders([
+                        'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                        'Content-Type' => 'application/json',
+                    ])->timeout(120)->connectTimeout(30)->post('https://api.openai.com/v1/chat/completions', [
+                        'model' => 'gpt-4-turbo',
+                        'messages' => [
+                            ['role' => 'system', 'content' => 'You are an expert teacher.'],
+                            ['role' => 'user', 'content' => $prompt],
+                        ],
+                        'temperature' => 0.5,
+                        'max_tokens' => 2000,
+                    ]);
+
+                    if ($resp->failed()) {
+                        Log::error("OpenAI batch {$i} failed attempt {$attempts}: " . $resp->body());
+                        if ($resp->status() === 429) sleep(2 * $attempts);
+                        else break;
+                        continue;
+                    }
+
+                    $content = $resp->json('choices.0.message.content') ?? null;
+                    if (!$content) {
+                        Log::warning("OpenAI returned empty content (batch {$i}, attempt {$attempts})");
+                        sleep(1);
+                        continue;
+                    }
+
+                    $responseContent = $content;
+                    break; // success
+                } catch (\Throwable $e) {
+                    Log::error("OpenAI exception (batch {$i} attempt {$attempts}): " . $e->getMessage());
+                    sleep(1 + $attempts);
+                }
+            } // end attempts
+
+            if (!$responseContent) {
+                Log::error("Failed to generate content for batch {$i} after {$maxAttempts} attempts. Skipping.");
+                continue;
+            }
+
+            // Extract rubric once if applicable
+            if ($rubricCaptured === null && in_array($questionType, ['Essay','Short Answer Questions','Critically Thought-out Opinions'])) {
+                if (preg_match('/(Rubric:\s*.*)/is', $responseContent, $m)) {
+                    $rubricCaptured = trim($m[1]);
+                    $responseContent = str_replace($m[0], '', $responseContent);
+                } elseif (preg_match('/(Criteria\s*\|\s*Weight\s*\|.*)/is', $responseContent, $m2)) {
+                    $rubricCaptured = trim($m2[1]);
+                    $responseContent = str_replace($m2[0], '', $responseContent);
+                }
+            }
+
+            // split into questions (captures lines starting with number+.)
+            $questions = preg_split('/(?<=\?)\s*(?=\d+\.\s)/', trim($responseContent));
+            if (count($questions) <= 1) {
+                $questions = preg_split('/(?=\d+\.\s)/', trim($responseContent));
+            }
+            foreach ($questions as $q) {
+                $q = trim($q);
+                if (!$q) continue;
+
+                // split by "Answer:"
+                $parts = preg_split('/Answer\s*[:\-]\s*/i', $q, 2);
+                $qText = trim($parts[0] ?? '');
+                $answerPart = isset($parts[1]) ? trim($parts[1]) : null;
+
+                // remove leading numbering "1. "
+                $qText = preg_replace('/^\d+\.\s*/', '', $qText);
+
+                $options = null;
+                if (strtolower($questionType) === 'multiple choice') {
+                    // try several patterns to extract options
+                    $optMatches = [];
+                    preg_match_all('/^[A-Z]\)\s*(.+?)(?=^\s*[A-Z]\)|\z)/msm', $qText, $optMatches);
+                    if (empty($optMatches[1])) {
+                        preg_match_all('/^[A-Z]\.\s*(.+?)(?=^\s*[A-Z]\.|\z)/msm', $qText, $optMatches);
+                    }
+                    if (!empty($optMatches[1])) {
+                        $options = array_map('trim', $optMatches[1]);
+                    } else {
+                        preg_match_all('/[A-Z]\)\s*([^A-Z]*)(?=\s*[A-Z]\)|$)/', $qText, $optMatches);
+                        if (!empty($optMatches[1])) $options = array_map('trim', $optMatches[1]);
+                    }
+                }
+
+                $answerKey = in_array($questionType, ['Essay','Short Answer Questions','Critically Thought-out Opinions']) ? 'N/A' :
+                             (!empty($answerPart) ? $answerPart : 'N/A');
+
+                Log::info("Saving question", [
+                    'assessment_id' => $assessment->id,
+                    'question_text' => $qText,
+                    'answer_key' => $answerKey,
+                    'options' => $options,
+                ]);
+
+                try {
+                    AssessmentQuestion::create([
+                        'assessment_id' => $assessment->id,
+                        'question_text' => $qText,
+                        'options' => $options ? json_encode($options, JSON_UNESCAPED_UNICODE) : null,
+                        'answer_key' => $answerKey,
+                        'sequence_number' => $sequence++,
+                    ]);
+                } catch (\Throwable $e) {
+                    Log::error("Failed to save question (assessment {$assessment->id}): " . $e->getMessage());
+                }
+            } // end foreach questions
+
+            // free memory
+            unset($responseContent, $questions);
+            usleep(200000); // small pause
+        } // end chunks loop
+
+        // Save rubric if captured
+        if ($rubricCaptured) {
+            try {
+                $assessment->update(['rubric' => $rubricCaptured]);
+            } catch (\Throwable $e) {
+                Log::warning("Failed to save rubric for assessment {$assessment->id}: " . $e->getMessage());
+            }
+        }
+
+        // mark completed if at least one question created
+        $hasQuestions = $assessment->questions()->count() > 0;
+        $assessment->update(['status' => $hasQuestions ? 'completed' : 'failed']);
+    } // end handle()
+}
