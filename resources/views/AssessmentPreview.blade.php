@@ -162,28 +162,59 @@
         </div>
         @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
-        // Only refresh if we're actually on the preview page
-        const isPreviewPage = window.location.pathname.includes('preview') || 
-                            window.location.href.includes('assessment');
+        function refreshPreviewContent() {
+            console.log('🔄 Refreshing preview content via AJAX...');
+            
+            $.ajax({
+                url: "/preview/{{ $assessment->id }}", // Make sure this URL includes the assessment ID
+                method: "GET",
+                success: function (response) {
+                    console.log("🟢 Preview content refreshed successfully.");
+                    
+                    let newContent = $(response).find("#content-area").html();
 
-        if (isPreviewPage) {
-            console.log('🔄 Auto-refresh enabled for preview page');
-            
-            setTimeout(function() {
-                console.log('🔄 Refreshing preview page...');
-                location.reload();
-            }, 5000);
-            
-            // Show loading indicator
-            document.addEventListener('DOMContentLoaded', function() {
-                const questionList = document.querySelector('.question-list');
-                if (questionList) {
-                    questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating questions... (page will auto-refresh in 5 seconds)</li>';
+                    if (newContent) {
+                        $("#content-area").fadeOut(150, function () {
+                            $(this).html(newContent).fadeIn(150);
+                            
+                            // Check if we need to keep refreshing
+                            checkIfStillGenerating();
+                        });
+                    } else {
+                        console.error("❌ Could not find #content-area in response.");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("❌ AJAX refresh failed:", error);
+                    // Fallback: try again in 5 seconds
+                    setTimeout(refreshPreviewContent, 5000);
                 }
             });
-        } else {
-            console.log('❌ Not on preview page, skipping auto-refresh');
         }
+
+        function checkIfStillGenerating() {
+            // Check if the new content still has generating status
+            const generatingIndicator = document.querySelector('[style*="Generating questions"]');
+            const statusText = document.body.innerText;
+            
+            if (generatingIndicator || statusText.includes('Generating questions') || statusText.includes('auto-refresh')) {
+                console.log('🔄 Still generating, will refresh again in 5 seconds...');
+                setTimeout(refreshPreviewContent, 5000);
+            } else {
+                console.log('✅ Generation complete, stopping auto-refresh');
+            }
+        }
+
+        // Start the refresh cycle
+        setTimeout(refreshPreviewContent, 5000);
+
+        // Show initial loading indicator
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionList = document.querySelector('.question-list');
+            if (questionList) {
+                questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating questions... (content will auto-refresh)</li>';
+            }
+        });
         </script>
         @endif
         </div>
