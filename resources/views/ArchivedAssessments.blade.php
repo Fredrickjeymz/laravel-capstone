@@ -21,8 +21,7 @@
         </div>
     <h3>All Assessments</h3>
     <div class="search-bar">
-        <input class="search-input" type="text" id="InputArchivedAssessment" placeholder="Search">
-        <button class="search-btn" id="BtnArchivedAssessment"><i class="fas fa-search"></i></button>
+        <input class="search-input" type="text" id="InputArchivedAssessment" placeholder="Search archived assessments...">
     </div>
         <table class="styled-table">
             <thead>
@@ -53,33 +52,11 @@
     </div>
 </div>
 <script>
-    function fetchAssessments(page = 1, search = '') {
-        const pageUrl = "{{ route('archivedassessment') }}?page=" + page + "&search=" + encodeURIComponent(search);
-
-        $.ajax({
-            url: pageUrl,
-            type: 'GET',
-            success: function (response) {
-                const extracted = $(response).find('.archived-assessment-table').html();
-                if (extracted) {
-                    $('.archived-assessment-table').fadeOut(150, function () {
-                        $(this).html(extracted).fadeIn(150);
-                    });
-                } else {
-                    $('.archived-assessment-table').html('<p>No results found.</p>');
-                }
-            },
-            error: function () {
-                $('.archived-assessment-table').html('<p>Error loading assessments.</p>');
-            }
-        });
-    }
-
-    $(document).ready(function () {
-        // Search button
-        $(document).on('click', '#BtnArchivedAssessment', function () {
-            const search = $('#InputArchivedAssessment').val();
-            fetchAssessments(1, search);
+    $(document).on('input', '#InputArchivedAssessment', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
         });
     });
 </script>

@@ -13,7 +13,7 @@
                 <h4><i class="fas fa-file-alt"></i></h4>
             </div>
             <h1>{{ $assessmentCount }}</h1>
-            <p>Created this month, Across all educators</p>
+            <p>Across all educators</p>
         </div>
         <div class="stat-card">
             <div class="con-ti">

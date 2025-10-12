@@ -14,8 +14,7 @@
         <h3>Students</h3>
         <button class="btn-add btn-add-stud"><i class="fas fa-plus"></i> New Student</button>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputStudent" placeholder="Search">
-            <button class="search-btn" id="searchBtnStudent"><i class="fas fa-search"></i></button>
+            <input class="search-input" type="text" id="searchInputStudents" placeholder="Search students...">
         </div>
         <table class="styled-table">
             <thead>
@@ -122,35 +121,11 @@
     </div>
 </div>
 <script>
-function fetchAssessments(page = 1, search = '') {
-    const pageUrl = "{{ route('students') }}?page=" + page + "&search=" + encodeURIComponent(search);
-
-    $.ajax({
-        url: pageUrl,
-        type: 'GET',
-        success: function (response) {
-            const extracted = $(response).find('.student-table').html();
-            if (extracted) {
-                $('.student-table').fadeOut(150, function () {
-                    $(this).html(extracted).fadeIn(150);
-                });
-            } else {
-                $('.student-table').html('<tr><td colspan="6" class="text-center">No results found.</td></tr>');
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error('AJAX error — status:', xhr.status, 'error:', error);
-            console.log('responseText:', xhr.responseText);
-            $('.student-table').html('<tr><td colspan="6" class="text-center">Error loading content — check console.</td></tr>');
-        }
-    });
-}
-
-    $(document).ready(function () {
-        // Search button
-        $(document).on('click', '#searchBtnStudent', function () {
-            const search = $('#searchInputStudent').val();
-            fetchAssessments(1, search);
+    $(document).on('input', '#searchInputStudents', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
         });
     });
 </script>

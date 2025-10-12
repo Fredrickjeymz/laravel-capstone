@@ -735,24 +735,27 @@ body, html {
     background-color: #91f89a ;
 }
 .search-input {
-    padding: 10px 20px;
+    padding: 12px 20px 12px 45px;
     width: 40%;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    border: 2px solid #5fcd79;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 400;
+    background: #ffffff;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    outline: none;
 }
-.search-btn{
-    height: 40px;
-    width: 50px;
-    margin-left: 3px;
-    border: none;
-    border-radius: 3px;
-    background-color: #daddda ;
-    font-size: smaller;
+
+.search-input:focus {
+    border-color: #28a745;
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
+    background: #f8fff9;
 }
-.search-btn:hover{
-    background-color: #218838;
-    transition: 0.3s ease-in-out;
-    color: white;
+
+.search-input::placeholder {
+    color: #9e9e9e;
+    font-weight: 300;
 }
 .bar-chart{
     margin-top: 0px;

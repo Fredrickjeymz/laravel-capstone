@@ -14,8 +14,7 @@
         <h3>Educators</h3>
         <button class="btn-add btn-add-teacher"><i class="fas fa-plus"></i> New Educator</button>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputTeacher" placeholder="Search">
-            <button class="search-btn" id="searchBtnTeacher"><i class="fas fa-search"></i></button>
+            <input class="search-input" type="text" id="searchInputEducator" placeholder="Search educator...">
         </div>
         <table id="teachers-table" class="styled-table">
             <thead>
@@ -122,33 +121,11 @@
         </div>
 </div>
 <script>
-    function fetchAssessments(page = 1, search = '') {
-        const pageUrl = "{{ route('teachers') }}?page=" + page + "&search=" + encodeURIComponent(search);
-
-        $.ajax({
-            url: pageUrl,
-            type: 'GET',
-            success: function (response) {
-                const extracted = $(response).find('#teachers-table').html();
-                if (extracted) {
-                    $('#teachers-table').fadeOut(150, function () {
-                        $(this).html(extracted).fadeIn(150);
-                    });
-                } else {
-                    $('#teachers-table').html('<p>No results found.</p>');
-                }
-            },
-            error: function () {
-                $('#teachers-table').html('<p>Error loading assessments.</p>');
-            }
-        });
-    }
-
-    $(document).ready(function () {
-        // Search button
-        $(document).on('click', '#searchBtnTeacher', function () {
-            const search = $('#searchInputTeacher').val();
-            fetchAssessments(1, search);
+    $(document).on('input', '#searchInputEducator', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
         });
     });
 </script>

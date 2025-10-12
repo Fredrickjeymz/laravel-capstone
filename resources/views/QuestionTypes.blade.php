@@ -17,8 +17,7 @@
         <h3>Question Types</h3>
         <button class="btn-add"><i class="fas fa-plus"></i> New Question Type</button>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputQuestion" placeholder="Search">
-            <button class="search-btn" id="searchBtnQuestion"><i class="fas fa-search"></i></button>
+            <input class="search-input" type="text" id="searchInputQuestionTypes" placeholder="Search question types...">
         </div>
         <table class="styled-table">
             <thead>
@@ -114,33 +113,11 @@
     </div>
 </div>
 <script>
-    function fetchAssessments(page = 1, search = '') {
-        const pageUrl = "{{ route('questiontypes') }}?page=" + page + "&search=" + encodeURIComponent(search);
-
-        $.ajax({
-            url: pageUrl,
-            type: 'GET',
-            success: function (response) {
-                const extracted = $(response).find('.question-table').html();
-                if (extracted) {
-                    $('.question-table').fadeOut(150, function () {
-                        $(this).html(extracted).fadeIn(150);
-                    });
-                } else {
-                    $('.question-table').html('<p>No results found.</p>');
-                }
-            },
-            error: function () {
-                $('.question-table').html('<p>Error loading assessments.</p>');
-            }
-        });
-    }
-
-    $(document).ready(function () {
-        // Search button
-        $(document).on('click', '#searchBtnQuestion', function () {
-            const search = $('#searchInputQuestion').val();
-            fetchAssessments(1, search);
+    $(document).on('input', '#searchInputQuestionTypes', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
         });
     });
 </script>

@@ -17,8 +17,7 @@
         </div>
         <h3>Assigned Assessments</h3>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputQuestion" placeholder="Search">
-            <button class="search-btn" id="searchBtnQuestion"><i class="fas fa-search"></i></button>
+            <input class="search-input" type="text" id="searchInputAssessment" placeholder="Search Assigned/Uploaded assessments...">
         </div>
         <table class="styled-table">
             <thead>
@@ -92,11 +91,19 @@
                 </div>
 
                 <button id="editTime" class="submit-btn edit-btn-time">Update</button>
-
+            </div>
             </div>
         </div>
-        </div>
     </div>
+    <script>
+    $(document).on('input', '#searchInputAssessment', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
+        });
+    });
+</script>
 </div>
 
 @endsection

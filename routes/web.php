@@ -113,6 +113,7 @@ Route::middleware(['teacher'])->group(function () {
     Route::post('/assigned-assessments/{id}/update-time', [AssessmentController::class, 'updateTime']);
     Route::delete('/assigned-assessments/{id}/delete-time', [AssessmentController::class, 'destroyTime'])->name('assigned-assessments.deleteTime');
     Route::get('/classes/{id}/students', [AssignedAssController::class, 'viewStudents'])->name('classes.viewStudents');
+    Route::post('/classes/add-student', [AssignedAssController::class, 'addToClass'])->name('classes.add-student');
     Route::post('/classes/remove-student', [AssignedAssController::class, 'removeStudent'])->name('classes.remove-student');
     Route::post('/change-pass', [ChangePassController::class, 'changePassword'])->name('teacher.changePassword');
     Route::post('/edit-profile', [ChangePassController::class, 'updateProfile'])->name('teacher.updateProfile');

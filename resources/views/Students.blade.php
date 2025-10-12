@@ -11,11 +11,10 @@
             <h3>Information</h3>
             <p>Stores detailed information about each registered student, including personal details and authentication credentials necessary for accessing the system.</p>
         </div>
-        <h3>Classes</h3>
+        <h3>Students</h3>
         <button class="btn-add btn-add-stud-class"><i class="fas fa-plus"></i> New Student to a Class</button>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputStudent" placeholder="Search">
-            <button class="search-btn" id="searchBtnStudent"><i class="fas fa-search"></i></button>
+            <input class="search-input" type="text" id="searchInputStudent" placeholder="Search students...">
         </div>
         <table class="styled-table">
             <thead>
@@ -63,18 +62,19 @@
                 <input type="hidden" id="csrf_token" value="{{ csrf_token() }}">
 
                 <div class="form-group">
-                    <label>Student:</label>
-                    <input list="studentsList" name="student_id" id="studentInput" required>
+                    <label>Select Student:</label>
+                    <input placeholder="Type to search students..." list="studentsList" name="student_id" id="studentInput" required>
 
                     <datalist id="studentsList">
                         @foreach($allStudents as $student)
                             <option value="{{ $student->id }} {{ $student->fname }} {{ $student->mname }} {{ $student->lname }} (LRN: {{ $student->lrn }})"></option>
                         @endforeach
                     </datalist>
+                    <small class="form-text">Start typing to see available students</small>
                 </div>
 
                 <div class="form-group">
-                    <label>Class:</label>
+                    <label>Select Class:</label>
                     <select name="school_class_id" required>
                         <option value="" disabled selected>Select Class</option>
                         @foreach($classes as $class)
@@ -83,7 +83,11 @@
                     </select>
                 </div>
 
-                <button id="saveNewBtnClassStudent" class="submit-btn submit-btn-class-student">Add</button>
+                <div class="modal-actions">
+                    <button id="closeAddModalClassStudent" class="btn btn-cancel">Cancel</button>
+                    <button id="saveNewBtnClassStudent" class="btn btn-primary">Add Student</button>
+                </div>
+
             </div>
         </div>
 
@@ -120,36 +124,13 @@
     </div>
 </div>
 <script>
-    function fetchAssessments(page = 1, search = '') {
-        const pageUrl = "{{ route('students') }}?page=" + page + "&search=" + encodeURIComponent(search);
-
-        $.ajax({
-            url: pageUrl,
-            type: 'GET',
-            success: function (response) {
-                const extracted = $(response).find('.student-table').html();
-                if (extracted) {
-                    $('.student-table').fadeOut(150, function () {
-                        $(this).html(extracted).fadeIn(150);
-                    });
-                } else {
-                    $('.student-table').html('<p>No results found.</p>');
-                }
-            },
-            error: function () {
-                $('.student-table').html('<p>Error loading assessments.</p>');
-            }
-        });
-    }
-
-    $(document).ready(function () {
-        // Search button
-        $(document).on('click', '#searchBtnStudent', function () {
-            const search = $('#searchInputStudent').val();
-            fetchAssessments(1, search);
+    $(document).on('input', '#searchInputStudent', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
         });
     });
-    
 </script>
 
 @endsection

@@ -13,8 +13,7 @@
         </div>
         <h3>All Generated Assessments</h3>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputGenerated" placeholder="Search ">
-            <button class="search-btn" id="searchBtnGenerated"><i class="fas fa-search"></i></button>
+            <input class="search-input" type="text" id="searchInputAssessment" placeholder="Search generated assessments... ">
         </div>
         <table class="styled-table">
             <thead>
@@ -48,33 +47,11 @@
     </div>
 </div>
 <script>
-    function fetchAssessments(page = 1, search = '') {
-        const pageUrl = "{{ route('generated') }}?page=" + page + "&search=" + encodeURIComponent(search);
-
-        $.ajax({
-            url: pageUrl,
-            type: 'GET',
-            success: function (response) {
-                const extracted = $(response).find('.assessment-table').html();
-                if (extracted) {
-                    $('.assessment-table').fadeOut(150, function () {
-                        $(this).html(extracted).fadeIn(150);
-                    });
-                } else {
-                    $('.assessment-table').html('<p>No results found.</p>');
-                }
-            },
-            error: function () {
-                $('.assessment-table').html('<p>Error loading assessments.</p>');
-            }
-        });
-    }
-
-    $(document).ready(function () {
-        // Search button
-        $(document).on('click', '#searchBtnGenerated', function () {
-            const search = $('#searchInputGenerated').val();
-            fetchAssessments(1, search);
+    $(document).on('input', '#searchInputAssessment', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
         });
     });
 </script>
