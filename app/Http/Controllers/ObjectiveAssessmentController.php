@@ -74,7 +74,8 @@ class ObjectiveAssessmentController extends Controller
 
             // 🔥 Try dispatching the job, catch errors
             try {
-                GenerateAssessmentJob::dispatch($assessment->id, $text, $payload, Auth::id());
+                GenerateAssessmentJob::dispatch($assessment->id, $text, $payload, Auth::id())
+                ->onQueue('assessments');
             } catch (\Throwable $e) {
                 Log::error("❌ Failed to dispatch GenerateAssessmentJob: " . $e->getMessage());
                 return response()->json([
