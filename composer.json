@@ -12,6 +12,7 @@
         "laravel/tinker": "^2.10.1",
         "phpoffice/phppresentation": "^0.9.0",
         "phpoffice/phpword": "^1.3",
+        "predis/predis": "^3.2",
         "sendinblue/api-v3-sdk": "*",
         "smalot/pdfparser": "^2.11",
         "thiagoalessio/tesseract_ocr": "^2.13"
