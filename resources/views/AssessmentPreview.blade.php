@@ -160,61 +160,94 @@
                 </div>
             @endif
         </div>
-        @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
-        <script>
-        function smoothQuestionsUpdate() {
-            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+     @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
+<script>
+function smoothDebugRefresh() {
+    console.log('🔄 DEBUG: Starting refresh...');
+    
+    const beforeCount = document.querySelectorAll('.question-list li').length;
+    console.log('📊 Questions before refresh:', beforeCount);
+    
+    const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+    
+    $.ajax({
+        url: "/preview",
+        method: "GET",
+        success: function (response) {
+            console.log("🟢 AJAX Success - Response received");
             
-            $.ajax({
-                url: "/preview",
-                method: "GET",
-                success: function (response) {
-                    // Extract ONLY the questions part from the response
-                    const $response = $(response);
-                    const newQuestions = $response.find('.q-l').html();
-                    const newAnswerKey = $response.find('[class*="bg-green-50"]').html();
-                    const newRubric = $response.find('.rubric-container').html();
-                    
-                    if (newQuestions) {
-                        // Update questions area without fade (instant)
-                        $('.q-l').html(newQuestions);
-                    }
-                    
-                    if (newAnswerKey) {
-                        $('[class*="bg-green-50"]').html(newAnswerKey);
-                    }
-                    
-                    if (newRubric) {
-                        $('.rubric-container').html(newRubric);
-                    }
-                    
-                    // Restore scroll instantly
-                    window.scrollTo(0, scrollPos);
-                    
-                    console.log('✅ Content updated smoothly');
-                    
-                    // Check if we should continue refreshing
-                    const assessmentComplete = !document.body.innerText.includes('Generating questions') && 
-                                            !document.body.innerText.includes('auto-refresh');
-                    
-                    if (!assessmentComplete) {
-                        setTimeout(smoothQuestionsUpdate, 3000);
-                    } else {
-                        console.log('✅ Assessment complete - stopping refresh');
-                    }
-                },
-                error: function() {
-                    // Restore scroll even on error
-                    window.scrollTo(0, scrollPos);
-                    setTimeout(smoothQuestionsUpdate, 5000);
-                }
-            });
-        }
+            let newContent = $(response).find("#content-area").html();
+            console.log("📦 New content length:", newContent ? newContent.length : 'NULL');
 
-        // Start updates
-        setTimeout(smoothQuestionsUpdate, 3000);
-        </script>
-        @endif
+            if (newContent) {
+                // Create a temporary hidden div to hold new content
+                const $tempDiv = $('<div>').css({
+                    position: 'absolute',
+                    left: '-9999px',
+                    opacity: 0
+                }).html(newContent);
+                
+                $('body').append($tempDiv);
+                
+                // Get ONLY the questions area from new content
+                const newQuestions = $tempDiv.find('.q-l').html();
+                const newAnswerKey = $tempDiv.find('[class*="bg-green-50"]').html();
+                const newRubric = $tempDiv.find('.rubric-container').html();
+                
+                console.log("🔄 Updating content areas individually...");
+                
+                // Update each section individually without replacing entire content area
+                if (newQuestions && $('.q-l').html() !== newQuestions) {
+                    $('.q-l').html(newQuestions);
+                    console.log('✅ Questions updated');
+                }
+                
+                if (newAnswerKey && $('[class*="bg-green-50"]').html() !== newAnswerKey) {
+                    $('[class*="bg-green-50"]').html(newAnswerKey);
+                    console.log('✅ Answer key updated');
+                }
+                
+                if (newRubric && $('.rubric-container').html() !== newRubric) {
+                    $('.rubric-container').html(newRubric);
+                    console.log('✅ Rubric updated');
+                }
+                
+                // Clean up
+                $tempDiv.remove();
+                
+                // Log questions count after refresh
+                setTimeout(() => {
+                    const afterCount = document.querySelectorAll('.question-list li').length;
+                    console.log('📊 Questions after refresh:', afterCount);
+                    console.log('📈 Change:', afterCount - beforeCount, 'questions');
+                    
+                    // Restore scroll position
+                    window.scrollTo(0, scrollPos);
+                    
+                    // Auto-scroll to new questions if any were added
+                    if (afterCount > beforeCount) {
+                        setTimeout(() => {
+                            const questionsArea = document.querySelector('.q-l');
+                            if (questionsArea) {
+                                questionsArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                            }
+                        }, 200);
+                    }
+                }, 100);
+            } else {
+                console.error("❌ No content found in response");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("❌ AJAX Error:", error);
+        }
+    });
+}
+
+// Start smooth refresh every 3 seconds
+setInterval(smoothDebugRefresh, 3000);
+</script>
+@endif
         </div>
             <div class="generated-actions">
                 <div class="actions-txt">
