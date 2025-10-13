@@ -53,7 +53,7 @@
             </div>
 
             {{-- Questions --}}
-            <div id="questions-area" class="q-l">
+            <div id="question-area" class="q-l">
                 <ol class="question-list">
                 @foreach ($assessment->questions as $index => $question)
                     <li>
@@ -162,33 +162,61 @@
         </div>
         @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
-        function refreshPreviewContent() {
-            console.log('🔄 Refreshing preview content...');
+        let currentQuestionsCount = {{ $assessment->questions->count() }};
+
+        function updateQuestionsOnly() {
+            console.log('🔄 Checking for new questions...');
             
-            // Use your existing loadPreviewPage function
-            loadPreviewPage();
+            // Save current scroll position
+            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
             
-            // Check again in 5 seconds if still generating
-            setTimeout(function() {
-                // Check if we still see generating indicators
-                const hasGeneratingText = document.body.innerText.includes('Generating questions') || 
-                                        document.body.innerText.includes('auto-refresh');
-                if (hasGeneratingText) {
-                    refreshPreviewContent();
+            $.ajax({
+                url: "/api/assessment/{{ $assessment->id }}/questions-only",
+                method: "GET",
+                data: {
+                    previous_count: currentQuestionsCount
+                },
+                success: function (response) {
+                    if (response.questions_html) {
+                        // Update the questions area
+                        $('#questions-area').html(response.questions_html);
+                        console.log('✅ Questions updated. Total:', response.questions_count);
+                        
+                        // Restore scroll position
+                        window.scrollTo(0, currentScroll);
+                        
+                        // Auto-scroll to new questions if any were added
+                        if (response.new_questions_count > 0) {
+                            setTimeout(() => {
+                                const questionsArea = document.getElementById('questions-area');
+                                questionsArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                            }, 100);
+                        }
+                        
+                        // Update the count
+                        currentQuestionsCount = response.questions_count;
+                        
+                        // Continue refreshing if still generating
+                        if (response.status === 'completed') {
+                            console.log('✅ Generation complete, stopping refresh');
+                            $('#questions-area').append('<div style="color: green; padding: 10px; background: #f0fff0; border-radius: 5px; margin-top: 20px;">✅ Assessment generation complete!</div>');
+                        } else {
+                            // Continue checking in 3 seconds
+                            setTimeout(updateQuestionsOnly, 3000);
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('❌ Update failed:', error);
+                    console.log('URL attempted:', '/api/assessment/{{ $assessment->id }}/questions-only');
+                    // Retry after 5 seconds on error
+                    setTimeout(updateQuestionsOnly, 5000);
                 }
-            }, 5000);
+            });
         }
 
-        // Start the refresh cycle
-        setTimeout(refreshPreviewContent, 5000);
-
-        // Show initial loading indicator
-        document.addEventListener('DOMContentLoaded', function() {
-            const questionList = document.querySelector('.question-list');
-            if (questionList) {
-                questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating questions... (content will auto-refresh)</li>';
-            }
-        });
+        // Start the update cycle
+        setTimeout(updateQuestionsOnly, 3000);
         </script>
         @endif
         </div>

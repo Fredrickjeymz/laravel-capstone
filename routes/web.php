@@ -119,7 +119,41 @@ Route::middleware(['teacher'])->group(function () {
     Route::post('/edit-profile', [ChangePassController::class, 'updateProfile'])->name('teacher.updateProfile');
     Route::get('/teacher/change-password', function (){return view('teacher-change-password');})->name('teacher.change-password');
     Route::get('/teacher/activity-log', [ActivityLogController::class, 'index'])->name('teacher.activity-log');
-
+    Route::get('/api/assessment/{id}/questions-only', function($id) {
+        $assessment = \App\Models\Assessment::with('questions')->find($id);
+        
+        if (!$assessment) {
+            return response()->json(['error' => 'Assessment not found'], 404);
+        }
+        
+        $previousCount = request('previous_count', 0);
+        $newQuestionsCount = $assessment->questions->count() - $previousCount;
+        
+        // Render the questions HTML directly (no partial view needed)
+        $questionsHtml = '';
+        foreach ($assessment->questions as $index => $question) {
+            $cleaned_text = preg_replace('/^\d+[\.\)]\s*/', '', $question->question_text);
+            $question_text = preg_split('/\s*[A-Z]\)[\s]*/', $cleaned_text)[0];
+            preg_match_all('/\s*([A-Z])\)[\s]*(.*?)(?=\s*[A-Z]\)|$)/', $question->question_text, $matches);
+            
+            $questionsHtml .= '<li>';
+            $questionsHtml .= '<p>' . trim($question_text) . '</p>';
+            $questionsHtml .= '<p>';
+            foreach ($matches[1] as $key => $option_letter) {
+                $questionsHtml .= '<p>' . $option_letter . ') ' . trim($matches[2][$key]) . '</p>';
+            }
+            $questionsHtml .= '</p>';
+            $questionsHtml .= '</li>';
+        }
+        
+        return response()->json([
+            'questions_html' => '<ol class="question-list">' . $questionsHtml . '</ol>',
+            'status' => $assessment->status,
+            'questions_count' => $assessment->questions->count(),
+            'new_questions_count' => max(0, $newQuestionsCount),
+            'is_completed' => $assessment->status === 'completed'
+        ]);
+    });
 });
 
 //Admin
