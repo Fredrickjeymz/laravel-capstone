@@ -1,5 +1,8 @@
 
 function loadPreviewPage() {
+    // Save scroll position BEFORE making the request
+    const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+    
     $.ajax({
         url: "/preview",
         method: "GET",
@@ -11,17 +14,24 @@ function loadPreviewPage() {
             let newContent = $(response).find("#content-area").html();
 
             if (newContent) {
+                // Fade out, update, fade in - but preserve scroll
                 $("#content-area").fadeOut(150, function () {
-                    $(this).html(newContent).fadeIn(150);
+                    $(this).html(newContent).fadeIn(150, function() {
+                        // Restore scroll position after fade in completes
+                        window.scrollTo(0, scrollPos);
+                    });
                 });
             } else {
                 console.error("❌ Could not find #content-area in response.");
-                $("#content-area").html("<p style='color:red;'>⚠️ Could not load preview content.</p>");
             }
         },
+        error: function(xhr, status, error) {
+            console.error("❌ Preview load failed:", error);
+            // Still restore scroll position even on error
+            window.scrollTo(0, scrollPos);
+        }
     });
 }
-
 
 $(document).ready(function () {
     console.log("✅ Navigation script loaded!");

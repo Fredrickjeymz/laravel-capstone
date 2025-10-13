@@ -162,61 +162,57 @@
         </div>
         @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
-        let currentQuestionsCount = {{ $assessment->questions->count() }};
-
-        function updateQuestionsOnly() {
-            console.log('🔄 Checking for new questions...');
-            
-            // Save current scroll position
-            const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+        function smoothQuestionsUpdate() {
+            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
             
             $.ajax({
-                url: "/api/assessment/{{ $assessment->id }}/questions-only",
+                url: "/preview",
                 method: "GET",
-                data: {
-                    previous_count: currentQuestionsCount
-                },
                 success: function (response) {
-                    if (response.questions_html) {
-                        // Update the questions area
-                        $('#questions-area').html(response.questions_html);
-                        console.log('✅ Questions updated. Total:', response.questions_count);
-                        
-                        // Restore scroll position
-                        window.scrollTo(0, currentScroll);
-                        
-                        // Auto-scroll to new questions if any were added
-                        if (response.new_questions_count > 0) {
-                            setTimeout(() => {
-                                const questionsArea = document.getElementById('questions-area');
-                                questionsArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                            }, 100);
-                        }
-                        
-                        // Update the count
-                        currentQuestionsCount = response.questions_count;
-                        
-                        // Continue refreshing if still generating
-                        if (response.status === 'completed') {
-                            console.log('✅ Generation complete, stopping refresh');
-                            $('#questions-area').append('<div style="color: green; padding: 10px; background: #f0fff0; border-radius: 5px; margin-top: 20px;">✅ Assessment generation complete!</div>');
-                        } else {
-                            // Continue checking in 3 seconds
-                            setTimeout(updateQuestionsOnly, 3000);
-                        }
+                    // Extract ONLY the questions part from the response
+                    const $response = $(response);
+                    const newQuestions = $response.find('.q-l').html();
+                    const newAnswerKey = $response.find('[class*="bg-green-50"]').html();
+                    const newRubric = $response.find('.rubric-container').html();
+                    
+                    if (newQuestions) {
+                        // Update questions area without fade (instant)
+                        $('.q-l').html(newQuestions);
+                    }
+                    
+                    if (newAnswerKey) {
+                        $('[class*="bg-green-50"]').html(newAnswerKey);
+                    }
+                    
+                    if (newRubric) {
+                        $('.rubric-container').html(newRubric);
+                    }
+                    
+                    // Restore scroll instantly
+                    window.scrollTo(0, scrollPos);
+                    
+                    console.log('✅ Content updated smoothly');
+                    
+                    // Check if we should continue refreshing
+                    const assessmentComplete = !document.body.innerText.includes('Generating questions') && 
+                                            !document.body.innerText.includes('auto-refresh');
+                    
+                    if (!assessmentComplete) {
+                        setTimeout(smoothQuestionsUpdate, 3000);
+                    } else {
+                        console.log('✅ Assessment complete - stopping refresh');
                     }
                 },
-                error: function(xhr, status, error) {
-                    console.error('❌ Update failed:', error);
-                    console.log('URL attempted:', '/api/assessment/{{ $assessment->id }}/questions-only');
-                    // Retry after 5 seconds on error
-                    setTimeout(updateQuestionsOnly, 5000);
+                error: function() {
+                    // Restore scroll even on error
+                    window.scrollTo(0, scrollPos);
+                    setTimeout(smoothQuestionsUpdate, 5000);
                 }
             });
         }
 
-        // Start the update cycle
-        setTimeout(updateQuestionsOnly, 3000);
+        // Start updates
+        setTimeout(smoothQuestionsUpdate, 3000);
         </script>
         @endif
         </div>
