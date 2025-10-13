@@ -163,6 +163,8 @@
         </div>
         @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
+        let refreshInterval;
+
         function smoothDebugRefresh() {
             console.log('🔄 DEBUG: Starting refresh...');
             
@@ -234,6 +236,16 @@
                                     }
                                 }, 200);
                             }
+                            
+                            // 🛑 STOP REFRESHING if assessment is complete
+                            // Check if the "Generating Questions" message is gone
+                            const generatingMessage = document.querySelector('[style*="Generating Questions"]');
+                            const hasGeneratingText = document.body.innerText.includes('Generating Questions');
+                            
+                            if (!generatingMessage && !hasGeneratingText) {
+                                console.log('✅ Assessment complete - STOPPING auto-refresh');
+                                clearInterval(refreshInterval);
+                            }
                         }, 100);
                     } else {
                         console.error("❌ No content found in response");
@@ -246,7 +258,14 @@
         }
 
         // Start smooth refresh every 3 seconds
-        setInterval(smoothDebugRefresh, 3000);
+        refreshInterval = setInterval(smoothDebugRefresh, 3000);
+
+        // Also stop if user navigates away
+        $(window).on('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
         </script>
         @endif
         </div>
