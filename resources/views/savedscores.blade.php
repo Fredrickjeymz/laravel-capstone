@@ -16,7 +16,10 @@
                 <p>The table shows all the score result belongs to the specific assessment.</p>
             </div>
             <div id="assessment-table">
-                <h3>Student's Scores</h3>
+                <h3>Student's Scores for Assessment: {{ $assessment->title }} - <span>{{ $assessment->question_type }}</span></h3>
+            <div class="search-bar">
+                <input class="search-input" type="text" id="searchInputStudent" placeholder="Search students...">
+            </div>
                     <table class="styled-table">
                     <thead>
                         <tr>
@@ -49,5 +52,14 @@
             </div>
         </div>
     </div>
+    <script>
+    $(document).on('input', '#searchInputStudent', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
+        });
+    });
+</script>
 </div>
 @endsection

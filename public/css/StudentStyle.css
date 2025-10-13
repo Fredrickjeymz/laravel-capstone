@@ -12,7 +12,7 @@
 :root{
   --brand-green: #218838;
   --brand-green-hover: #2eb94f;
-  --brand-light: #f4f9f4;
+  --brand-light: #e8effc;
   --muted: #64748b;
   --card-border: #dee2e6;
   --bg: #ffffff;
@@ -293,8 +293,8 @@ html, body { margin:0; padding:0; width:100%; min-height:100%; font-family: 'Pop
 .shortcut-buttons button{
     border: none;
     text-align: left;
-    padding: 13.5px;
-    gap: 10px;
+    padding: 13px;
+    gap: 5px;
     display: flex;
     border-radius: 10px;
 }
@@ -740,6 +740,10 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
 @media (max-width: 768px) {
   :root{ --header-height:56px; --nav-height-mobile:64px; }
 
+  html, body{
+    font-size: 12.5px;
+  }
+
   /* stack layout */
   .sub-container{ flex-direction:column; width:100%; max-width:100%; margin-top: calc(var(--header-height) + 8px); padding: 8px 12px 12px; gap:12px; }
   .main-container{
@@ -797,7 +801,7 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
   align-items: center;
   justify-content: center;
   color: #111827;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   padding: 6px 0;
   transition: all 0.25s ease;
@@ -806,7 +810,7 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
 
 /* Icons */
 .nav-btn i {
-  font-size: 20px;
+  font-size: 12px;
   margin-bottom: 3px;
   color: #111827;
   transition: color 0.3s ease;
@@ -831,7 +835,7 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
 @media (max-width: 768px) {
 
   .nav-btn i {
-    font-size: 24px;
+    font-size: 12px;
   }
 
   .navigation {
@@ -845,7 +849,7 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
   /* navigation layout */
   .navigation{ width:100%; display:flex; flex-direction:row; gap:0; align-items:center; justify-content:space-around; padding:0; }
   .navigation button.nav-btn, .navigation button{ background:none; padding:10px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; border-radius:0; color:#111827; font-size:12px; width:100%; height:100%; }
-  .navigation button.nav-btn i, .nav button i{ font-size:20px; margin:0; display:block; }
+  .navigation button.nav-btn i, .nav button i{ font-size:12px; margin:0; display:block; }
 
   /* ===================== Responsive Navbar ===================== */
 
@@ -875,11 +879,11 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
 }
 
 .nav form button i {
-  font-size: 1.2rem;
+  font-size: 12px;
 }
 
 .nav form button span {
-  font-size: 0.85rem;
+  font-size: 12px;
 }
 
 /* Hover / active effects */
@@ -889,7 +893,7 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
 
   /* header */
   .header{ height:var(--header-height); padding:0 12px; }
-  .header h2{ font-size:0.95rem; }
+  .header h2{ font-size:12px; }
 
   /* leave space above bottom nav */
   .main-container{ margin-bottom: calc(var(--nav-height-mobile) + 8px); padding-bottom:18px; }
@@ -953,7 +957,7 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
     justify-content: center;
     text-align: center;
     padding: 10px 0;
-    font-size: 0.95rem;
+    font-size: 12px;
     background: linear-gradient(to right, #28a745, #218838);
     color: #fff;
     border: none;
@@ -987,7 +991,7 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
     display: block;
     text-align: center;
     justify-content: center;
-    font-size: 1rem;
+    font-size: 12px;
     padding: 10px;
     margin-top: 8px;
   }
@@ -996,10 +1000,11 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
 @media (max-width: 768px) {
   .navigation .nav-btn {
     font-size: 0;
+    border-radius: 5px;
   }
 
   .navigation .nav-btn i {
-    font-size: 1.5rem;
+    font-size: 16px;
     margin: 0;
   }
 }
