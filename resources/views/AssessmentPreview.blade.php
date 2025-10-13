@@ -163,8 +163,6 @@
         </div>
         @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
-        let refreshInterval;
-
         function smoothDebugRefresh() {
             console.log('🔄 DEBUG: Starting refresh...');
             
@@ -199,7 +197,7 @@
                         
                         console.log("🔄 Updating content areas individually...");
                         
-                        // Update each section individually
+                        // Update each section individually without replacing entire content area
                         if (newQuestions && $('.q-l').html() !== newQuestions) {
                             $('.q-l').html(newQuestions);
                             console.log('✅ Questions updated');
@@ -236,19 +234,6 @@
                                     }
                                 }, 200);
                             }
-                            
-                            // 🛑 STOP REFRESHING if assessment is complete
-                            const $responseDoc = $(response);
-                            const statusFromResponse = $responseDoc.find('[data-assessment-status]').data('assessment-status') || 
-                                                    document.body.innerText.includes('completed') ? 'completed' : 'in-progress';
-                            
-                            if (statusFromResponse === 'completed' || afterCount >= {{ $assessment->num_items ?? 0 }}) {
-                                console.log('✅ Assessment complete - STOPPING auto-refresh');
-                                clearInterval(refreshInterval);
-                                
-                                // Show completion message
-                                $('.q-l').append('<div style="color: green; padding: 10px; background: #f0fff0; border-radius: 5px; margin-top: 20px;">✅ Assessment generation complete! Auto-refresh stopped.</div>');
-                            }
                         }, 100);
                     } else {
                         console.error("❌ No content found in response");
@@ -261,14 +246,7 @@
         }
 
         // Start smooth refresh every 3 seconds
-        refreshInterval = setInterval(smoothDebugRefresh, 3000);
-
-        // Also stop if user navigates away
-        $(window).on('beforeunload', function() {
-            if (refreshInterval) {
-                clearInterval(refreshInterval);
-            }
-        });
+        setInterval(smoothDebugRefresh, 3000);
         </script>
         @endif
         </div>
