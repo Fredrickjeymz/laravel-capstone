@@ -162,73 +162,31 @@
         </div>
         @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
-        let currentScrollPosition = 0;
-
-        function saveScrollPosition() {
-            currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
-        }
-
-        function restoreScrollPosition() {
-            window.scrollTo(0, currentScrollPosition);
-        }
-
-        function smoothScrollToBottom() {
-            const questionsArea = document.getElementById('questions-area');
-            if (questionsArea) {
-                questionsArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
-            }
-        }
-
-        function updateQuestionsOnly() {
-            console.log('🔄 Checking for new questions...');
+        function refreshPreviewContent() {
+            console.log('🔄 Refreshing preview content...');
             
-            // Save current scroll position
-            saveScrollPosition();
+            // Use your existing loadPreviewPage function
+            loadPreviewPage();
             
-            $.ajax({
-                url: "/api/assessment/{{ $assessment->id }}/questions-only",
-                method: "GET",
-                success: function (response) {
-                    if (response.questions_html) {
-                        // Smoothly update only the questions area
-                        $('#questions-area').html(response.questions_html);
-                        console.log('✅ Questions updated smoothly');
-                        
-                        // Restore scroll position and optionally auto-scroll to new content
-                        restoreScrollPosition();
-                        
-                        // If new questions were added, scroll to them
-                        if (response.new_questions_count > 0) {
-                            setTimeout(smoothScrollToBottom, 100);
-                        }
-                        
-                        // Continue refreshing if still generating
-                        if (response.status === 'completed') {
-                            console.log('✅ Generation complete, stopping refresh');
-                            // Show completion message
-                            $('#questions-area').append('<div class="completion-message" style="color: green; padding: 10px; background: #f0fff0; border-radius: 5px; margin-top: 20px;">✅ Assessment generation complete!</div>');
-                        } else {
-                            // Continue checking
-                            setTimeout(updateQuestionsOnly, 3000);
-                        }
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('❌ Update failed:', error);
-                    // Retry after 5 seconds on error
-                    setTimeout(updateQuestionsOnly, 5000);
+            // Check again in 5 seconds if still generating
+            setTimeout(function() {
+                // Check if we still see generating indicators
+                const hasGeneratingText = document.body.innerText.includes('Generating questions') || 
+                                        document.body.innerText.includes('auto-refresh');
+                if (hasGeneratingText) {
+                    refreshPreviewContent();
                 }
-            });
+            }, 5000);
         }
 
-        // Start the update cycle
-        setTimeout(updateQuestionsOnly, 3000);
+        // Start the refresh cycle
+        setTimeout(refreshPreviewContent, 5000);
 
         // Show initial loading indicator
         document.addEventListener('DOMContentLoaded', function() {
             const questionList = document.querySelector('.question-list');
             if (questionList) {
-                questionList.innerHTML += '<li style="color: #666; font-style: italic; padding: 10px; background: #f8f9fa; border-radius: 5px;">🔄 Generating questions... (new questions will appear below)</li>';
+                questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating questions... (content will auto-refresh)</li>';
             }
         });
         </script>
