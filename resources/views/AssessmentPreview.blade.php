@@ -163,100 +163,112 @@
         </div>
         @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
-            let refreshInterval;
+        let refreshInterval;
 
-            function smoothDebugRefresh() {
-                console.log('DEBUG: Starting refresh...');
-                
-                const beforeCount = document.querySelectorAll('.question-list li').length;
-                console.log('Questions before refresh:', beforeCount);
-                
-                const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-                
-                $.ajax({
-                    url: "/preview",
-                    method: "GET",
-                    success: function (response) {
-                        console.log("AJAX Success - Response received");
+        function smoothDebugRefresh() {
+            console.log('🔄 DEBUG: Starting refresh...');
+            
+            const beforeCount = document.querySelectorAll('.question-list li').length;
+            console.log('📊 Questions before refresh:', beforeCount);
+            
+            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+            
+            $.ajax({
+                url: "/preview",
+                method: "GET",
+                success: function (response) {
+                    console.log("🟢 AJAX Success - Response received");
+                    
+                    let newContent = $(response).find("#content-area").html();
+                    console.log("📦 New content length:", newContent ? newContent.length : 'NULL');
+
+                    if (newContent) {
+                        // Create a temporary hidden div to hold new content
+                        const $tempDiv = $('<div>').css({
+                            position: 'absolute',
+                            left: '-9999px',
+                            opacity: 0
+                        }).html(newContent);
                         
-                        let newContent = $(response).find("#content-area").html();
-                        console.log("New content length:", newContent ? newContent.length : 'NULL');
-
-                        if (newContent) {
-                            // Create a temporary hidden div to hold new content
-                            const $tempDiv = $('<div>').css({
-                                position: 'absolute',
-                                left: '-9999px',
-                                opacity: 0
-                            }).html(newContent);
-                            
-                            $('body').append($tempDiv);
-                            
-                            // Get ONLY the questions area from new content
-                            const newQuestions = $tempDiv.find('.q-l').html();
-                            const newAnswerKey = $tempDiv.find('[class*="bg-green-50"]').html();
-                            const newRubric = $tempDiv.find('.rubric-container').html();
-                            
-                            console.log("Updating content areas individually...");
-                            
-                            // Update each section individually
-                            if (newQuestions && $('.q-l').html() !== newQuestions) {
-                                $('.q-l').html(newQuestions);
-                                console.log('Questions updated');
-                            }
-                            
-                            if (newAnswerKey && $('[class*="bg-green-50"]').html() !== newAnswerKey) {
-                                $('[class*="bg-green-50"]').html(newAnswerKey);
-                                console.log('Answer key updated');
-                            }
-                            
-                            if (newRubric && $('.rubric-container').html() !== newRubric) {
-                                $('.rubric-container').html(newRubric);
-                                console.log('Rubric updated');
-                            }
-                            
-                            // Clean up
-                            $tempDiv.remove();
-                            
-                            // Log questions count after refresh
-                            setTimeout(() => {
-                                const afterCount = document.querySelectorAll('.question-list li').length;
-                                console.log('Questions after refresh:', afterCount);
-                                
-                                // Restore scroll position
-                                window.scrollTo(0, scrollPos);
-                                
-                                // Auto-scroll to new questions if any were added
-                                if (afterCount > beforeCount) {
-                                    setTimeout(() => {
-                                        const questionsArea = document.querySelector('.q-l');
-                                        if (questionsArea) {
-                                            questionsArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                                        }
-                                    }, 200);
-                                }
-                                
-                                // STOP REFRESHING if no new questions were added
-                                if (afterCount === beforeCount) {
-                                    console.log('No new questions - Assessment likely complete, STOPPING auto-refresh');
-                                    clearInterval(refreshInterval);
-                                    
-                                    // Show completion message
-                                    $('.q-l').append('<div style="color: green; padding: 10px; background: #f0fff0; border-radius: 5px; margin-top: 20px;">Assessment generation complete! Auto-refresh stopped.</div>');
-                                }
-                            }, 100);
-                        } else {
-                            console.error("No content found in response");
+                        $('body').append($tempDiv);
+                        
+                        // Get ONLY the questions area from new content
+                        const newQuestions = $tempDiv.find('.q-l').html();
+                        const newAnswerKey = $tempDiv.find('[class*="bg-green-50"]').html();
+                        const newRubric = $tempDiv.find('.rubric-container').html();
+                        
+                        console.log("🔄 Updating content areas individually...");
+                        
+                        // Update each section individually
+                        if (newQuestions && $('.q-l').html() !== newQuestions) {
+                            $('.q-l').html(newQuestions);
+                            console.log('✅ Questions updated');
                         }
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("AJAX Error:", error);
+                        
+                        if (newAnswerKey && $('[class*="bg-green-50"]').html() !== newAnswerKey) {
+                            $('[class*="bg-green-50"]').html(newAnswerKey);
+                            console.log('✅ Answer key updated');
+                        }
+                        
+                        if (newRubric && $('.rubric-container').html() !== newRubric) {
+                            $('.rubric-container').html(newRubric);
+                            console.log('✅ Rubric updated');
+                        }
+                        
+                        // Clean up
+                        $tempDiv.remove();
+                        
+                        // Log questions count after refresh
+                        setTimeout(() => {
+                            const afterCount = document.querySelectorAll('.question-list li').length;
+                            console.log('📊 Questions after refresh:', afterCount);
+                            console.log('📈 Change:', afterCount - beforeCount, 'questions');
+                            
+                            // Restore scroll position
+                            window.scrollTo(0, scrollPos);
+                            
+                            // Auto-scroll to new questions if any were added
+                            if (afterCount > beforeCount) {
+                                setTimeout(() => {
+                                    const questionsArea = document.querySelector('.q-l');
+                                    if (questionsArea) {
+                                        questionsArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                                    }
+                                }, 200);
+                            }
+                            
+                            // 🛑 STOP REFRESHING if assessment is complete
+                            const $responseDoc = $(response);
+                            const statusFromResponse = $responseDoc.find('[data-assessment-status]').data('assessment-status') || 
+                                                    document.body.innerText.includes('completed') ? 'completed' : 'in-progress';
+                            
+                            if (statusFromResponse === 'completed' || afterCount >= {{ $assessment->num_items ?? 0 }}) {
+                                console.log('✅ Assessment complete - STOPPING auto-refresh');
+                                clearInterval(refreshInterval);
+                                
+                                // Show completion message
+                                $('.q-l').append('<div style="color: green; padding: 10px; background: #f0fff0; border-radius: 5px; margin-top: 20px;">✅ Assessment generation complete! Auto-refresh stopped.</div>');
+                            }
+                        }, 100);
+                    } else {
+                        console.error("❌ No content found in response");
                     }
-                });
-            }
+                },
+                error: function(xhr, status, error) {
+                    console.error("❌ AJAX Error:", error);
+                }
+            });
+        }
 
-            // Start smooth refresh every 3 seconds
-            refreshInterval = setInterval(smoothDebugRefresh, 3000);
+        // Start smooth refresh every 3 seconds
+        refreshInterval = setInterval(smoothDebugRefresh, 3000);
+
+        // Also stop if user navigates away
+        $(window).on('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
         </script>
         @endif
         </div>
