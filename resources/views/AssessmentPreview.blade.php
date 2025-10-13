@@ -53,7 +53,7 @@
             </div>
 
             {{-- Questions --}}
-            <div class="q-l">
+            <div id="questions-area" class="q-l">
                 <ol class="question-list">
                 @foreach ($assessment->questions as $index => $question)
                     <li>
@@ -162,57 +162,73 @@
         </div>
         @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
         <script>
-        function refreshPreviewContent() {
-            console.log('🔄 Refreshing preview content via AJAX...');
+        let currentScrollPosition = 0;
+
+        function saveScrollPosition() {
+            currentScrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+        }
+
+        function restoreScrollPosition() {
+            window.scrollTo(0, currentScrollPosition);
+        }
+
+        function smoothScrollToBottom() {
+            const questionsArea = document.getElementById('questions-area');
+            if (questionsArea) {
+                questionsArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
+            }
+        }
+
+        function updateQuestionsOnly() {
+            console.log('🔄 Checking for new questions...');
+            
+            // Save current scroll position
+            saveScrollPosition();
             
             $.ajax({
-                url: "/preview/{{ $assessment->id }}", // Make sure this URL includes the assessment ID
+                url: "/api/assessment/{{ $assessment->id }}/questions-only",
                 method: "GET",
                 success: function (response) {
-                    console.log("🟢 Preview content refreshed successfully.");
-                    
-                    let newContent = $(response).find("#content-area").html();
-
-                    if (newContent) {
-                        $("#content-area").fadeOut(150, function () {
-                            $(this).html(newContent).fadeIn(150);
-                            
-                            // Check if we need to keep refreshing
-                            checkIfStillGenerating();
-                        });
-                    } else {
-                        console.error("❌ Could not find #content-area in response.");
+                    if (response.questions_html) {
+                        // Smoothly update only the questions area
+                        $('#questions-area').html(response.questions_html);
+                        console.log('✅ Questions updated smoothly');
+                        
+                        // Restore scroll position and optionally auto-scroll to new content
+                        restoreScrollPosition();
+                        
+                        // If new questions were added, scroll to them
+                        if (response.new_questions_count > 0) {
+                            setTimeout(smoothScrollToBottom, 100);
+                        }
+                        
+                        // Continue refreshing if still generating
+                        if (response.status === 'completed') {
+                            console.log('✅ Generation complete, stopping refresh');
+                            // Show completion message
+                            $('#questions-area').append('<div class="completion-message" style="color: green; padding: 10px; background: #f0fff0; border-radius: 5px; margin-top: 20px;">✅ Assessment generation complete!</div>');
+                        } else {
+                            // Continue checking
+                            setTimeout(updateQuestionsOnly, 3000);
+                        }
                     }
                 },
                 error: function(xhr, status, error) {
-                    console.error("❌ AJAX refresh failed:", error);
-                    // Fallback: try again in 5 seconds
-                    setTimeout(refreshPreviewContent, 5000);
+                    console.error('❌ Update failed:', error);
+                    // Retry after 5 seconds on error
+                    setTimeout(updateQuestionsOnly, 5000);
                 }
             });
         }
 
-        function checkIfStillGenerating() {
-            // Check if the new content still has generating status
-            const generatingIndicator = document.querySelector('[style*="Generating questions"]');
-            const statusText = document.body.innerText;
-            
-            if (generatingIndicator || statusText.includes('Generating questions') || statusText.includes('auto-refresh')) {
-                console.log('🔄 Still generating, will refresh again in 5 seconds...');
-                setTimeout(refreshPreviewContent, 5000);
-            } else {
-                console.log('✅ Generation complete, stopping auto-refresh');
-            }
-        }
-
-        // Start the refresh cycle
-        setTimeout(refreshPreviewContent, 5000);
+        // Start the update cycle
+        setTimeout(updateQuestionsOnly, 3000);
 
         // Show initial loading indicator
         document.addEventListener('DOMContentLoaded', function() {
             const questionList = document.querySelector('.question-list');
             if (questionList) {
-                questionList.innerHTML += '<li style="color: #666; font-style: italic;">🔄 Generating questions... (content will auto-refresh)</li>';
+                questionList.innerHTML += '<li style="color: #666; font-style: italic; padding: 10px; background: #f8f9fa; border-radius: 5px;">🔄 Generating questions... (new questions will appear below)</li>';
             }
         });
         </script>

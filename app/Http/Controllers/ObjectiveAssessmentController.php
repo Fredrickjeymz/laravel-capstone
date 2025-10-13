@@ -113,17 +113,18 @@ class ObjectiveAssessmentController extends Controller
 
     public function preview($id = null)
     {
-        // If no ID provided, get the latest assessment
+        // If no ID provided, get the latest assessment (your existing logic)
         if (!$id) {
             $assessment = Assessment::with('questions')
                 ->where('teacher_id', Auth::id())
                 ->latest()
                 ->first();
         } else {
+            // Get the specific assessment by ID
             $assessment = Assessment::with('questions')
                 ->where('id', $id)
                 ->where('teacher_id', Auth::id())
-                ->first();
+                ->firstOrFail();
         }
 
         if (!$assessment) {
