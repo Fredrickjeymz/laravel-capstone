@@ -87,7 +87,7 @@ Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('
 Route::middleware(['teacher'])->group(function () {
     Route::get('/dashboard', [Counts::class, 'dashboard'])->middleware('auth')->name('teacherdashboard');
     Route::post('/generateobjassessment', [ObjectiveAssessmentController::class, 'generateAssessment']);
-    Route::get('/preview', [ObjectiveAssessmentController::class, 'preview'])->name('preview');
+    Route::get('/preview/{id?}', [ObjectiveAssessmentController::class, 'preview'])->name('preview');
     Route::post('/save-assessment/{id}', [AssessmentController::class, 'saveAssessment'])->name('assessment.save');
     Route::get('/my-saved-assessments', [AssessmentController::class, 'mySavedAssessments'])->name('my-saved-assessments');
     Route::delete('/assessments/{id}', [AssessmentController::class, 'destroy'])->name('assessment.delete');
