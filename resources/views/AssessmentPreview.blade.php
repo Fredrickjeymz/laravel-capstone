@@ -20,9 +20,10 @@
                     <p>⏳ Generating your assessment, Please wait.</p>
                 </div>
             </div>
-        <div class="generated-area" id="generated-area" style="display:none;">
+        <div class="generated-area">
+        <div id="assessment-content" style="display:none;">
             <div class="gen-del" data-id="{{ $assessment->id }}">
-            <div data-assessment-status="{{ $assessment->status }}" style="display: none;"></div>
+            <div data-assessment-status="{{ $assessment->status }}" style="display:none;"></div>
             <div class="mb-6">
                 <center>
                 <div class="q-t">
@@ -167,27 +168,31 @@
                 </div>
             @endif
         </div>
-        <script>
+        </div>
+       <script>
             document.addEventListener('DOMContentLoaded', function () {
-                const assessmentId = "{{ $assessment->id ?? '' }}"; // Make sure $assessment is passed to this view
-                const initialStatus = "{{ $assessment->status ?? 'pending' }}";
+                const assessmentId = "{{ $assessment->id ?? '' }}";
+                const spinner = document.getElementById('overlay-spinner');
+                const content = document.getElementById('assessment-content');
+                const statusElement = document.querySelector('[data-assessment-status]');
+                let initialStatus = statusElement ? statusElement.getAttribute('data-assessment-status') : 'pending';
 
                 if (!assessmentId) {
                     console.error("❌ Assessment ID not found in view.");
                     return;
                 }
 
-                const spinner = document.getElementById('overlay-spinner');
-                const content = document.getElementById('generated-area');
+                // Always show spinner first (so user sees loading)
+                $(spinner).fadeIn();
 
                 // Function to load the preview content dynamically
                 function loadPreviewPage() {
                     $.ajax({
-                        url: `/preview/${assessmentId}`, // adjust if your route differs
+                        url: `/preview/${assessmentId}`, // adjust if needed
                         method: "GET",
                         success: function (response) {
-                            $(content).html(response).fadeIn();
-                            $(spinner).fadeOut();
+                            $(content).html(response).fadeIn(300);
+                            $(spinner).fadeOut(300);
                         },
                         error: function () {
                             $(spinner).html("<p class='text-danger text-center'>⚠️ Failed to load assessment preview.</p>");
@@ -195,37 +200,34 @@
                     });
                 }
 
-                // Show spinner initially if not completed yet
-                if (initialStatus === "pending" || initialStatus === "in-progress") {
-                    $(spinner).fadeIn();
-
-                    const interval = setInterval(() => {
-                        $.ajax({
-                            url: `/assessment-status/${assessmentId}`,
-                            method: "GET",
-                            success: function (res) {
-                                if (res.success && res.status === "completed") {
-                                    clearInterval(interval);
-                                    console.log("✅ Assessment generation completed!");
-                                    loadPreviewPage();
-                                } else if (res.status === "failed") {
-                                    clearInterval(interval);
-                                    $(spinner).html("<p class='text-danger text-center'>❌ Assessment generation failed. Please try again.</p>");
-                                }
-                            },
-                            error: function () {
-                                console.error("⚠️ Error checking assessment status.");
+                // Polling logic
+                const interval = setInterval(() => {
+                    $.ajax({
+                        url: `/assessment-status/${assessmentId}`,
+                        method: "GET",
+                        success: function (res) {
+                            if (res.success && res.status === "completed") {
+                                clearInterval(interval);
+                                console.log("✅ Assessment generation completed!");
+                                loadPreviewPage();
+                            } else if (res.status === "failed") {
+                                clearInterval(interval);
+                                $(spinner).html("<p class='text-danger text-center'>❌ Assessment generation failed. Please try again.</p>");
                             }
-                        });
-                    }, 5000); // check every 5 seconds
-                } else if (initialStatus === "completed") {
-                    // Already completed — just load content
+                        },
+                        error: function () {
+                            console.error("⚠️ Error checking assessment status.");
+                        }
+                    });
+                }, 5000); // every 5 seconds
+
+                // If status is already completed, skip waiting
+                if (initialStatus === "completed") {
+                    clearInterval(interval);
                     loadPreviewPage();
-                } else if (initialStatus === "failed") {
-                    $(spinner).html("<p class='text-danger text-center'>❌ Assessment generation failed. Please try again.</p>");
                 }
             });
-        </script>
+            </script>
         </div>
             <div class="generated-actions">
                 <div class="actions-txt">
