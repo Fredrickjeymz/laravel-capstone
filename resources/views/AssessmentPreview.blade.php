@@ -14,7 +14,7 @@
             <p>Review your generated assessment and download or save it.</p>
         </div>
         <div class="generated-are-con">
-            <div id="overlay-spinner">
+            <div id="overlay-spinner" style="display:none;">
                 <div class="spinner-container">
                     <div class="spinner"></div>
                     <p>⏳ Generating your assessment, Please wait.</p>
@@ -169,65 +169,37 @@
                     @endif
                 </div>
             </div>
-       <script>
+        <script>
             document.addEventListener('DOMContentLoaded', function () {
+                const spinner = $("#overlay-spinner");
+                const content = $("#assessment-content");
                 const assessmentId = "{{ $assessment->id ?? '' }}";
-                const spinner = document.getElementById('overlay-spinner');
-                const content = document.getElementById('assessment-content');
-                const statusElement = document.querySelector('[data-assessment-status]');
-                let initialStatus = statusElement ? statusElement.getAttribute('data-assessment-status') : 'pending';
 
-                if (!assessmentId) {
-                    console.error("❌ Assessment ID not found in view.");
-                    return;
-                }
+                // Show spinner while page initializes
+                spinner.show();
+                content.hide();
 
-                // Always show spinner first (so user sees loading)
-                $(spinner).fadeIn();
-
-                // Function to load the preview content dynamically
-                function loadPreviewPage() {
-                    $.ajax({
-                        url: `/preview/${assessmentId}`, // adjust if needed
-                        method: "GET",
-                        success: function (response) {
-                            $(content).html(response).fadeIn(300);
-                            $(spinner).fadeOut(300);
-                        },
-                        error: function () {
-                            $(spinner).html("<p class='text-danger text-center'>⚠️ Failed to load assessment preview.</p>");
-                        }
+                // When the assessment is generated, your main AJAX (generate-btn click)
+                // already returns the redirect link, so we don't need polling here.
+                // Instead, when we reach this page (preview), just load its content normally.
+                
+                // Load the assessment preview directly
+                $.ajax({
+                    url: `/preview?id=${assessmentId}`,
+                    method: "GET",
+                    success: function (response) {
+                    spinner.fadeOut(200, () => {
+                        content.html(response).fadeIn(300);
                     });
-                }
-
-                // Polling logic
-                const interval = setInterval(() => {
-                    $.ajax({
-                        url: `/assessment-status/${assessmentId}`,
-                        method: "GET",
-                        success: function (res) {
-                            if (res.success && res.status === "completed") {
-                                clearInterval(interval);
-                                console.log("✅ Assessment generation completed!");
-                                loadPreviewPage();
-                            } else if (res.status === "failed") {
-                                clearInterval(interval);
-                                $(spinner).html("<p class='text-danger text-center'>❌ Assessment generation failed. Please try again.</p>");
-                            }
-                        },
-                        error: function () {
-                            console.error("⚠️ Error checking assessment status.");
-                        }
-                    });
-                }, 5000); // every 5 seconds
-
-                // If status is already completed, skip waiting
-                if (initialStatus === "completed") {
-                    clearInterval(interval);
-                    loadPreviewPage();
-                }
+                    },
+                    error: function (xhr) {
+                    spinner.fadeOut(200);
+                    content.html("<p class='text-red-600 text-center mt-4'>⚠️ Failed to load assessment preview.</p>").fadeIn(300);
+                    console.error("❌ Error loading preview:", xhr.responseText);
+                    }
+                });
             });
-            </script>
+        </script>
         </div>
             <div class="generated-actions">
                 <div class="actions-txt">
