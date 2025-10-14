@@ -119,7 +119,8 @@ Route::middleware(['teacher'])->group(function () {
     Route::post('/edit-profile', [ChangePassController::class, 'updateProfile'])->name('teacher.updateProfile');
     Route::get('/teacher/change-password', function (){return view('teacher-change-password');})->name('teacher.change-password');
     Route::get('/teacher/activity-log', [ActivityLogController::class, 'index'])->name('teacher.activity-log');
-    Route::get('/assessment-status/{id}', [AssessmentController::class, 'checkStatus'])->name('assessment.status');
+    Route::get('/check-assessment-status/{id}', [AssessmentController::class, 'checkStatus']);
+
 
 });
 

@@ -23,21 +23,14 @@ class AssessmentController extends Controller
 
     public function checkStatus($id)
     {
-        $assessment = \App\Models\Assessment::where('id', $id)
-            ->where('teacher_id', Auth::id())
-            ->select('status')
-            ->first();
+        $assessment = Assessment::find($id);
 
         if (!$assessment) {
-            return response()->json([
-                'success' => false,
-                'status'  => 'not_found'
-            ]);
+            return response()->json(['status' => 'not_found']);
         }
 
         return response()->json([
-            'success' => true,
-            'status'  => $assessment->status
+            'status' => $assessment->status,
         ]);
     }
 
