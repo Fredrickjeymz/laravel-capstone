@@ -17,6 +17,8 @@ function loadPreviewPage() {
                     $(this).html(newContent).fadeIn(150, function() {
                         // Restore scroll position after fade in completes
                         window.scrollTo(0, scrollPos);
+                        console.log("🔁 AJAX preview loaded — reinitializing watcher.");
+                        initPreviewWatcher();
                     });
                 });
             } else {
@@ -31,60 +33,60 @@ function loadPreviewPage() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-        const spinner = $("#overlay-spinner");
-        const content = $("#assessment-content");
-        const assessmentId = "{{ $assessment->id ?? '' }}";
-        const assessmentStatus = $("[data-assessment-status]").data("assessment-status");
+function initPreviewWatcher() {
+    const spinner = $("#overlay-spinner");
+    const content = $("#assessment-content");
+    const assessmentId = content.data("id");
+    const assessmentStatus = content.data("assessment-status");
 
-        if (!assessmentId) return;
-
-        console.log("🔍 Loaded preview for assessment:", assessmentId, "status:", assessmentStatus);
-
-        // If assessment is still processing, poll every 3 seconds
-        if (assessmentStatus === "processing" || assessmentStatus === "pending") {
-            spinner.show();
-            content.hide();
-
-            const checkInterval = setInterval(() => {
-                console.log("⏳ Checking assessment status...");
-                $.ajax({
-                    url: `/check-assessment-status/${assessmentId}`,
-                    method: "GET",
-                    success: function (response) {
-                        console.log("🟢 Status response:", response);
-
-                        if (response.status === "completed") {
-                            clearInterval(checkInterval);
-                            console.log("✅ Assessment ready! Reloading preview...");
-
-                            // Reload the preview content without full page refresh
-                            $.ajax({
-                                url: `/preview?id=${assessmentId}`,
-                                method: "GET",
-                                success: function (html) {
-                                    const newContent = $(html).find("#content-area").html();
-                                    $("#content-area").fadeOut(200, function () {
-                                        $(this).html(newContent).fadeIn(200);
-                                    });
-                                }
-                            });
-                        }
-                    },
-                    error: function (err) {
-                        console.error("❌ Error checking status:", err);
-                    }
-                });
-            }, 3000); // Check every 3 seconds
-        } else {
-            // Already completed – show normally
-            spinner.hide();
-            content.show();
+    if (!assessmentId) {
+        console.log("⚠️ No assessment ID found in preview.");
+        return;
     }
-});
+
+    console.log("🔍 Initializing preview watcher for assessment:", assessmentId, "status:", assessmentStatus);
+
+    if (assessmentStatus === "processing" || assessmentStatus === "pending") {
+        spinner.show();
+        content.hide();
+
+        const checkInterval = setInterval(() => {
+            console.log("⏳ Checking assessment status...");
+            $.ajax({
+                url: `/check-assessment-status/${assessmentId}`,
+                method: "GET",
+                success: function (response) {
+                    console.log("🟢 Status response:", response);
+                    if (response.status === "completed") {
+                        clearInterval(checkInterval);
+                        console.log("✅ Assessment ready! Reloading preview...");
+
+                        $.ajax({
+                            url: `/preview?id=${assessmentId}`,
+                            method: "GET",
+                            success: function (html) {
+                                const newContent = $(html).find("#content-area").html();
+                                $("#content-area").fadeOut(200, function () {
+                                    $(this).html(newContent).fadeIn(200, initPreviewWatcher); // re-init watcher after load
+                                });
+                            }
+                        });
+                    }
+                },
+                error: function (err) {
+                    console.error("❌ Error checking status:", err);
+                }
+            });
+        }, 3000);
+    } else {
+        spinner.hide();
+        content.show();
+    }
+}
 
 $(document).ready(function () {
     console.log("✅ Navigation script loaded!");
+    initPreviewWatcher(); // runs when first loaded
 
     const lastActive = localStorage.getItem("activeNav");
     if (lastActive) {
@@ -95,6 +97,14 @@ $(document).ready(function () {
     $(document).on("click", "a[href='/preview']", function (e) {
         e.preventDefault();
         loadPreviewPage();
+    });
+
+    // Re-run preview watcher every time preview loads via AJAX
+    $(document).ajaxSuccess(function (event, xhr, settings) {
+        if (settings.url.includes("/preview")) {
+            console.log("🔁 AJAX preview loaded — reinitializing watcher.");
+            initPreviewWatcher();
+        }
     });
 
     $(document).on("click", "#generate-btn", function (e) {
