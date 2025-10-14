@@ -161,113 +161,80 @@
                 </div>
             @endif
         </div>
-        @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
-        <script>
-        let refreshInterval;
+@if($assessment->status === 'pending' || $assessment->status === 'in-progress')
+<script>
+// Check if refresh is already running
+if (typeof window.autoRefreshRunning === 'undefined') {
+    window.autoRefreshRunning = true;
+    
+    let refreshInterval;
 
-        function smoothDebugRefresh() {
-            console.log('🔄 DEBUG: Starting refresh...');
-            
-            const beforeCount = document.querySelectorAll('.question-list li').length;
-            console.log('📊 Questions before refresh:', beforeCount);
-            
-            const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-            
-            $.ajax({
-                url: "/preview",
-                method: "GET",
-                success: function (response) {
-                    console.log("🟢 AJAX Success - Response received");
+    function forceVisualUpdate() {
+        console.log('🔄 FORCE: Starting refresh...');
+        
+        const beforeCount = document.querySelectorAll('.question-list li').length;
+        console.log('📊 Questions before refresh:', beforeCount);
+        
+        const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+        const timestamp = new Date().getTime();
+        
+        $.ajax({
+            url: "/preview?t=" + timestamp,
+            method: "GET",
+            cache: false,
+            success: function (response) {
+                console.log("🟢 AJAX Success - Response received");
+                
+                let newContent = $(response).find("#content-area").html();
+                
+                if (newContent) {
+                    console.log("🔄 FORCE UPDATING ENTIRE CONTENT AREA...");
                     
-                    let newContent = $(response).find("#content-area").html();
-                    console.log("📦 New content length:", newContent ? newContent.length : 'NULL');
-
-                    if (newContent) {
-                        // Create a temporary hidden div to hold new content
-                        const $tempDiv = $('<div>').css({
-                            position: 'absolute',
-                            left: '-9999px',
-                            opacity: 0
-                        }).html(newContent);
+                    // Force update with a visual change first
+                    $("#content-area").css('opacity', '0.7');
+                    
+                    setTimeout(() => {
+                        // Replace entire content area
+                        $("#content-area").html(newContent);
                         
-                        $('body').append($tempDiv);
+                        // Force reflow and visual update
+                        $("#content-area").hide().show();
                         
-                        // Get ONLY the questions area from new content
-                        const newQuestions = $tempDiv.find('.q-l').html();
-                        const newAnswerKey = $tempDiv.find('[class*="bg-green-50"]').html();
-                        const newRubric = $tempDiv.find('.rubric-container').html();
+                        // Restore opacity
+                        $("#content-area").css('opacity', '1');
                         
-                        console.log("🔄 Updating content areas individually...");
+                        // Restore scroll position
+                        window.scrollTo(0, scrollPos);
                         
-                        // Update each section individually without replacing entire content area
-                        if (newQuestions && $('.q-l').html() !== newQuestions) {
-                            $('.q-l').html(newQuestions);
-                            console.log('✅ Questions updated');
+                        console.log('✅ FORCE UPDATE COMPLETE');
+                        
+                        // Check if we should stop
+                        const afterCount = document.querySelectorAll('.question-list li').length;
+                        console.log('📊 Questions after refresh:', afterCount);
+                        
+                        const hasGeneratingMessage = document.body.innerText.includes('Generating Questions');
+                        
+                        if (!hasGeneratingMessage) {
+                            console.log('✅ Assessment complete - STOPPING refresh');
+                            clearInterval(refreshInterval);
+                            window.autoRefreshRunning = false;
                         }
-                        
-                        if (newAnswerKey && $('[class*="bg-green-50"]').html() !== newAnswerKey) {
-                            $('[class*="bg-green-50"]').html(newAnswerKey);
-                            console.log('✅ Answer key updated');
-                        }
-                        
-                        if (newRubric && $('.rubric-container').html() !== newRubric) {
-                            $('.rubric-container').html(newRubric);
-                            console.log('✅ Rubric updated');
-                        }
-                        
-                        // Clean up
-                        $tempDiv.remove();
-                        
-                        // Log questions count after refresh
-                        setTimeout(() => {
-                            const afterCount = document.querySelectorAll('.question-list li').length;
-                            console.log('📊 Questions after refresh:', afterCount);
-                            console.log('📈 Change:', afterCount - beforeCount, 'questions');
-                            
-                            // Restore scroll position
-                            window.scrollTo(0, scrollPos);
-                            
-                            // Auto-scroll to new questions if any were added
-                            if (afterCount > beforeCount) {
-                                setTimeout(() => {
-                                    const questionsArea = document.querySelector('.q-l');
-                                    if (questionsArea) {
-                                        questionsArea.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                                    }
-                                }, 200);
-                            }
-                            
-                            // 🛑 STOP REFRESHING if assessment is complete
-                            // Check if the "Generating Questions" message is gone
-                            const generatingMessage = document.querySelector('[style*="Generating Questions"]');
-                            const hasGeneratingText = document.body.innerText.includes('Generating Questions');
-                            
-                            if (!generatingMessage && !hasGeneratingText) {
-                                console.log('✅ Assessment complete - STOPPING auto-refresh');
-                                clearInterval(refreshInterval);
-                            }
-                        }, 100);
-                    } else {
-                        console.error("❌ No content found in response");
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error("❌ AJAX Error:", error);
+                    }, 50);
                 }
-            });
-        }
-
-        // Start smooth refresh every 3 seconds
-        refreshInterval = setInterval(smoothDebugRefresh, 3000);
-
-        // Also stop if user navigates away
-        $(window).on('beforeunload', function() {
-            if (refreshInterval) {
-                clearInterval(refreshInterval);
+            },
+            error: function(xhr, status, error) {
+                console.error("❌ AJAX Error:", error);
             }
         });
-        </script>
-        @endif
+    }
+
+    // Start refresh every 3 seconds
+    refreshInterval = setInterval(forceVisualUpdate, 3000);
+} else {
+    console.log('🔄 Auto-refresh already running, skipping...');
+}
+</script>
+@endif
         </div>
             <div class="generated-actions">
                 <div class="actions-txt">
