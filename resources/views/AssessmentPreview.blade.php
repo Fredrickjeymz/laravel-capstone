@@ -14,7 +14,13 @@
             <p>Review your generated assessment and download or save it.</p>
         </div>
         <div class="generated-are-con">
-        <div class="generated-area">
+            <div id="overlay-spinner" style="display:none;">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                    <p>⏳ Generating your assessment, Please wait.</p>
+                </div>
+            </div>
+        <div class="generated-area" id="generated-area" style="display:none;">
             <div class="gen-del" data-id="{{ $assessment->id }}">
             <div data-assessment-status="{{ $assessment->status }}" style="display: none;"></div>
             <div class="mb-6">
@@ -161,75 +167,65 @@
                 </div>
             @endif
         </div>
-    @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
-    <script>
-        (function() {
-            // Use IIFE to avoid variable conflicts
-            var refreshFlag = 'autoRefresh_{{ $assessment->id }}';
-            
-            if (!window[refreshFlag]) {
-                window[refreshFlag] = true;
-                
-                var refreshInterval;
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const assessmentId = "{{ $assessment->id ?? '' }}"; // Make sure $assessment is passed to this view
+                const initialStatus = "{{ $assessment->status ?? 'pending' }}";
 
-                function forceVisualUpdate() {
-                    console.log('🔄 FORCE: Starting refresh for assessment {{ $assessment->id }}...');
-                    
-                    var beforeCount = document.querySelectorAll('.question-list li').length;
-                    console.log('📊 Questions before refresh:', beforeCount);
-                    
-                    var scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-                    var timestamp = new Date().getTime();
-                    
+                if (!assessmentId) {
+                    console.error("❌ Assessment ID not found in view.");
+                    return;
+                }
+
+                const spinner = document.getElementById('overlay-spinner');
+                const content = document.getElementById('generated-area');
+
+                // Function to load the preview content dynamically
+                function loadPreviewPage() {
                     $.ajax({
-                        url: "/preview?t=" + timestamp,
+                        url: `/preview/${assessmentId}`, // adjust if your route differs
                         method: "GET",
-                        cache: false,
                         success: function (response) {
-                            console.log("🟢 AJAX Success - Response received");
-                            
-                            var newContent = $(response).find("#content-area").html();
-                            
-                            if (newContent) {
-                                console.log("🔄 FORCE UPDATING ENTIRE CONTENT AREA...");
-                                
-                                $("#content-area").css('opacity', '0.7');
-                                
-                                setTimeout(function() {
-                                    $("#content-area").html(newContent);
-                                    $("#content-area").hide().show();
-                                    $("#content-area").css('opacity', '1');
-                                    window.scrollTo(0, scrollPos);
-                                    
-                                    console.log('✅ FORCE UPDATE COMPLETE');
-                                    
-                                    var afterCount = document.querySelectorAll('.question-list li').length;
-                                    console.log('📊 Questions after refresh:', afterCount);
-                                    
-                                    var hasGeneratingMessage = document.body.innerText.includes('Generating Questions');
-                                    
-                                    if (!hasGeneratingMessage) {
-                                        console.log('✅ Assessment complete - STOPPING refresh');
-                                        clearInterval(refreshInterval);
-                                        window[refreshFlag] = false;
-                                    }
-                                }, 50);
-                            }
+                            $(content).html(response).fadeIn();
+                            $(spinner).fadeOut();
                         },
-                        error: function(xhr, status, error) {
-                            console.error("❌ AJAX Error:", error);
+                        error: function () {
+                            $(spinner).html("<p class='text-danger text-center'>⚠️ Failed to load assessment preview.</p>");
                         }
                     });
                 }
 
-                // Start refresh every 3 seconds
-                refreshInterval = setInterval(forceVisualUpdate, 3000);
-            } else {
-                console.log('🔄 Auto-refresh already running for this assessment, skipping...');
-            }
-        })();
-    </script>
-    @endif
+                // Show spinner initially if not completed yet
+                if (initialStatus === "pending" || initialStatus === "in-progress") {
+                    $(spinner).fadeIn();
+
+                    const interval = setInterval(() => {
+                        $.ajax({
+                            url: `/assessment-status/${assessmentId}`,
+                            method: "GET",
+                            success: function (res) {
+                                if (res.success && res.status === "completed") {
+                                    clearInterval(interval);
+                                    console.log("✅ Assessment generation completed!");
+                                    loadPreviewPage();
+                                } else if (res.status === "failed") {
+                                    clearInterval(interval);
+                                    $(spinner).html("<p class='text-danger text-center'>❌ Assessment generation failed. Please try again.</p>");
+                                }
+                            },
+                            error: function () {
+                                console.error("⚠️ Error checking assessment status.");
+                            }
+                        });
+                    }, 5000); // check every 5 seconds
+                } else if (initialStatus === "completed") {
+                    // Already completed — just load content
+                    loadPreviewPage();
+                } else if (initialStatus === "failed") {
+                    $(spinner).html("<p class='text-danger text-center'>❌ Assessment generation failed. Please try again.</p>");
+                }
+            });
+        </script>
         </div>
             <div class="generated-actions">
                 <div class="actions-txt">

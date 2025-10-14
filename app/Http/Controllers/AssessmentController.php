@@ -20,8 +20,29 @@ use App\Helpers\ActivityLogger;
 
 class AssessmentController extends Controller
 {
+
+    public function checkStatus($id)
+    {
+        $assessment = \App\Models\Assessment::where('id', $id)
+            ->where('teacher_id', Auth::id())
+            ->select('status')
+            ->first();
+
+        if (!$assessment) {
+            return response()->json([
+                'success' => false,
+                'status'  => 'not_found'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'status'  => $assessment->status
+        ]);
+    }
+
     public function saveAssessment($id)
-{
+    {
     $assessment = Assessment::with('questions')->findOrFail($id);
 
     // Step 1: Save the assessment

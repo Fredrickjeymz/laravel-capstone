@@ -1,19 +1,4 @@
-
-// When navigating away, reset all auto-refresh flags
-function resetAutoRefresh() {
-    // Reset the global flag
-    window.autoRefreshRunning = false;
-    
-    // Reset any assessment-specific flags
-    Object.keys(window).forEach(key => {
-        if (key.startsWith('autoRefresh_')) {
-            window[key] = false;
-        }
-    });
-}
-
 function loadPreviewPage() {
-    resetAutoRefresh();
     const scrollPos = window.pageYOffset || document.documentElement.scrollTop;
     
     $.ajax({

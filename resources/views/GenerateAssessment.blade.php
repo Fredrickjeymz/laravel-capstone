@@ -16,7 +16,7 @@
             <div id="overlay-spinner" style="display:none;">
                 <div class="spinner-container">
                     <div class="spinner"></div>
-                    <p>⏳ Generating your assessment, Please wait.</p>
+                    <p>⏳ Extracting your Learning Material File, Please wait.</p>
                 </div>
             </div>
                 <div class="form-area-txt">
