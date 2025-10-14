@@ -167,7 +167,10 @@ $(document).ready(function () {
                         let content = tempDiv.find('#content-area').html();
                     
                         $("#content-area").fadeOut(150, function () {
-                            $(this).html(content).fadeIn(150);
+                            $(this).html(content).fadeIn(150, function() {
+                                console.log("🔁 Reinitializing preview watcher after generation redirect...");
+                                initPreviewWatcher();
+                            });
                         });
                     });                 
                 }
