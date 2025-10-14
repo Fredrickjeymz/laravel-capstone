@@ -71,12 +71,11 @@ $(document).on('submit', '#quiz-form', function (e) {
         success: function (response) {
             $('#quiz-form').remove();
 
-            const score = response.score;
             const message = `
                 <div class="submitted-message">
                     <h2><i class="fas fa-check-circle"></i> Submission Successful!</h2>
-                    <p>Your score is <strong>${score.total_score}/${score.max_score}</strong> (${score.percentage}%).</p>
-                    ${score.remarks ? `<p class="remarks">Remarks: ${score.remarks}</p>` : ''}
+                    <p>🤖 AI is currently evaluating your quiz in the background.</p>
+                    <p>You can now safely exit this page. Later on, you’ll be able to view your score in the <strong>Quizzes</strong> section.</p>
                 </div>
             `;
             $('.quiz-question-card').append(message); // Update container if needed

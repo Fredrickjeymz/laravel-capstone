@@ -14,14 +14,18 @@
             <p>Review your generated assessment and download or save it.</p>
         </div>
         <div class="generated-are-con">
-            <div id="overlay-spinner" style="display:none;">
-                <div class="spinner-container">
-                    <div class="spinner"></div>
-                    <p>⏳ Generating your assessment, Please wait.</p>
+                <div id="overlay-spinner" style="display: none;">
+                    <div class="spinner-container">
+                        <div class="spinner-ring"></div>
+                        <p class="spinner-text">
+                        <i class="fa-solid fa-brain"></i> Learning material extracted! Generating questions.<br>
+                        <span>Please wait...</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
             
             <div class="generated-area" >
+                <div class="gen-del" data-id="{{ $assessment->id }}">
                 <div id="assessment-content" data-id="{{ $assessment->id }}" data-assessment-status="{{ $assessment->status }}">
                     <div class="mb-6">
                         <center>
@@ -166,7 +170,7 @@
                             @endif
                         </div>
                     @endif
-                </div>
+                </div></div>
             </div>
             <div class="generated-actions">
                 <div class="actions-txt">

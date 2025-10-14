@@ -89,11 +89,14 @@
                         </div>
                      </center>
                 </div>
-                 <div id="overlay-spinner" style="display:none;">
+                <div id="overlay-spinner" style="display: none;">
                     <div class="spinner-container">
-                        <div class="spinner"></div>
-                             <p>⏳ Submitting your answers, Please wait.</p>
-                        </div>
+                        <div class="spinner-ring"></div>
+                        <p class="spinner-text">
+                        <i class="fa-solid fa-paper-plane"></i> Submitting your answers.<br>
+                        <span>Please wait...</span>
+                        </p>
+                    </div>
                 </div>
             </form>
 

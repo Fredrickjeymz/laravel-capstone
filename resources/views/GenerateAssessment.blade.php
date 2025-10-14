@@ -13,12 +13,15 @@
         </div>
         <div class="generate-area">
             <div class="form-area">
-            <div id="overlay-spinner" style="display:none;">
-                <div class="spinner-container">
-                    <div class="spinner"></div>
-                    <p>⏳ Extracting your Learning Material File, Please wait.</p>
+                <div id="overlay-spinner" style="display: none;">
+                    <div class="spinner-container">
+                        <div class="spinner-ring"></div>
+                        <p class="spinner-text">
+                        <i class="fa-solid fa-spinner fa-spin"></i> Extracting your Learning Material File<br>
+                        <span>Please wait...</span>
+                        </p>
+                    </div>
                 </div>
-            </div>
                 <div class="form-area-txt">
                     <h3>Assessment Configuration</h3>
                     <p>Upload a file and set the parameters for your assessment.</p>

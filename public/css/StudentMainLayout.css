@@ -391,6 +391,15 @@ body, html {
     padding: 10px;
     font-size: small;
 }
+
+.score-btn{
+    background:#218838;
+    color: white;
+    border-radius: 20px;
+    border: none;
+    padding: 10px;
+    font-size: small;
+}
 .score-rem {
     display: flex;
     gap: 10px;
@@ -602,17 +611,13 @@ body, html {
     font-weight: 500;
     color: #047857;
 }
-.score-rem {
-    display: flex;
-    gap: 10px;
-    background: linear-gradient(to right, #28a745, #218838);
+.score-rem{
+    background:#218838;
     color: white;
-    padding: 8px 12px;
     border-radius: 20px;
-}
-.score-rem p {
-    margin: 0;
-    font-size: 0.95rem;
+    border: none;
+    padding: 10px;
+    font-size: small;
 }
 .dashboard-containers{
     display: flex;
@@ -1319,3 +1324,5 @@ body, html {
     font-size: 12px;
   }
 }
+
+

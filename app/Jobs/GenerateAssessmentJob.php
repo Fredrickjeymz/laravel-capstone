@@ -218,6 +218,37 @@ class GenerateAssessmentJob implements ShouldQueue
                 continue;
             }
 
+            // 🔥 ADD RUBRIC EXTRACTION HERE - BEFORE parsing questions
+            if ($rubricCaptured === null && in_array($questionType, ['Essay','Short Answer Questions','Critically Thought-out Opinions'])) {
+                Log::info("🔍 Looking for rubric in batch {$i} for {$questionType}");
+                Log::info("📝 Response content preview:", ['preview' => substr($responseContent, 0, 500)]);
+                
+                // Try multiple patterns to capture the rubric
+                if (preg_match('/(Rubric:\s*.*?)(?=\d+\.\s|$)/is', $responseContent, $m)) {
+                    $rubricCaptured = trim($m[1]);
+                    $responseContent = str_replace($m[0], '', $responseContent);
+                    Log::info("✅ Rubric captured using 'Rubric:' pattern", ['rubric_length' => strlen($rubricCaptured)]);
+                    Log::info("📋 Full rubric:", ['rubric' => $rubricCaptured]);
+                } elseif (preg_match('/(Criteria\s*\|\s*Weight\s*\|.*?)(?=\d+\.\s|$)/is', $responseContent, $m2)) {
+                    $rubricCaptured = trim($m2[1]);
+                    $responseContent = str_replace($m2[0], '', $responseContent);
+                    Log::info("✅ Rubric captured using 'Criteria' pattern", ['rubric_length' => strlen($rubricCaptured)]);
+                    Log::info("📋 Full rubric:", ['rubric' => $rubricCaptured]);
+                } elseif (preg_match('/(.*?Excellent.*?Proficient.*?Basic.*?Needs Improvement.*?)(?=\d+\.\s|$)/is', $responseContent, $m3)) {
+                    $rubricCaptured = trim($m3[1]);
+                    $responseContent = str_replace($m3[0], '', $responseContent);
+                    Log::info("✅ Rubric captured using table pattern", ['rubric_length' => strlen($rubricCaptured)]);
+                    Log::info("📋 Full rubric:", ['rubric' => $rubricCaptured]);
+                } else {
+                    Log::warning("❌ No rubric pattern found in response");
+                    Log::info("🔍 Available patterns checked: 'Rubric:', 'Criteria | Weight', table headers");
+                }
+                
+                if ($rubricCaptured) {
+                    Log::info("📋 Rubric preview:", ['rubric_preview' => substr($rubricCaptured, 0, 200) . '...']);
+                }
+            }
+
             // Parse questions from response
             $questions = $this->parseQuestionsFromResponse($responseContent, $questionType);
             Log::info("📝 Parsed questions from batch {$i}", [
@@ -265,6 +296,35 @@ class GenerateAssessmentJob implements ShouldQueue
             if ($i < $chunks - 1) {
                 sleep(1);
             }
+        }
+
+       // 🔥 ADD RUBRIC SAVING HERE
+        if ($rubricCaptured) {
+            try {
+                Log::info("💾 Saving rubric to assessment", [
+                    'assessment_id' => $assessment->id,
+                    'rubric_length' => strlen($rubricCaptured),
+                    'question_type' => $questionType
+                ]);
+                
+                $assessment->update(['rubric' => $rubricCaptured]);
+                
+                // Verify the save worked
+                $assessment->refresh();
+                Log::info("✅ Rubric saved successfully", [
+                    'rubric_in_db' => !empty($assessment->rubric),
+                    'db_rubric_length' => strlen($assessment->rubric ?? '')
+                ]);
+            } catch (\Throwable $e) {
+                Log::warning("❌ Failed to save rubric for assessment {$assessment->id}: " . $e->getMessage());
+            }
+        } else if (in_array($questionType, ['Essay','Short Answer Questions','Critically Thought-out Opinions'])) {
+            Log::warning("❌ No rubric captured for subjective assessment type: {$questionType}");
+            Log::info("🔍 Rubric capture status:", [
+                'rubric_captured' => $rubricCaptured,
+                'question_type' => $questionType,
+                'is_subjective' => in_array($questionType, ['Essay','Short Answer Questions','Critically Thought-out Opinions'])
+            ]);
         }
 
         // Update status based on actual results
