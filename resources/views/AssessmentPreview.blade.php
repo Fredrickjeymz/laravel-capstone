@@ -170,59 +170,6 @@
                     @endif
                 </div>
             </div>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const spinner = $("#overlay-spinner");
-        const content = $("#assessment-content");
-        const assessmentId = "{{ $assessment->id ?? '' }}";
-        const assessmentStatus = $("[data-assessment-status]").data("assessment-status");
-
-        if (!assessmentId) return;
-
-        console.log("🔍 Loaded preview for assessment:", assessmentId, "status:", assessmentStatus);
-
-        // If assessment is still processing, poll every 3 seconds
-        if (assessmentStatus === "processing" || assessmentStatus === "pending") {
-            spinner.show();
-            content.hide();
-
-            const checkInterval = setInterval(() => {
-                console.log("⏳ Checking assessment status...");
-                $.ajax({
-                    url: `/check-assessment-status/${assessmentId}`,
-                    method: "GET",
-                    success: function (response) {
-                        console.log("🟢 Status response:", response);
-
-                        if (response.status === "completed") {
-                            clearInterval(checkInterval);
-                            console.log("✅ Assessment ready! Reloading preview...");
-
-                            // Reload the preview content without full page refresh
-                            $.ajax({
-                                url: `/preview?id=${assessmentId}`,
-                                method: "GET",
-                                success: function (html) {
-                                    const newContent = $(html).find("#content-area").html();
-                                    $("#content-area").fadeOut(200, function () {
-                                        $(this).html(newContent).fadeIn(200);
-                                    });
-                                }
-                            });
-                        }
-                    },
-                    error: function (err) {
-                        console.error("❌ Error checking status:", err);
-                    }
-                });
-            }, 3000); // Check every 3 seconds
-        } else {
-            // Already completed – show normally
-            spinner.hide();
-            content.show();
-        }
-    });
-    </script>
         </div>
             <div class="generated-actions">
                 <div class="actions-txt">
