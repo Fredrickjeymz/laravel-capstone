@@ -14,7 +14,6 @@
             <p>Review your generated assessment and download or save it.</p>
         </div>
         <div class="generated-are-con">
-            
             <div id="overlay-spinner" style="display:none;">
                 <div class="spinner-container">
                     <div class="spinner"></div>
@@ -22,7 +21,7 @@
                 </div>
             </div>
             
-            <div class="generated-area">
+            <div class="generated-area" >
                 <div id="assessment-content" data-id="{{ $assessment->id }}" data-assessment-status="{{ $assessment->status }}">
                     <div class="mb-6">
                         <center>
@@ -169,7 +168,6 @@
                     @endif
                 </div>
             </div>
-        </div>
             <div class="generated-actions">
                 <div class="actions-txt">
                     <h3>Assessment Actions</h3>
