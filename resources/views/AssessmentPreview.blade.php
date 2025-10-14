@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="generated-area">
-                <div id="assessment-content" style="display:none;">
+                <div id="assessment-content">
                     <div class="gen-del" data-id="{{ $assessment->id }}">
                     <div data-assessment-status="{{ $assessment->status }}" style="display:none;"></div>
                     <div class="mb-6">
@@ -183,21 +183,7 @@
                 // already returns the redirect link, so we don't need polling here.
                 // Instead, when we reach this page (preview), just load its content normally.
                 
-                // Load the assessment preview directly
-                $.ajax({
-                    url: `/preview?id=${assessmentId}`,
-                    method: "GET",
-                    success: function (response) {
-                    spinner.fadeOut(200, () => {
-                        content.html(response).fadeIn(300);
-                    });
-                    },
-                    error: function (xhr) {
-                    spinner.fadeOut(200);
-                    content.html("<p class='text-red-600 text-center mt-4'>⚠️ Failed to load assessment preview.</p>").fadeIn(300);
-                    console.error("❌ Error loading preview:", xhr.responseText);
-                    }
-                });
+                // Load the assessment preview directl
             });
         </script>
         </div>
