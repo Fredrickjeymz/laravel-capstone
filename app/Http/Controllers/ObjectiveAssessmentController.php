@@ -86,9 +86,8 @@ class ObjectiveAssessmentController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => '✅ Assessment generation started. You will be notified when it is ready.',
-                'assessment_id' => $assessment->id,
-                'redirect' => route('preview', ['id' => $assessment->id])
+                'redirect' => route('preview', ['id' => $assessment->id]), // ✅ include the ID
+                'assessment_id' => $assessment->id
             ]);
 
         } catch (\Illuminate\Validation\ValidationException $e) {

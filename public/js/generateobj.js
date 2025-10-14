@@ -161,18 +161,21 @@ $(document).ready(function () {
             },
             success: function (data) {
                 console.log("✅ Success response:", data);
-                if (data.redirect) {
-                    $.get(data.redirect, function (response) {
+                if (data.assessment_id) {
+                    const previewUrl = `/preview/${data.assessment_id}`; // ✅ load specific ID
+                    console.log("🔄 Loading preview for new assessment:", previewUrl);
+
+                    $.get(previewUrl, function (response) {
                         let tempDiv = $('<div>').html(response);
                         let content = tempDiv.find('#content-area').html();
                     
                         $("#content-area").fadeOut(150, function () {
                             $(this).html(content).fadeIn(150, function() {
                                 console.log("🔁 Reinitializing preview watcher after generation redirect...");
-                                initPreviewWatcher();
+                                setTimeout(() => initPreviewWatcher(), 300);
                             });
                         });
-                    });                 
+                    });
                 }
                 
             },            
