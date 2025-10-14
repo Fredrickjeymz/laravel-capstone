@@ -161,75 +161,75 @@
                 </div>
             @endif
         </div>
-        @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
-        <script>
-            (function() {
-                // Use IIFE to avoid variable conflicts
-                var refreshFlag = 'autoRefresh_{{ $assessment->id }}';
+    @if($assessment->status === 'pending' || $assessment->status === 'in-progress')
+    <script>
+        (function() {
+            // Use IIFE to avoid variable conflicts
+            var refreshFlag = 'autoRefresh_{{ $assessment->id }}';
+            
+            if (!window[refreshFlag]) {
+                window[refreshFlag] = true;
                 
-                if (!window[refreshFlag]) {
-                    window[refreshFlag] = true;
+                var refreshInterval;
+
+                function forceVisualUpdate() {
+                    console.log('🔄 FORCE: Starting refresh for assessment {{ $assessment->id }}...');
                     
-                    var refreshInterval;
-
-                    function forceVisualUpdate() {
-                        console.log('🔄 FORCE: Starting refresh for assessment {{ $assessment->id }}...');
-                        
-                        var beforeCount = document.querySelectorAll('.question-list li').length;
-                        console.log('📊 Questions before refresh:', beforeCount);
-                        
-                        var scrollPos = window.pageYOffset || document.documentElement.scrollTop;
-                        var timestamp = new Date().getTime();
-                        
-                        $.ajax({
-                            url: "/preview?t=" + timestamp,
-                            method: "GET",
-                            cache: false,
-                            success: function (response) {
-                                console.log("🟢 AJAX Success - Response received");
+                    var beforeCount = document.querySelectorAll('.question-list li').length;
+                    console.log('📊 Questions before refresh:', beforeCount);
+                    
+                    var scrollPos = window.pageYOffset || document.documentElement.scrollTop;
+                    var timestamp = new Date().getTime();
+                    
+                    $.ajax({
+                        url: "/preview?t=" + timestamp,
+                        method: "GET",
+                        cache: false,
+                        success: function (response) {
+                            console.log("🟢 AJAX Success - Response received");
+                            
+                            var newContent = $(response).find("#content-area").html();
+                            
+                            if (newContent) {
+                                console.log("🔄 FORCE UPDATING ENTIRE CONTENT AREA...");
                                 
-                                var newContent = $(response).find("#content-area").html();
+                                $("#content-area").css('opacity', '0.7');
                                 
-                                if (newContent) {
-                                    console.log("🔄 FORCE UPDATING ENTIRE CONTENT AREA...");
+                                setTimeout(function() {
+                                    $("#content-area").html(newContent);
+                                    $("#content-area").hide().show();
+                                    $("#content-area").css('opacity', '1');
+                                    window.scrollTo(0, scrollPos);
                                     
-                                    $("#content-area").css('opacity', '0.7');
+                                    console.log('✅ FORCE UPDATE COMPLETE');
                                     
-                                    setTimeout(function() {
-                                        $("#content-area").html(newContent);
-                                        $("#content-area").hide().show();
-                                        $("#content-area").css('opacity', '1');
-                                        window.scrollTo(0, scrollPos);
-                                        
-                                        console.log('✅ FORCE UPDATE COMPLETE');
-                                        
-                                        var afterCount = document.querySelectorAll('.question-list li').length;
-                                        console.log('📊 Questions after refresh:', afterCount);
-                                        
-                                        var hasGeneratingMessage = document.body.innerText.includes('Generating Questions');
-                                        
-                                        if (!hasGeneratingMessage) {
-                                            console.log('✅ Assessment complete - STOPPING refresh');
-                                            clearInterval(refreshInterval);
-                                            window[refreshFlag] = false;
-                                        }
-                                    }, 50);
-                                }
-                            },
-                            error: function(xhr, status, error) {
-                                console.error("❌ AJAX Error:", error);
+                                    var afterCount = document.querySelectorAll('.question-list li').length;
+                                    console.log('📊 Questions after refresh:', afterCount);
+                                    
+                                    var hasGeneratingMessage = document.body.innerText.includes('Generating Questions');
+                                    
+                                    if (!hasGeneratingMessage) {
+                                        console.log('✅ Assessment complete - STOPPING refresh');
+                                        clearInterval(refreshInterval);
+                                        window[refreshFlag] = false;
+                                    }
+                                }, 50);
                             }
-                        });
-                    }
-
-                    // Start refresh every 3 seconds
-                    refreshInterval = setInterval(forceVisualUpdate, 3000);
-                } else {
-                    console.log('🔄 Auto-refresh already running for this assessment, skipping...');
+                        },
+                        error: function(xhr, status, error) {
+                            console.error("❌ AJAX Error:", error);
+                        }
+                    });
                 }
-            })();
-        </script>
-        @endif
+
+                // Start refresh every 3 seconds
+                refreshInterval = setInterval(forceVisualUpdate, 3000);
+            } else {
+                console.log('🔄 Auto-refresh already running for this assessment, skipping...');
+            }
+        })();
+    </script>
+    @endif
         </div>
             <div class="generated-actions">
                 <div class="actions-txt">
