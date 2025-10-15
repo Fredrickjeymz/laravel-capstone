@@ -88,7 +88,7 @@ function initPreviewWatcher() {
 
 $(document).ready(function () {
     console.log("✅ Navigation script loaded!");
-    initPreviewWatcher(); // runs when first loaded
+    initPreviewWatcher(); 
 
     const lastActive = localStorage.getItem("activeNav");
     if (lastActive) {
@@ -177,7 +177,6 @@ $(document).ready(function () {
                                 // 🔥 ADD SMALL DELAY TO ENSURE DOM IS READY
                                 setTimeout(() => {
                                     $("#overlay-spinner").hide(); // Ensure spinner is hidden
-                                    initPreviewWatcher();
                                 }, 500);
                             });
                         });
