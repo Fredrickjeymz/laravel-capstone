@@ -88,7 +88,7 @@ function initPreviewWatcher() {
 
 $(document).ready(function () {
     console.log("✅ Navigation script loaded!");
-    initPreviewWatcher(); 
+
 
     const lastActive = localStorage.getItem("activeNav");
     if (lastActive) {
@@ -105,7 +105,7 @@ $(document).ready(function () {
     $(document).ajaxSuccess(function (event, xhr, settings) {
         if (settings.url.includes("/preview")) {
             console.log("🔁 AJAX preview loaded — reinitializing watcher.");
-            initPreviewWatcher();
+       
         }
     });
 
@@ -177,6 +177,7 @@ $(document).ready(function () {
                                 // 🔥 ADD SMALL DELAY TO ENSURE DOM IS READY
                                 setTimeout(() => {
                                     $("#overlay-spinner").hide(); // Ensure spinner is hidden
+                                    initPreviewWatcher();
                                 }, 500);
                             });
                         });
