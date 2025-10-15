@@ -110,7 +110,7 @@ class GenerateAssessmentJob implements ShouldQueue
         };
 
         // Batch settings
-        $batchSize = min(5, $numItems); // Ensure batch size doesn't exceed total items
+        $batchSize = min(10, $numItems); // Ensure batch size doesn't exceed total items
         $chunks = (int) ceil($numItems / $batchSize);
         $sequence = 1;
         $totalQuestionsCreated = 0;
@@ -123,64 +123,80 @@ class GenerateAssessmentJob implements ShouldQueue
         ]);
 
         for ($i = 0; $i < $chunks; $i++) {
-            $remaining = $numItems - ($i * $batchSize);
-            $count = min($batchSize, $remaining); // Ensure we don't exceed remaining items
+        $remaining = $numItems - ($i * $batchSize);
+        $count = min($batchSize, $remaining);
 
-            if ($count <= 0) {
-                Log::info('No more items to process, stopping');
-                break;
-            }
+        if ($count <= 0) {
+            Log::info('No more items to process, stopping');
+            break;
+        }
 
-            Log::info("🔄 Processing batch {$i}", [
-                'questions_in_batch' => $count,
-                'sequence_start' => $sequence
-            ]);
+        Log::info("🔄 Processing batch {$i}", [
+            'questions_in_batch' => $count,
+            'sequence_start' => $sequence,
+            'batch' => $i + 1,
+            'total_batches' => $chunks
+        ]);
 
-            $prompt = $buildBasePrompt($count);
+        // Add batch context to your existing prompt
+        $batchPrompt = $buildBasePrompt($count);
+        
+        // Enhance with batch-specific instructions for diversity
+        if ($chunks > 1) {
+            $batchPrompt .= "\n\nBATCH CONTEXT: This is batch " . ($i + 1) . " of {$chunks}. ";
+            $batchPrompt .= "Ensure questions in this batch are distinct from other batches and cover different aspects of the material.";
+        }
 
-            $responseContent = null;
-            $attempts = 0;
-            $maxAttempts = 3;
+        $responseContent = null;
+        $attempts = 0;
+        $maxAttempts = 3;
 
-            while ($attempts < $maxAttempts && !$responseContent) {
-                $attempts++;
-                try {
-                    Log::info("📡 OpenAI API call attempt {$attempts} for batch {$i}");
-                    
-                    $resp = Http::withHeaders([
-                        'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
-                        'Content-Type' => 'application/json',
-                    ])->timeout(120)->post('https://api.openai.com/v1/chat/completions', [
-                        'model' => 'gpt-4-turbo',
-                        'messages' => [
-                            ['role' => 'system', 'content' => 'You are an expert teacher who follows formatting rules exactly.'],
-                            ['role' => 'user', 'content' => $prompt],
-                        ],
-                        'temperature' => 0.3,
-                        'max_tokens' => 4000,
+        // Vary temperature slightly per batch for more diversity
+        $temperature = 0.3 + ($i * 0.05); // Increases slightly each batch
+        $temperature = min($temperature, 0.6); // Cap at 0.6
+
+        while ($attempts < $maxAttempts && !$responseContent) {
+            $attempts++;
+            try {
+                Log::info("📡 OpenAI API call attempt {$attempts} for batch {$i}", [
+                    'temperature' => $temperature,
+                    'batch_context' => $chunks > 1 ? "Batch " . ($i + 1) . "/{$chunks}" : "Single batch"
+                ]);
+                
+                $resp = Http::withHeaders([
+                    'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+                    'Content-Type' => 'application/json',
+                ])->timeout(120)->post('https://api.openai.com/v1/chat/completions', [
+                    'model' => 'gpt-4-turbo',
+                    'messages' => [
+                        ['role' => 'system', 'content' => 'You are an expert teacher who follows formatting rules exactly.'],
+                        ['role' => 'user', 'content' => $batchPrompt],
+                    ],
+                    'temperature' => $temperature, // Use varied temperature
+                    'max_tokens' => 4000,
+                ]);
+
+                if ($resp->successful()) {
+                    $responseContent = $resp->json('choices.0.message.content');
+                    Log::info("✅ OpenAI response received for batch {$i}", [
+                        'response_length' => strlen($responseContent),
+                        'preview' => substr($responseContent, 0, 200) . '...'
                     ]);
-
-                    if ($resp->successful()) {
-                        $responseContent = $resp->json('choices.0.message.content');
-                        Log::info("✅ OpenAI response received for batch {$i}", [
-                            'response_length' => strlen($responseContent),
-                            'preview' => substr($responseContent, 0, 200) . '...'
-                        ]);
-                    } else {
-                        Log::warning("⚠️ OpenAI API failed", [
-                            'status' => $resp->status(),
-                            'response' => $resp->body()
-                        ]);
-                        sleep(2 * $attempts);
-                    }
-                } catch (\Throwable $e) {
-                    Log::error("❌ OpenAI exception", [
-                        'attempt' => $attempts,
-                        'error' => $e->getMessage()
+                } else {
+                    Log::warning("⚠️ OpenAI API failed", [
+                        'status' => $resp->status(),
+                        'response' => $resp->body()
                     ]);
-                    sleep(1 + $attempts);
+                    sleep(2 * $attempts);
                 }
+            } catch (\Throwable $e) {
+                Log::error("❌ OpenAI exception", [
+                    'attempt' => $attempts,
+                    'error' => $e->getMessage()
+                ]);
+                sleep(1 + $attempts);
             }
+        }
 
             if (!$responseContent) {
                 Log::error("🚫 Failed to get OpenAI response for batch {$i} after {$maxAttempts} attempts");
