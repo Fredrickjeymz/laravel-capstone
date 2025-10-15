@@ -20,6 +20,15 @@
                     </div>
                 </div>
             </div>
+                <div id="overlay-spinner" style="display: none;">
+                    <div class="spinner-container">
+                        <div class="spinner-ring"></div>
+                        <p class="spinner-text">
+                        <i class="fa-solid fa-paper-plane"></i> Submitting your answers.<br>
+                        <span>Please wait...</span>
+                        </p>
+                    </div>
+                </div>
             <form id="quiz-form">
                 @csrf
                 <input type="hidden" name="assessment_id" value="{{ $assessment->id }}">
@@ -89,20 +98,33 @@
                         </div>
                      </center>
                 </div>
-                <div id="overlay-spinner" style="display: none;">
-                    <div class="spinner-container">
-                        <div class="spinner-ring"></div>
-                        <p class="spinner-text">
-                        <i class="fa-solid fa-paper-plane"></i> Submitting your answers.<br>
-                        <span>Please wait...</span>
-                        </p>
-                    </div>
-                </div>
             </form>
 
         </div>
 </div>
+<script>
+    function preventBrowserNavigation() {
+    // Prevent back/forward buttons
+    history.pushState(null, null, window.location.href);
+    window.onpopstate = function() {
+        history.pushState(null, null, window.location.href);
+    };
 
+    // Prevent page refresh
+    window.onbeforeunload = function(e) {
+        if (!quizSubmitted) {
+            e.preventDefault();
+            e.returnValue = '';
+            return '';
+        }
+    };
+}
+
+// Initialize when quiz page loads
+if (window.location.pathname.includes('/student/quiz/')) {
+    preventBrowserNavigation();
+}
+</script>
 <script>
 let quizSubmitted = false;
 let timerInterval; // 🔥 Declare it globally

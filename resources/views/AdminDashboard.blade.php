@@ -25,7 +25,7 @@
         </div>
         <div class="stat-card">
             <div class="con-ti">
-                <h4>Ecuducators</h4>
+                <h4>Educators</h4>
                 <h4><i class="fas fa-chalkboard-teacher"></i></h4>
             </div>
             <h1>{{ $teacherCount }}</h1>

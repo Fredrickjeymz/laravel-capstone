@@ -11,6 +11,7 @@ use App\Models\StudentAssessmentQuestionScore;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\EvaluateAnswersJob;
 use App\Helpers\ActivityLogger;
 
 class QuizViewController extends Controller
@@ -130,24 +131,48 @@ class QuizViewController extends Controller
         $assessment = Assessment::with('questions')->findOrFail($request->assessment_id);
         $submittedAnswers = $request->answers;
 
-        // ✅ ADD THIS - Create immediate "processing" record
-        StudentAssessmentScore::create([
-            'student_id' => $student->id,
-            'assessment_id' => $assessment->id,
-            'total_score' => 0,
-            'max_score' => 100,
-            'percentage' => 0,
-            'remarks' => 'AI evaluation in progress...',
-            'status' => 'processing', // Add this field to your table
-        ]);
+        try {
+            // Try synchronous evaluation first
+            set_time_limit(120); // 2 minutes max
+            
+            $evaluator = new EvaluateAnswersJob($assessment, $student, $submittedAnswers);
+            $evaluator->handle();
+            
+            $score = $evaluator->getEvaluationResult();
 
-        // ✅ Dispatch the evaluation job
-        \App\Jobs\EvaluateAnswersJob::dispatch($assessment, $student, $submittedAnswers);
+            if ($score) {
+                return response()->json([
+                    'message' => '✅ Evaluation completed successfully!',
+                    'status' => 'completed',
+                    'score' => $score->total_score,
+                    'max_score' => $score->max_score,
+                    'percentage' => $score->percentage,
+                    'remarks' => $score->remarks,
+                    'evaluation_id' => $score->id
+                ]);
+            }
 
-        return response()->json([
-            'message' => '✅ Your submission was received. AI is evaluating your answers in the background.',
-            'status' => 'queued'
-        ]);
+        } catch (\Exception $e) {
+            Log::warning("Sync evaluation failed, falling back to async: " . $e->getMessage());
+            
+            // Fallback to async processing
+            StudentAssessmentScore::create([
+                'student_id' => $student->id,
+                'assessment_id' => $assessment->id,
+                'total_score' => 0,
+                'max_score' => 100,
+                'percentage' => 0,
+                'remarks' => 'AI evaluation in progress...',
+                'status' => 'processing',
+            ]);
+
+            EvaluateAnswersJob::dispatch($assessment, $student, $submittedAnswers);
+
+            return response()->json([
+                'message' => '✅ Submission received! AI evaluation in progress.',
+                'status' => 'queued'
+            ]);
+        }
     }
     
 }

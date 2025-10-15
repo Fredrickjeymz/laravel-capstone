@@ -55,14 +55,18 @@ class ObjectiveAssessmentController extends Controller
                 'instruction' => $request->input('instruction'),
             ];
 
-            /*
-            $standardRubric = "Criteria | Weight | Excellent (100%) | Proficient (75%) | Basic (50%) | Needs Improvement (25%)
+            // ✅ Add fixed rubric for subjective question types
+            $fixedRubric = null;
+            $subjectiveTypes = ['Essay', 'Short Answer Questions', 'Critically Thought-out Opinions'];
+
+            if (in_array($request->input('question_type'), $subjectiveTypes)) {
+                $fixedRubric = "Criteria | Weight | Excellent (100%) | Proficient (75%) | Basic (50%) | Needs Improvement (25%)
             Content & Development | 30% | Demonstrates deep understanding; provides insightful, original ideas; all points are fully supported with evidence | Shows clear understanding; ideas mostly well-developed and supported; minor gaps in evidence | Shows some understanding; ideas partially developed; limited evidence | Demonstrates minimal understanding; ideas undeveloped or unsupported
             Organization | 20% | Information is logically and coherently organized; clear introduction, body, and conclusion | Information mostly organized; minor lapses in clarity or structure | Organization is inconsistent; transitions unclear | Information is disorganized; lacks clear structure
             Grammar and Mechanics | 20% | Virtually no errors in spelling, punctuation, or grammar | Few minor errors that do not hinder comprehension | Several errors that sometimes interfere with understanding | Frequent errors that significantly hinder comprehension
             Critical Thinking | 20% | Analysis is thorough, insightful, and demonstrates strong reasoning; evaluates multiple perspectives | Analysis is clear and logical; considers some perspectives | Analysis is limited; reasoning is sometimes unclear | Little to no analysis; reasoning is weak or absent
             Clarity & Coherence | 10% | Writing is clear, concise, and easy to follow; excellent flow | Writing is mostly clear; minor issues with flow or clarity | Writing sometimes unclear; ideas occasionally hard to follow | Writing is unclear; ideas difficult to follow or confusing";
-            */
+            }
 
             $assessment = Assessment::create([
                 'teacher_id' => Auth::id(),
@@ -70,7 +74,7 @@ class ObjectiveAssessmentController extends Controller
                 'subject' => $payload['subject'] ?? null,
                 'instructions' => $payload['instruction'] ?? null,
                 'question_type' => $payload['question_type'],
-                'rubric' => null,
+                'rubric' => $fixedRubric, // ✅ Use the fixed rubric here
                 'status' => 'pending',
             ]);
 

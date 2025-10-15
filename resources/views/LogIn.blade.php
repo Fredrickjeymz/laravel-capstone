@@ -23,9 +23,9 @@
                 <label for="role">Login As</label>
                 <select name="role" id="role" required>
                 <option value="" disabled selected>Select your role</option>
-                <option value="teacher">👩‍🏫 Teacher</option>
-                <option value="student">🎓 Student</option>
-                <option value="admin">🛡️ Admin</option>
+                <option value="teacher">📚 Educator</option>
+                <option value="student">📖 Student</option>
+                <option value="admin">⚙️ Admin</option>
                 </select>
                 <small class="helper-text">Choose your role.</small>
             </div>

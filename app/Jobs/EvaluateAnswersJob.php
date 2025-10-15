@@ -97,8 +97,8 @@ class EvaluateAnswersJob implements ShouldQueue
 
             $content = trim($content);
             $content = preg_replace('/^
-(?:json)?\s*([\s\S]*?)\s*
-$/', '$1', $content);
+    (?:json)?\s*([\s\S]*?)\s*
+    $/', '$1', $content);
             $content = preg_replace('/[\x00-\x1F\x7F]/', '', $content);
 
             $result = json_decode($content, true);
@@ -107,38 +107,15 @@ $/', '$1', $content);
             }
 
             // === Save results ===
-$score = StudentAssessmentScore::where([
-    'student_id' => $this->student->id,
-    'assessment_id' => $this->assessment->id,
-    'status' => 'processing'
-])->latest()->first();
-
-// ✅ Add logging to see if we found the processing record
-Log::info("Looking for processing record - Found: " . ($score ? "YES, ID: " . $score->id : "NO"));
-
-if ($score) {
-    Log::info("Updating existing record ID: " . $score->id);
-    $score->update([
-        'total_score' => $result['total_score'],
-        'max_score' => $result['max_score'], 
-        'percentage' => $result['percentage'],
-        'remarks' => $result['overall_feedback'] ?? null,
-        'status' => 'completed',
-    ]);
-    Log::info("Record updated successfully");
-} else {
-    Log::warning("No processing record found, creating new one");
-                // Fallback - create new if not found
-                $score = StudentAssessmentScore::create([
-                    'student_id' => $this->student->id,
-                    'assessment_id' => $this->assessment->id,
-                    'total_score' => $result['total_score'],
-                    'max_score' => $result['max_score'],
-                    'percentage' => $result['percentage'],
-                    'remarks' => $result['overall_feedback'] ?? null,
-                    'status' => 'completed',
-                ]);
-            }
+            $score = StudentAssessmentScore::create([
+                'student_id' => $this->student->id,
+                'assessment_id' => $this->assessment->id,
+                'total_score' => $result['total_score'],
+                'max_score' => $result['max_score'],
+                'percentage' => $result['percentage'],
+                'remarks' => $result['overall_feedback'] ?? null,
+                'status' => 'completed',
+            ]);
 
             $questions = $this->assessment->questions->values();
             foreach ($result['question_results'] as $index => $r) {
@@ -162,9 +139,19 @@ if ($score) {
 
             Log::info("✅ Evaluation completed successfully for student {$this->student->full_name}");
 
+            // Store the score result in a class property for access
+            $this->evaluationResult = $score;
+
         } catch (\Exception $e) {
             Log::error("❌ AI Evaluation failed", ['error' => $e->getMessage()]);
             throw $e;
         }
     }
+
+    // Add a getter method to retrieve the result
+    public function getEvaluationResult()
+    {
+        return $this->evaluationResult ?? null;
+    }
+
 }

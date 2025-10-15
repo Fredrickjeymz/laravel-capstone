@@ -1089,3 +1089,25 @@ button:focus, a:focus, input:focus, textarea:focus{ outline: 3px solid rgba(33,1
     transform: translateY(0);
   }
 }
+
+.empty-state {
+    text-align: center;
+    padding: 5px;
+    background-color: #ccdbf3;
+    border-radius: 12px;
+    margin: 1rem 0;
+}
+
+.empty-state p {
+  color: rgb(64, 64, 64);
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .empty-state {
+      color: white;
+    }
+}

@@ -55,9 +55,6 @@
                             </td>
                         </tr>
                     @empty
-                        <tr>
-                            <td colspan="4">No students enrolled in this class.</td>
-                        </tr>
                     @endforelse
                 </tbody>
             </table>

@@ -65,7 +65,7 @@
                             <button class="pends-completed completed" disabled><strong>Your score:</strong> {{ $studentScore->total_score }} / {{ $studentScore->max_score }}</button>
                         </div>
                         <div>
-                             <button class="pends-completed remarks" disabled><strong>Remarks:</strong> {{ $studentScore->remarks ?? 'None' }}</button>
+                             <button class="pends remarks" disabled><strong>Remarks:</strong> {{ $studentScore->remarks ?? 'None' }}</button>
                         </div>
                     @elseif ($isDue)
                         <button class="pends-due due" disabled>Over Due</button>
@@ -81,7 +81,7 @@
                 </div>
             </div>
         @empty
-            <div class="no-quiz-message">
+            <div class="empty-state">
                 <p>No quizzes available for this class at the moment.</p>
             </div>
         @endforelse

@@ -51,11 +51,10 @@ $(document).on('click', '.take-quiz-btn', function (e) {
 
 $(document).on('submit', '#quiz-form', function (e) {
     e.preventDefault();
-
     if (quizSubmitted) return;
     quizSubmitted = true;
 
-    clearInterval(timerInterval); // ✅ Stops countdown if user clicks Submit
+    clearInterval(timerInterval);
 
     let formData = new FormData(this);
 
@@ -65,35 +64,93 @@ $(document).on('submit', '#quiz-form', function (e) {
         data: formData,
         processData: false,
         contentType: false,
+        timeout: 120000, // 2 minute timeout
         beforeSend: function () {
             $("#overlay-spinner").show();
+            
+            // ✅ Keep the header, hide form, show processing message
+            $('#quiz-form').hide(); // Hide the form instead of removing
+            $('.quiz-question-card').append(`
+                <div class="processing-message mt-4">
+                    <div class="alert alert-info">
+                        <h4><i class="fas fa-robot"></i> AI Evaluation in Progress</h4>
+                        <p class="mb-2">🤖 Our AI teacher is carefully reviewing your answers...</p>
+                        <p class="mb-0">This may take 20-30 seconds. Please don't close this page.</p>
+                    </div>
+                </div>
+            `);
         },
         success: function (response) {
-            $('#quiz-form').remove();
-
-            const message = `
-                <div class="submitted-message">
-                    <h2><i class="fas fa-check-circle"></i> Submission Successful!</h2>
-                    <p>🤖 AI is currently evaluating your quiz in the background.</p>
-                    <p>You can now safely exit this page. Later on, you’ll be able to view your score in the <strong>Quizzes</strong> section.</p>
-                </div>
-            `;
-            $('.quiz-question-card').append(message); // Update container if needed
+            // ✅ Remove processing message and show results
+            $('.processing-message').remove();
+            
+            if (response.status === 'completed') {
+                // Show immediate results
+                const message = `
+                    <div class="submitted-message mt-4">
+                        <div class="alert alert-success">
+                            <h4><i class="fas fa-check-circle"></i> Quiz Evaluated Successfully!</h4>
+                        </div>
+                        <div class="score-card mt-3 p-4 bg-light rounded">
+                            <h5 class="text-primary">Your Results</h5>
+                            <div class="score-details">
+                                <p><strong>Score:</strong> ${response.score}/${response.max_score}</p>
+                                <p><strong>Percentage:</strong> ${response.percentage}%</p>
+                                <p><strong>Remarks:</strong> ${response.remarks}</p>
+                            </div>
+                        </div>
+                        <p class="mt-3">📊 You can view detailed results in the <strong>Quizzes</strong> section.</p>
+                    </div>
+                `;
+                $('.quiz-question-card').append(message);
+            } else {
+                // Fallback to queued message
+                showQueuedMessage();
+            }
         },
         error: function (xhr) {
-            quizSubmitted = false; 
-            Swal.fire({
-                icon: 'error',
-                title: 'Submission Failed!',
-                text: '⚠️ Please check your internet connection and try again.',
-                confirmButtonText: 'OK'
-            });
+            quizSubmitted = false;
+            
+            // ✅ Remove processing message on error
+            $('.processing-message').remove();
+            $('#quiz-form').show(); // Show the form again
+            
+            if (xhr.status === 504 || xhr.status === 0) {
+                // Timeout or connection issue - fallback to background processing
+                showQueuedMessage();
+            } else {
+                // Other errors
+                let errorMessage = '⚠️ Please check your internet connection and try again.';
+                if (xhr.responseJSON && xhr.responseJSON.error) {
+                    errorMessage = xhr.responseJSON.error;
+                }
+                
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Submission Failed!',
+                    text: errorMessage,
+                    confirmButtonText: 'OK'
+                });
+            }
         },
         complete: function () {
             $("#overlay-spinner").hide();
         }
     });
 });
+
+function showQueuedMessage() {
+    $('.processing-message').remove(); // Remove processing message
+    $('.quiz-question-card').append(`
+        <div class="submitted-message mt-4">
+            <div class="alert alert-success">
+                <h4><i class="fas fa-check-circle"></i> Submission Successful!</h4>
+            </div>
+            <p>🤖 AI is currently evaluating your quiz in the background.</p>
+            <p>You can now safely exit this page. Later on, you'll be able to view your score in the <strong>Quizzes</strong> section.</p>
+        </div>
+    `);
+}
 
 
 
