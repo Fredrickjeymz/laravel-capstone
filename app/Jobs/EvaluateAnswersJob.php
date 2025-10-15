@@ -95,7 +95,7 @@ class EvaluateAnswersJob implements ShouldQueue
                 $prompt .= "- For True/False: student_answer must be 'True' or 'False' only.\n";
                 $prompt .= "- Normalize student answers (e.g., 'T' → 'True', 'F' → 'False').\n";
             } else {
-                $prompt .= "- For subjective: include rubric-based criteria_scores.\n";
+                $prompt .= "- For subjective (Essay, Short Answer Questions, or Critically Thought-out Opinions): include rubric-based criteria_scores.\n";
             }
 
             $prompt .= "- Also return a short (1 sentence) overall_feedback summarizing the student's performance.\n";
