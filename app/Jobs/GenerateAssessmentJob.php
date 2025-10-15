@@ -95,7 +95,9 @@ class GenerateAssessmentJob implements ShouldQueue
               \nOrganization | 20% | text | text | text | text 
               \nGrammar and Mechanics | 20% | text | text | text | text 
               \nCritical Thinking | 20% | text | text | text | text 
-              \nClarity & Coherence | 10% | | text | text | text | text";
+              \nClarity & Coherence | 10% | | text | text | text | text
+
+              \nMake sure the rubric appears as a separate section at the end and starts with the word 'Rubric:'.";
                     break;
                 case 'Short Answer Questions':
                     $basePrompt .= "short answer questions. Provide a scoring rubric with the following:
@@ -108,7 +110,9 @@ class GenerateAssessmentJob implements ShouldQueue
               \nOrganization | 20% | text | text | text | text 
               \nGrammar and Mechanics | 20% | text | text | text | text 
               \nCritical Thinking | 20% | text | text | text | text 
-              \nClarity & Coherence | 10% | | text | text | text | text";
+              \nClarity & Coherence | 10% | | text | text | text | text
+
+             \nMake sure the rubric appears as a separate section at the end and starts with the word 'Rubric:'.";
                     break;
                 case 'Critically Thought-out Opinions':
                     $basePrompt .= "critical thinking questions. Provide a scoring rubric with the following:
@@ -121,8 +125,9 @@ class GenerateAssessmentJob implements ShouldQueue
               \nOrganization | 20% | text | text | text | text 
               \nGrammar and Mechanics | 20% | text | text | text | text 
               \nCritical Thinking | 20% | text | text | text | text 
-              \nClarity & Coherence | 10% | | text | text | text | text";
-                    break;
+              \nClarity & Coherence | 10% | | text | text | text | text
+              
+              \nMake sure the rubric appears as a separate section at the end and starts with the word 'Rubric:'.";
                 default:
                     $basePrompt .= "{$questionType} questions. Format like:\n1. Question.\nAnswer: Answer.";
             }
@@ -218,32 +223,37 @@ class GenerateAssessmentJob implements ShouldQueue
                 continue;
             }
 
+            Log::info('🧠 Checking if rubric exists in raw content', [
+                'has_rubric_word' => str_contains($responseContent, 'Rubric') ? 'yes' : 'no',
+                'rubric_pos' => strpos($responseContent, 'Rubric')
+            ]);
             // 🔥 ADD RUBRIC EXTRACTION HERE - BEFORE parsing questions
             if ($rubricCaptured === null && in_array($questionType, ['Essay','Short Answer Questions','Critically Thought-out Opinions'])) {
                 Log::info("🔍 Looking for rubric in batch {$i} for {$questionType}");
+                Log::info('🧠 Checking if rubric exists in raw content', [
+                    'has_rubric_word' => str_contains($responseContent, 'Rubric') ? 'yes' : 'no',
+                    'rubric_pos' => strpos($responseContent, 'Rubric')
+                ]);
+
                 Log::info("📝 Response content preview:", ['preview' => substr($responseContent, 0, 500)]);
-                
-                // Try multiple patterns to capture the rubric
-                if (preg_match('/(Rubric:\s*.*?)(?=\d+\.\s|$)/is', $responseContent, $m)) {
+
+                // Capture rubric that starts with "Rubric:" or "Criteria" or table headers
+                if (preg_match('/(Rubric:.*)$/is', $responseContent, $m)) {
                     $rubricCaptured = trim($m[1]);
-                    $responseContent = str_replace($m[0], '', $responseContent);
+                    $responseContent = preg_replace('/(Rubric:.*)$/is', '', $responseContent);
                     Log::info("✅ Rubric captured using 'Rubric:' pattern", ['rubric_length' => strlen($rubricCaptured)]);
-                    Log::info("📋 Full rubric:", ['rubric' => $rubricCaptured]);
-                } elseif (preg_match('/(Criteria\s*\|\s*Weight\s*\|.*?)(?=\d+\.\s|$)/is', $responseContent, $m2)) {
+                } elseif (preg_match('/(Criteria\s*\|\s*Weight\s*\|.*)$/is', $responseContent, $m2)) {
                     $rubricCaptured = trim($m2[1]);
-                    $responseContent = str_replace($m2[0], '', $responseContent);
+                    $responseContent = preg_replace('/(Criteria\s*\|\s*Weight\s*\|.*)$/is', '', $responseContent);
                     Log::info("✅ Rubric captured using 'Criteria' pattern", ['rubric_length' => strlen($rubricCaptured)]);
-                    Log::info("📋 Full rubric:", ['rubric' => $rubricCaptured]);
-                } elseif (preg_match('/(.*?Excellent.*?Proficient.*?Basic.*?Needs Improvement.*?)(?=\d+\.\s|$)/is', $responseContent, $m3)) {
+                } elseif (preg_match('/(Content\s*&\s*Development.*?Needs Improvement.*)$/is', $responseContent, $m3)) {
                     $rubricCaptured = trim($m3[1]);
-                    $responseContent = str_replace($m3[0], '', $responseContent);
-                    Log::info("✅ Rubric captured using table pattern", ['rubric_length' => strlen($rubricCaptured)]);
-                    Log::info("📋 Full rubric:", ['rubric' => $rubricCaptured]);
+                    $responseContent = preg_replace('/(Content\s*&\s*Development.*?Needs Improvement.*)$/is', '', $responseContent);
+                    Log::info("✅ Rubric captured using table headers pattern", ['rubric_length' => strlen($rubricCaptured)]);
                 } else {
                     Log::warning("❌ No rubric pattern found in response");
-                    Log::info("🔍 Available patterns checked: 'Rubric:', 'Criteria | Weight', table headers");
                 }
-                
+
                 if ($rubricCaptured) {
                     Log::info("📋 Rubric preview:", ['rubric_preview' => substr($rubricCaptured, 0, 200) . '...']);
                 }

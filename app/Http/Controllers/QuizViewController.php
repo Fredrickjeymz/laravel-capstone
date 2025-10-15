@@ -15,87 +15,89 @@ use App\Helpers\ActivityLogger;
 
 class QuizViewController extends Controller
 {
-    public function showQuizzes($id)
-    {
-        $student = auth()->guard('student')->user();
+   public function showQuizzes($id)
+{
+    $student = auth()->guard('student')->user();
 
-        $class = SchoolClass::with([
-            'assessments' => function ($query) use ($student) {
-                $query->withCount('questions')
-                    ->with(['studentScores' => function ($q) use ($student) {
-                        $q->where('student_id', $student->id);
-                    }])
-                    ->withPivot('time_limit', 'due_date', 'created_at');
-            },
-            'teacher'
-        ])->findOrFail($id);
+    $class = SchoolClass::with([
+        'assessments' => function ($query) use ($student) {
+            $query->withCount('questions')
+                ->with(['studentScores' => function ($q) use ($student) {
+                    $q->where('student_id', $student->id);
+                }])
+                ->withPivot('time_limit', 'due_date', 'created_at');
+        },
+        'teacher'
+    ])->findOrFail($id);
 
-        // ✅ Make sure student belongs to class
-        if (!$student->classes->contains('id', $class->id)) {
-            abort(403, 'Unauthorized access to this class');
+    // ✅ Make sure student belongs to class
+    if (!$student->classes->contains('id', $class->id)) {
+        abort(403, 'Unauthorized access to this class');
+    }
+
+    $now = now()->timezone(config('app.timezone'));
+
+    $sortedAssessments = $class->assessments->sortBy(function ($assessment) use ($student, $now) {
+        $studentScore = $assessment->studentScores->firstWhere('student_id', $student->id);
+        
+        // ✅ FIX: Check if ANY score exists (even with 0 points = processing)
+        $alreadyTaken = $studentScore !== null; // This should now work!
+
+        $dueDateRaw = $assessment->pivot->due_date ?? null;
+        $dueDate = $dueDateRaw
+            ? \Carbon\Carbon::parse($dueDateRaw)->timezone(config('app.timezone'))
+            : null;
+
+        $isDue = $dueDate && $dueDate->isPast();
+
+        // Priority system
+        if ($alreadyTaken) {
+            $priority = 2; // completed last
+        } elseif ($isDue) {
+            $priority = 1; // overdue middle
+        } else {
+            $priority = 0; // pending first
         }
 
-        $now = now()->timezone(config('app.timezone'));
+        // Sort by priority first, then due date
+        return [$priority, $dueDate ?? $now->copy()->addYears(10)];
+    });
 
-        $sortedAssessments = $class->assessments->sortBy(function ($assessment) use ($student, $now) {
-            $studentScore = $assessment->studentScores->firstWhere('student_id', $student->id);
-            $alreadyTaken = $studentScore !== null;
-
-            $dueDateRaw = $assessment->pivot->due_date ?? null;
-            $dueDate = $dueDateRaw
-                ? \Carbon\Carbon::parse($dueDateRaw)->timezone(config('app.timezone'))
-                : null;
-
-            $isDue = $dueDate && $dueDate->isPast();
-
-            // Priority system
-            if ($alreadyTaken) {
-                $priority = 2; // completed last
-            } elseif ($isDue) {
-                $priority = 1; // overdue middle
-            } else {
-                $priority = 0; // pending first
-            }
-
-            // Sort by priority first, then due date
-            return [$priority, $dueDate ?? $now->copy()->addYears(10)];
-        });
-
-        return view('InsideClass', [
-            'class' => $class,
-            'student' => $student,
-            'now' => $now,
-            'assessments' => $sortedAssessments // ✅ use this in Blade
-        ]);
-    }
+    return view('InsideClass', [
+        'class' => $class,
+        'student' => $student,
+        'now' => $now,
+        'assessments' => $sortedAssessments
+    ]);
+}
 
 
-    public function showAllQuizzes()
-    {
-        $student = auth()->guard('student')->user();
+ public function showAllQuizzes()
+{
+    $student = auth()->guard('student')->user();
 
-        // Get class IDs student is in
-        $classIds = $student->classes()->pluck('school_class_id')->toArray();
+    // Get class IDs student is in
+    $classIds = $student->classes()->pluck('school_class_id')->toArray();
 
-        // Fetch classes with assessments that have the pivot
-        $classes = \App\Models\SchoolClass::with([
-            'assessments' => function ($query) {
-                $query->withCount('questions')
-                    ->with('teacher')
-                    ->withPivot('time_limit', 'due_date', 'created_at');
-            },
-            'assessments.studentScores' => function ($query) use ($student) {
-                $query->where('student_id', $student->id);
-            },
-            'teacher'
-        ])
-        ->whereIn('id', $classIds)
-        ->get();
+    // Fetch classes with assessments that have the pivot
+    $classes = \App\Models\SchoolClass::with([
+        'assessments' => function ($query) {
+            $query->withCount('questions')
+                ->with('teacher')
+                ->withPivot('time_limit', 'due_date', 'created_at');
+        },
+        'assessments.studentScores' => function ($query) use ($student) {
+            $query->where('student_id', $student->id);
+        },
+        'teacher'
+    ])
+    ->whereIn('id', $classIds)
+    ->get();
 
-        $now = now();
+    $now = now();
 
-        return view('StudentQuiz', compact('classes', 'student', 'now'));
-    }
+    return view('StudentQuiz', compact('classes', 'student', 'now'));
+}
 
     public function show($assessment_id)
     {
@@ -127,6 +129,17 @@ class QuizViewController extends Controller
         $student = auth()->guard('student')->user();
         $assessment = Assessment::with('questions')->findOrFail($request->assessment_id);
         $submittedAnswers = $request->answers;
+
+        // ✅ ADD THIS - Create immediate "processing" record
+        StudentAssessmentScore::create([
+            'student_id' => $student->id,
+            'assessment_id' => $assessment->id,
+            'total_score' => 0,
+            'max_score' => 100,
+            'percentage' => 0,
+            'remarks' => 'AI evaluation in progress...',
+            'status' => 'processing', // Add this field to your table
+        ]);
 
         // ✅ Dispatch the evaluation job
         \App\Jobs\EvaluateAnswersJob::dispatch($assessment, $student, $submittedAnswers);
