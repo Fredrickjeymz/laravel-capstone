@@ -55,7 +55,8 @@ class ObjectiveAssessmentController extends Controller
                 'instruction' => $request->input('instruction'),
             ];
 
-            /*$standardRubric = "Criteria | Weight | Excellent (100%) | Proficient (75%) | Basic (50%) | Needs Improvement (25%)
+            /*
+            $standardRubric = "Criteria | Weight | Excellent (100%) | Proficient (75%) | Basic (50%) | Needs Improvement (25%)
             Content & Development | 30% | Demonstrates deep understanding; provides insightful, original ideas; all points are fully supported with evidence | Shows clear understanding; ideas mostly well-developed and supported; minor gaps in evidence | Shows some understanding; ideas partially developed; limited evidence | Demonstrates minimal understanding; ideas undeveloped or unsupported
             Organization | 20% | Information is logically and coherently organized; clear introduction, body, and conclusion | Information mostly organized; minor lapses in clarity or structure | Organization is inconsistent; transitions unclear | Information is disorganized; lacks clear structure
             Grammar and Mechanics | 20% | Virtually no errors in spelling, punctuation, or grammar | Few minor errors that do not hinder comprehension | Several errors that sometimes interfere with understanding | Frequent errors that significantly hinder comprehension

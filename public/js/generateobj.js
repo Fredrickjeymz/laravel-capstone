@@ -39,14 +39,16 @@ function initPreviewWatcher() {
     const assessmentId = content.data("id");
     const assessmentStatus = content.data("assessment-status");
 
-    if (!assessmentId) {
-        console.log("⚠️ No assessment ID found in preview.");
+    // 🔥 ADD THIS CHECK - Only run if we're on a preview page with assessment
+    if (!assessmentId || !content.length) {
+        console.log("⚠️ No assessment found or not on preview page. Skipping watcher.");
+        spinner.hide(); // Ensure spinner is hidden
         return;
     }
 
     console.log("🔍 Initializing preview watcher for assessment:", assessmentId, "status:", assessmentStatus);
 
-    if (assessmentStatus === "processing" || assessmentStatus === "pending") {
+    if (assessmentStatus === "processing" || assessmentStatus === "pending" || assessmentStatus === "in-progress") {
         spinner.show();
         content.hide();
 
@@ -162,7 +164,7 @@ $(document).ready(function () {
             success: function (data) {
                 console.log("✅ Success response:", data);
                 if (data.assessment_id) {
-                    const previewUrl = `/preview/${data.assessment_id}`; // ✅ load specific ID
+                    const previewUrl = `/preview/${data.assessment_id}`;
                     console.log("🔄 Loading preview for new assessment:", previewUrl);
 
                     $.get(previewUrl, function (response) {
@@ -172,13 +174,16 @@ $(document).ready(function () {
                         $("#content-area").fadeOut(150, function () {
                             $(this).html(content).fadeIn(150, function() {
                                 console.log("🔁 Reinitializing preview watcher after generation redirect...");
-                                setTimeout(() => initPreviewWatcher(), 300);
+                                // 🔥 ADD SMALL DELAY TO ENSURE DOM IS READY
+                                setTimeout(() => {
+                                    $("#overlay-spinner").hide(); // Ensure spinner is hidden
+                                    initPreviewWatcher();
+                                }, 500);
                             });
                         });
                     });
                 }
-                
-            },            
+            },          
             error: function (error) {
                 console.error("❌ Error response:", error);
                 $("#overlay-spinner").hide();
