@@ -45,13 +45,32 @@ class EvaluateAnswersJob implements ShouldQueue
 
             // === Build prompt exactly like yours ===
             $prompt = "Evaluate student answers against the following assessment:\n\n";
-            $prompt .= "- For multiple choice questions, answer_key must complete (e.g. A. Laravel).\n";
+
+            // 🔥 ENHANCED: More specific instructions for multiple choice
+            if ($this->assessment->question_type === 'Multiple Choice') {
+                $prompt .= "CRITICAL FOR MULTIPLE CHOICE:\n";
+                $prompt .= "- Student answers MUST be compared as LETTERS ONLY (A, B, C, D)\n";
+                $prompt .= "- Correct answers are LETTERS ONLY\n";
+                $prompt .= "- If student wrote text, map it to the corresponding letter\n";
+                $prompt .= "- Score: 1 if letters match, 0 if they don't\n\n";
+            } elseif ($this->assessment->question_type === 'True Or False') {
+                $prompt .= "CRITICAL FOR TRUE/FALSE:\n";
+                $prompt .= "- Student answers MUST be compared as True/False only\n";
+                $prompt .= "- Normalize variations (e.g., 'T', 'true', 'TRUE' → 'True')\n\n";
+            }
+
             $prompt .= "ASSESSMENT TITLE: {$this->assessment->title}\n";
             $prompt .= "QUESTION TYPE: {$this->assessment->question_type}\n\n";
 
             foreach ($this->assessment->questions as $q) {
                 $prompt .= "QUESTION {$q->sequence_number}:\n{$q->question_text}\n";
-                $prompt .= "CORRECT ANSWER: {$q->answer_key}\n\n";
+                
+                // 🔥 ENHANCED: Show answer format explicitly
+                if ($this->assessment->question_type === 'Multiple Choice') {
+                    $prompt .= "CORRECT ANSWER (LETTER): {$q->answer_key}\n\n";
+                } else {
+                    $prompt .= "CORRECT ANSWER: {$q->answer_key}\n\n";
+                }
             }
 
             if ($this->assessment->rubric) {
@@ -66,8 +85,19 @@ class EvaluateAnswersJob implements ShouldQueue
             $prompt .= "\nINSTRUCTIONS:\n";
             $prompt .= "- Return JSON with total_score, max_score, percentage, question_results, and overall_feedback.\n";
             $prompt .= "- Each question_results[] must have student_answer, score, max_score, feedback.\n";
-            $prompt .= "- For multiple choice questions, student_answer must complete (e.g. A. Laravel).\n";
-            $prompt .= "- For subjective: include rubric-based criteria_scores.\n";
+
+            // 🔥 ENHANCED: More specific formatting rules
+            if ($this->assessment->question_type === 'Multiple Choice') {
+                $prompt .= "- For multiple choice: student_answer must be the LETTER ONLY (e.g., 'A', 'B', 'C', 'D').\n";
+                $prompt .= "- For multiple choice: score is 1 if letters match exactly, 0 otherwise.\n";
+                $prompt .= "- Map student text answers to corresponding letters (e.g., 'Mike De Leon' → 'C').\n";
+            } elseif ($this->assessment->question_type === 'True Or False') {
+                $prompt .= "- For True/False: student_answer must be 'True' or 'False' only.\n";
+                $prompt .= "- Normalize student answers (e.g., 'T' → 'True', 'F' → 'False').\n";
+            } else {
+                $prompt .= "- For subjective: include rubric-based criteria_scores.\n";
+            }
+
             $prompt .= "- Also return a short (1 sentence) overall_feedback summarizing the student's performance.\n";
             $prompt .= "- JSON only. No extra explanation. Do NOT include markdown like ```json.\n\n";
             $prompt .= "JSON ONLY OUTPUT:";
