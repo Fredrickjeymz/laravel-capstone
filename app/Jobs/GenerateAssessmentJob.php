@@ -84,50 +84,14 @@ class GenerateAssessmentJob implements ShouldQueue
                     $basePrompt .= "matching type questions. Format strictly like:\n1. [Matching term or phrase]\nAnswer: A: [Correct match for item 1]\n2. [Matching term or phrase]\nAnswer: B: [Correct match for item 2]\n\nDo not provide any list of options, rubric, or additional explanations. Only provide exactly one matching pair per item as shown.";
                     break;
                 case 'Essay':
-                    $basePrompt .= "essay questions. Provide a scoring rubric with the following:
-            - 5 criteria such as content and development, organization, grammar & mechanics, critical thinking, and clarity & coherence.
-            - Each criterion should have a description and percentage weight.
-              Format like:\n1. Describe a significant life experience that has shaped your perspective. 
-              \n2. Is social media a net positive or negative for society?
-              \nRubric:
-              \nCriteria | Weight |\tExcellent (100%) | Proficient (75%) | Basic (50%) |\tNeeds Improvement (25%)
-              \nContent & Development | 30% | Demonstrates deep understanding; insightful, original ideas; strong supporting evidence | text | text | text
-              \nOrganization | 20% | text | text | text | text 
-              \nGrammar and Mechanics | 20% | text | text | text | text 
-              \nCritical Thinking | 20% | text | text | text | text 
-              \nClarity & Coherence | 10% | | text | text | text | text
-
-              \nMake sure the rubric appears as a separate section at the end and starts with the word 'Rubric:'.";
+                    $basePrompt .= "essay questions. Format like:\n1. Describe a significant life experience that has shaped your perspective. \n2. Is social media a net positive or negative for society?";
                     break;
                 case 'Short Answer Questions':
-                    $basePrompt .= "short answer questions. Provide a scoring rubric with the following:
-            - 5 criteria such as content and development, organization, grammar & mechanics, critical thinking, and clarity & coherence.
-            - Each criterion should have a description and percentage weight.
-              Format like:\n1. What is the chemical symbol for water? 
-              \n2. In what year did World War II begin?
-              \nCriteria | Weight |\tExcellent (100%) | Proficient (75%) | Basic (50%) | \tNeeds Improvement (25%)
-              \nContent & Development | 30% | Demonstrates deep understanding; insightful, original ideas; strong supporting evidence | text | text | text
-              \nOrganization | 20% | text | text | text | text 
-              \nGrammar and Mechanics | 20% | text | text | text | text 
-              \nCritical Thinking | 20% | text | text | text | text 
-              \nClarity & Coherence | 10% | | text | text | text | text
-
-             \nMake sure the rubric appears as a separate section at the end and starts with the word 'Rubric:'.";
+                    $basePrompt .= "short answer questions. Format like:\n1. What is the chemical symbol for water? \n2. In what year did World War II begin?";
                     break;
                 case 'Critically Thought-out Opinions':
-                    $basePrompt .= "critical thinking questions. Provide a scoring rubric with the following:
-            - 5 criteria such as content and development, organization, grammar & mechanics, critical thinking, and clarity & coherence.
-            - Each criterion should have a description and percentage weight.
-              Format like:\n1. What problem or issue is being addressed?
-              \n2. What evidence or data supports this claim or argument?
-              \nCriteria | Weight |\tExcellent (100%) | Proficient (75%) | Basic (50%) | \tNeeds Improvement (25%)
-              \nContent & Development | 30% | Demonstrates deep understanding; insightful, original ideas; strong supporting evidence | text | text | text
-              \nOrganization | 20% | text | text | text | text 
-              \nGrammar and Mechanics | 20% | text | text | text | text 
-              \nCritical Thinking | 20% | text | text | text | text 
-              \nClarity & Coherence | 10% | | text | text | text | text
-              
-              \nMake sure the rubric appears as a separate section at the end and starts with the word 'Rubric:'.";
+                    $basePrompt .= "critical thinking questions. Format like:\n1. What problem or issue is being addressed?\n2. What evidence or data supports this claim or argument?";
+                    break;
                 default:
                     $basePrompt .= "{$questionType} questions. Format like:\n1. Question.\nAnswer: Answer.";
             }
@@ -223,42 +187,6 @@ class GenerateAssessmentJob implements ShouldQueue
                 continue;
             }
 
-            Log::info('🧠 Checking if rubric exists in raw content', [
-                'has_rubric_word' => str_contains($responseContent, 'Rubric') ? 'yes' : 'no',
-                'rubric_pos' => strpos($responseContent, 'Rubric')
-            ]);
-            // 🔥 ADD RUBRIC EXTRACTION HERE - BEFORE parsing questions
-            if ($rubricCaptured === null && in_array($questionType, ['Essay','Short Answer Questions','Critically Thought-out Opinions'])) {
-                Log::info("🔍 Looking for rubric in batch {$i} for {$questionType}");
-                Log::info('🧠 Checking if rubric exists in raw content', [
-                    'has_rubric_word' => str_contains($responseContent, 'Rubric') ? 'yes' : 'no',
-                    'rubric_pos' => strpos($responseContent, 'Rubric')
-                ]);
-
-                Log::info("📝 Response content preview:", ['preview' => substr($responseContent, 0, 500)]);
-
-                // Capture rubric that starts with "Rubric:" or "Criteria" or table headers
-                if (preg_match('/(Rubric:.*)$/is', $responseContent, $m)) {
-                    $rubricCaptured = trim($m[1]);
-                    $responseContent = preg_replace('/(Rubric:.*)$/is', '', $responseContent);
-                    Log::info("✅ Rubric captured using 'Rubric:' pattern", ['rubric_length' => strlen($rubricCaptured)]);
-                } elseif (preg_match('/(Criteria\s*\|\s*Weight\s*\|.*)$/is', $responseContent, $m2)) {
-                    $rubricCaptured = trim($m2[1]);
-                    $responseContent = preg_replace('/(Criteria\s*\|\s*Weight\s*\|.*)$/is', '', $responseContent);
-                    Log::info("✅ Rubric captured using 'Criteria' pattern", ['rubric_length' => strlen($rubricCaptured)]);
-                } elseif (preg_match('/(Content\s*&\s*Development.*?Needs Improvement.*)$/is', $responseContent, $m3)) {
-                    $rubricCaptured = trim($m3[1]);
-                    $responseContent = preg_replace('/(Content\s*&\s*Development.*?Needs Improvement.*)$/is', '', $responseContent);
-                    Log::info("✅ Rubric captured using table headers pattern", ['rubric_length' => strlen($rubricCaptured)]);
-                } else {
-                    Log::warning("❌ No rubric pattern found in response");
-                }
-
-                if ($rubricCaptured) {
-                    Log::info("📋 Rubric preview:", ['rubric_preview' => substr($rubricCaptured, 0, 200) . '...']);
-                }
-            }
-
             // Parse questions from response
             $questions = $this->parseQuestionsFromResponse($responseContent, $questionType);
             Log::info("📝 Parsed questions from batch {$i}", [
@@ -306,35 +234,6 @@ class GenerateAssessmentJob implements ShouldQueue
             if ($i < $chunks - 1) {
                 sleep(1);
             }
-        }
-
-       // 🔥 ADD RUBRIC SAVING HERE
-        if ($rubricCaptured) {
-            try {
-                Log::info("💾 Saving rubric to assessment", [
-                    'assessment_id' => $assessment->id,
-                    'rubric_length' => strlen($rubricCaptured),
-                    'question_type' => $questionType
-                ]);
-                
-                $assessment->update(['rubric' => $rubricCaptured]);
-                
-                // Verify the save worked
-                $assessment->refresh();
-                Log::info("✅ Rubric saved successfully", [
-                    'rubric_in_db' => !empty($assessment->rubric),
-                    'db_rubric_length' => strlen($assessment->rubric ?? '')
-                ]);
-            } catch (\Throwable $e) {
-                Log::warning("❌ Failed to save rubric for assessment {$assessment->id}: " . $e->getMessage());
-            }
-        } else if (in_array($questionType, ['Essay','Short Answer Questions','Critically Thought-out Opinions'])) {
-            Log::warning("❌ No rubric captured for subjective assessment type: {$questionType}");
-            Log::info("🔍 Rubric capture status:", [
-                'rubric_captured' => $rubricCaptured,
-                'question_type' => $questionType,
-                'is_subjective' => in_array($questionType, ['Essay','Short Answer Questions','Critically Thought-out Opinions'])
-            ]);
         }
 
         // Update status based on actual results
