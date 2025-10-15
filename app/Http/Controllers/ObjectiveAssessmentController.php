@@ -213,52 +213,80 @@ class ObjectiveAssessmentController extends Controller
     {
         try {
             $zip = new \ZipArchive();
-            if ($zip->open($file->getPathname()) === TRUE) {
-                // Debug: Log if the file is successfully opened
-                Log::info("PPTX file opened successfully.");
-    
-                $text = "";
-                $slideIndex = 1;
-    
-                // Loop through the slides (ppt/slides/slide1.xml, ppt/slides/slide2.xml, ...)
-                while ($zip->locateName('ppt/slides/slide' . $slideIndex . '.xml') !== false) {
-                    $slideContent = $zip->getFromName('ppt/slides/slide' . $slideIndex . '.xml');
-    
-                    // Parse the XML content
-                    $xml = simplexml_load_string($slideContent);
-                    if ($xml === false) {
-                        Log::error("Failed to parse XML for slide: " . $slideIndex);
-                        continue;
-                    }
-    
-                    // Extract the text from the XML
-                    foreach ($xml->xpath('//a:t') as $textElement) {
-                        $text .= (string)$textElement . " ";  // Append extracted text
-                    }
-    
-                    Log::info("Processed slide " . $slideIndex); // Log which slide is being processed
-                    $slideIndex++;
-                }
-    
-                // If no text is extracted, fall back to OCR
-                if (empty(trim($text))) {
-                    Log::warning("No text extracted from PPTX. Attempting OCR...");
-                    $text = $this->extractTextFromImage($file);
-                }
-    
-                $zip->close();  // Close the ZIP archive
-                return trim($text);
-            } else {
-                Log::error("Failed to open PPTX file as a ZIP.");
+            $result = $zip->open($file->getPathname());
+            
+            if ($result !== TRUE) {
+                Log::error("Failed to open PPTX file", ['error_code' => $result]);
                 return null;
             }
+
+            Log::info("PPTX file opened successfully");
+
+            $text = "";
+            $slideIndex = 1;
+
+            // Register namespaces for XML parsing
+            $namespaces = [
+                'a' => 'http://schemas.openxmlformats.org/drawingml/2006/main',
+                'r' => 'http://schemas.openxmlformats.org/officeDocument/2006/relationships'
+            ];
+
+            while ($zip->locateName('ppt/slides/slide' . $slideIndex . '.xml') !== false) {
+                $slideContent = $zip->getFromName('ppt/slides/slide' . $slideIndex . '.xml');
+                
+                if ($slideContent === false) {
+                    Log::warning("Could not read slide {$slideIndex}");
+                    $slideIndex++;
+                    continue;
+                }
+
+                // Load XML with error handling
+                libxml_use_internal_errors(true);
+                $xml = simplexml_load_string($slideContent);
+                
+                if ($xml === false) {
+                    $errors = libxml_get_errors();
+                    Log::warning("XML parsing failed for slide {$slideIndex}", ['errors' => $errors]);
+                    libxml_clear_errors();
+                    $slideIndex++;
+                    continue;
+                }
+
+                // Register namespaces
+                foreach ($namespaces as $prefix => $namespace) {
+                    $xml->registerXPathNamespace($prefix, $namespace);
+                }
+
+                // Extract text from all text elements
+                $textElements = $xml->xpath('//a:t');
+                foreach ($textElements as $textElement) {
+                    $text .= (string)$textElement . " ";
+                }
+
+                Log::info("Processed slide {$slideIndex}, found " . count($textElements) . " text elements");
+                $slideIndex++;
+            }
+
+            $zip->close();
+
+            $text = trim($text);
+            
+            if (empty($text)) {
+                Log::warning("No text extracted from PPTX slides");
+                return null;
+            }
+
+            return $text;
+
         } catch (\Exception $e) {
-            Log::error("PPT extraction error: " . $e->getMessage());
+            Log::error("PPT extraction error", [
+                'error' => $e->getMessage(),
+                'file' => $file->getClientOriginalName()
+            ]);
             return null;
         }
     }
     
-
 
     private function extractTextFromImage($file)
     {
