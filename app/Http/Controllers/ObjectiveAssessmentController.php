@@ -34,6 +34,18 @@ class ObjectiveAssessmentController extends Controller
                 'bloom_taxonomy' => 'required|json',
             ]);
 
+            // Auto-generate title based on quarter, subject, and count
+            $quarter = $request->input('quarter');
+            $subject = $request->input('subject');
+
+            $count = Assessment::where('teacher_id', Auth::id())
+                ->where('subject', $subject)
+                ->where('quarter', $quarter)
+                ->count();
+
+            $nextNumber = $count + 1;
+            $autoTitle = "{$quarter}: Assessment {$nextNumber} in {$subject}";
+
             $bloomTaxonomy = json_decode($request->input('bloom_taxonomy'), true);
             $file = $request->file('learning_material');
             $text = $this->extractTextFromFile($file);
@@ -70,7 +82,8 @@ class ObjectiveAssessmentController extends Controller
 
             $assessment = Assessment::create([
                 'teacher_id' => Auth::id(),
-                'title' => $payload['title'] ?? 'Untitled Assessment',
+                'quarter' => $quarter,
+                'title' => $autoTitle,
                 'subject' => $payload['subject'] ?? null,
                 'instructions' => $payload['instruction'] ?? null,
                 'question_type' => $payload['question_type'],

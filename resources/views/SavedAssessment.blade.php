@@ -19,12 +19,33 @@
             </div>
             <h3>My Assessments</h3>
                 <div class="search-bar">
+                    <select name="filter-quarter" id="filterQuarter">
+                        <option value="" disabled selected>Filter by Quarter</option>s
+                        <option value="First Quarter">First Quarter</option>
+                        <option value="Second Quarter">Second Quarter</option>
+                        <option value="Third Quarter">Third Quarter</option>
+                        <option value="Fourth Quarter">Fourth Quarter</option>
+                    </select>
+                    <select name="subject" id="filterSubject" required>
+                        <option value="" disabled selected>Filter by Subject</option>
+                        <option value="Filipino">Filipino</option>
+                        <option value="Science">Science</option>
+                        <option value="English">English</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Araling Panlipunan">Araling Panlipunan</option>
+                        <option value="Edukasyon sa Pagpapakatao">Edukasyon sa Pagpapakatao</option>
+                        <option value="Physical Education">Physical Education</option>
+                        <option value="Health">Health</option>
+                        <option value="Music">Music</option>
+                        <option value="Technology and Livelihood Education">Technology and Livelihood Education</option>
+                    </select>
                     <input class="search-input" type="text" id="searchInputAssessment" placeholder="Search assessments...">
                 </div>
                 <table class="styled-table">
                     <thead>
                         <tr>
                             <th>Title</th>
+                            <th>Quarter</th>
                             <th>Question Type</th>
                             <th>Subject</th>
                             <th>No. of Questions</th>
@@ -36,6 +57,7 @@
                     @foreach ($savedAssessments as $assessment)
                         <tr>
                             <td>{{ $assessment->title ?? '-' }}</td>
+                            <td>{{ $assessment->quarter }}</td>
                             <td>{{ $assessment->question_type }}</td>
                             <td>{{ $assessment->subject }}</td>
                             <td>{{ $assessment->questions->count() }}</td>
@@ -60,6 +82,24 @@
 </div>
 <script>
     $(document).on('input', '#searchInputAssessment', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
+        });
+    });
+</script>
+<script>
+    $(document).on('input', '#filterQuarter', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
+        });
+    });
+</script>
+<script>
+    $(document).on('input', '#filterSubject', function () {
         let searchText = $(this).val().toLowerCase();
         $('table.styled-table tbody tr').each(function () {
             let rowText = $(this).text().toLowerCase();

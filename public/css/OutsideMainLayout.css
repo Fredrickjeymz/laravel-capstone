@@ -462,9 +462,9 @@ input:focus, select:focus {
 .form-card {
   margin: 0 auto;
   background: #fff;
-  padding: 20px 25px;
+  padding: 25px 30px;
   padding-top: 5px;
-  margin-top: 50px;
+  margin-top: 70px;
   border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
@@ -482,27 +482,27 @@ input:focus, select:focus {
 
 /* Titles */
 .form-title {
-  font-size: 27px;
+  font-size: 28px;
   font-weight: 1000;
   color: #166534;
   margin-bottom: 0px;
 }
 
 .form-subtitle {
-  font-size: 14.5px;
+  font-size: 15px;
   color: #6b7280;
-  margin-bottom: 15px;
+  margin-bottom: 17px;
 }
 
 /* Inputs & Selects */
 .form-group {
   text-align: left;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
-  font-weight: 600;
+  font-weight: 700;
   color: #374151;
   margin-bottom: 5px;
   font-size: 13px;
@@ -512,7 +512,7 @@ input:focus, select:focus {
 .form-group input,
 .form-group select {
   width: 100%;
-  padding: 13px 13px;
+  padding: 15px 15px;
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
   font-size: 15px;
@@ -527,15 +527,17 @@ input:focus, select:focus {
 
     .helper-text {
         display: block;
+        margin-left: 5px;
         margin-top: 6px;
         font-size: 12px;
         color: #6b7280;
     }
 
-    .submit-btn {
+    .submit-btn-login {
         width: 100%;
         background: #218838;
         color: #fff;
+        margin-top: 10px;
         font-size: 15px;
         font-weight: 600;
         padding: 12px;
@@ -551,6 +553,9 @@ input:focus, select:focus {
 /* Forgot Password */
 .forgot-password-link {
   margin-top: 10px;
+  text-align: left;
+  margin-left: 5px;
+  margin-bottom: 10px;
 }
 
 .forgot-password-link a {

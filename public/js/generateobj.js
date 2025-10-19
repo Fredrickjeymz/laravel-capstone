@@ -138,8 +138,22 @@ $(document).ready(function () {
             return;
         }
 
-        formData.append("title", document.querySelector("input[name='title']").value);
-        formData.append("subject", document.querySelector("input[name='subject']").value);
+        const quarter = document.querySelector("select[name='quarter']").value;
+        const subject = document.querySelector("select[name='subject']").value;
+
+        if (!quarter || !subject) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid!',
+                text: 'Please select both Quarter and Subject.',
+                timer: 2000,
+                showConfirmButton: false
+            });
+            return;
+        }
+
+        formData.append("quarter", quarter);
+        formData.append("subject", subject);
         formData.append("instruction", document.querySelector("input[name='instruction']").value);
         formData.append("learning_material", file);
         formData.append("question_type", questionType);

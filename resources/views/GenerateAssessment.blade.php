@@ -28,12 +28,30 @@
                 </div>
                     <div class="ti-in">
                         <div class="ti">
-                            <label for="title">Assessment Title</label>
-                            <input type="text" name="title" placeholder=" e.g., Chapter 5 Quiz: Cell Structure ">
+                            <label for="quarter">Select Quarter</label>
+                            <select name="quarter" id="quarter" required>
+                                <option value="" disabled selected>Select Quarter</option>
+                                <option value="First Quarter">First Quarter</option>
+                                <option value="Second Quarter">Second Quarter</option>
+                                <option value="Third Quarter">Third Quarter</option>
+                                <option value="Fourth Quarter">Fourth Quarter</option>
+                            </select>
                         </div>
                         <div class="sub">
-                            <label for="instruction">Subject</label>
-                            <input type="text" name="subject" placeholder=" e.g., Science and Society">
+                            <label>Subject</label>
+                            <select name="subject" id="subject" required>
+                                <option value="" disabled selected>Select Subject</option>
+                                <option value="Filipino">Filipino</option>
+                                <option value="Science">Science</option>
+                                <option value="English">English</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Araling Panlipunan">Araling Panlipunan</option>
+                                <option value="Edukasyon sa Pagpapakatao">Edukasyon sa Pagpapakatao</option>
+                                <option value="Physical Education">Physical Education</option>
+                                <option value="Health">Health</option>
+                                <option value="Music">Music</option>
+                                <option value="Technology and Livelihood Education">Technology and Livelihood Education</option>
+                            </select>
                         </div>
                         <div class="in">
                             <label for="instruction">Assessment Instructions</label>

@@ -7,37 +7,27 @@
             <p class="form-subtitle">Sign in to Sepnas Assessment Generator</p>
 
             <form id="login-form">
-            @csrf
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" required>
-            </div>
+                @csrf
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
 
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                <small class="helper-text">Must be at least 8 characters, including numbers.</small>
-            </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                    <small class="helper-text">Must be at least 8 characters, including numbers.</small>
+                </div>
 
-            <div class="form-group">
-                <label for="role">Login As</label>
-                <select name="role" id="role" required>
-                <option value="" disabled selected>Select your role</option>
-                <option value="teacher">📚 Educator</option>
-                <option value="student">📖 Student</option>
-                <option value="admin">⚙️ Admin</option>
-                </select>
-                <small class="helper-text">Choose your role.</small>
-            </div>
+                <div class="forgot-password-link">
+                    <a href="#" id="openForgotPasswordModal">Forgot Password?</a>
+                </div>
 
-            <button class="submit-btn" type="submit">Login</button>
+                <button class="submit-btn-login" type="submit">Login</button>
 
-            <div id="error-message" style="color: red; display: none; margin-top: 10px;"></div>
-
-            <div class="forgot-password-link">
-                <a href="#" id="openForgotPasswordModal">Forgot Password?</a>
-            </div>
+                <div id="error-message" style="color: red; display: none; margin-top: 10px;"></div>
             </form>
+
         </div>
         <div id="forgotPasswordModal" class="custom-modal" style="display: none;">
             <div class="custom-modal-content">
@@ -58,24 +48,22 @@
 <script>
     $(document).ready(function () {
         $("#login-form").submit(function (e) {
-            e.preventDefault(); // Prevent normal form submission
+            e.preventDefault();
 
             let formData = {
                 _token: $("input[name='_token']").val(),
                 username: $("#username").val(),
                 password: $("#password").val(),
-                remember: $("#remember").is(":checked") ? 1 : 0,
-                role: $("#role").val() // ✅ Add this to send the selected role
             };
 
             $.ajax({
-                url: "{{ route('login') }}", 
+                url: "{{ route('login') }}",
                 type: "POST",
                 data: formData,
                 dataType: "json",
                 success: function (response) {
                     if (response.success) {
-                        window.location.href = response.redirect; // Redirect on success
+                        window.location.href = response.redirect;
                     } else {
                         $("#error-message").text(response.message).show();
                     }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Assessment extends Model
 {
-    protected $fillable = ['teacher_id', 'title', 'subject', 'instructions', 'question_type','rubric','status'];
+    protected $fillable = ['teacher_id', 'quarter', 'title', 'subject', 'instructions', 'question_type','rubric','status'];
 
     public function questions()
     {
