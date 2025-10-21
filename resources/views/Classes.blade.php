@@ -14,7 +14,9 @@
         <h3>Classes</h3>
         <button class="btn-add btn-add-class"><i class="fas fa-plus"></i> New Class</button>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputClass" placeholder="Search classes...">
+            <div class="search-wrapper">
+                <input class="search-input" type="text" id="searchInputAssessment" placeholder=" Search Classes...">
+            </div>
         </div>
         <table class="styled-table">
             <thead>

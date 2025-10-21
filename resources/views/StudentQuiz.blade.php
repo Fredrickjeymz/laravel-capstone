@@ -49,7 +49,7 @@
                     <h3><i class="fas fa-file-alt"></i> {{ $assessment->title }} - {{ $assessment->pivot->created_at->format('M d, Y') }}</h3>
                 </div>
                 <div class="stats">
-                    <p class="meta"><i class="fas fa-clock"></i> Time Limit: {{ $assessment->pivot->time_limit }} mins - {{ $alreadyTaken ? '1/1' : '0/1' }} Attempts</p>
+                    <p class="meta"><i class="fas fa-clock"></i> Time Limit: {{ $assessment->pivot->time_limit }} mins</p>
                     <p class="meta"><i class="fas fa-toggle-on"></i> {{ $assessment->question_type }} - {{ $assessment->questions_count }} Questions</p>
                     <p><i class="fas fa-calendar-xmark"></i> Due: 
                         {{ $dueDate ? $dueDate->format('M d, Y h:i A') : 'N/A' }}

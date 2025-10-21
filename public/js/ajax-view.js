@@ -53,10 +53,6 @@ $(document).on('click', '.btn-scores-view', function (e) {
             $("#content-area").html("<p style='color:red;'>⚠️ Error loading preview.</p>");
         }
     });
-
-    // Highlight the sidebar tab
-    $('.nav-link').removeClass('active');
-    $('#btn-saved').addClass('active');
 });
 
 $(document).on('click', '.view-btn-res', function (e) {
@@ -84,9 +80,6 @@ $(document).on('click', '.view-btn-res', function (e) {
         }
     });
 
-    // Highlight the sidebar tab
-    $('.nav-link').removeClass('active');
-    $('#btn-saved').addClass('active');
 });
 
 

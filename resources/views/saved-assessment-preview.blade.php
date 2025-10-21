@@ -156,8 +156,8 @@
         </div>
             <div class="generated-actions">
                 <div class="actions-txt">
-                    <h3>Saved Assessment Actions</h3>
-                    <p>Manage you saved assessment.</p>
+                    <h3>Assessment Actions</h3>
+                    <p>Manage your assessment.</p>
                     <h4>Download Format</h4>
                 </div>
                 <div class="download-btns">

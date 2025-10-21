@@ -7,6 +7,7 @@
         <p>Manage and review your assessments.</p>
     </div>
         <div class="table-container">
+            <!--
             <div class="assessment-type-card">
                 <h3>Assigned Assessments</h3>
                 <p>Assigned assessments are quizzespublished and officially linked to specific classes.</p>
@@ -16,31 +17,41 @@
                         View Assigned Assessments
                     </button>
                 </div>
+            </div> -->
+            <div class="information-card">
+                <h3>Information</h3>
+                <p>Holds data about all generated assessments, including titles, instructions, question types, creation dates, and their linkage to specific classes and students.</p>
             </div>
             <h3>My Assessments</h3>
-                <div class="search-bar">
-                    <select name="filter-quarter" id="filterQuarter">
-                        <option value="" disabled selected>Filter by Quarter</option>s
-                        <option value="First Quarter">First Quarter</option>
-                        <option value="Second Quarter">Second Quarter</option>
-                        <option value="Third Quarter">Third Quarter</option>
-                        <option value="Fourth Quarter">Fourth Quarter</option>
-                    </select>
-                    <select name="subject" id="filterSubject" required>
-                        <option value="" disabled selected>Filter by Subject</option>
-                        <option value="Filipino">Filipino</option>
-                        <option value="Science">Science</option>
-                        <option value="English">English</option>
-                        <option value="Mathematics">Mathematics</option>
-                        <option value="Araling Panlipunan">Araling Panlipunan</option>
-                        <option value="Edukasyon sa Pagpapakatao">Edukasyon sa Pagpapakatao</option>
-                        <option value="Physical Education">Physical Education</option>
-                        <option value="Health">Health</option>
-                        <option value="Music">Music</option>
-                        <option value="Technology and Livelihood Education">Technology and Livelihood Education</option>
-                    </select>
-                    <input class="search-input" type="text" id="searchInputAssessment" placeholder="Search assessments...">
+            <div class="search-bar">
+                <select name="filter-quarter" id="filterQuarter" class="search-select">
+                    <option value="" disabled selected>Filter by Quarter</option>
+                    <option value="First Quarter">First Quarter</option>
+                    <option value="Second Quarter">Second Quarter</option>
+                    <option value="Third Quarter">Third Quarter</option>
+                    <option value="Fourth Quarter">Fourth Quarter</option>
+                </select>
+
+                <select name="subject" id="filterSubject" class="search-select" required>
+                    <option value="" disabled selected>Filter by Subject</option>
+                    <option value="Filipino">Filipino</option>
+                    <option value="Science">Science</option>
+                    <option value="English">English</option>
+                    <option value="Mathematics">Mathematics</option>
+                    <option value="Araling Panlipunan">Araling Panlipunan</option>
+                    <option value="Edukasyon sa Pagpapakatao">Edukasyon sa Pagpapakatao</option>
+                    <option value="Physical Education">Physical Education</option>
+                    <option value="Health">Health</option>
+                    <option value="Music">Music</option>
+                    <option value="Technology and Livelihood Education">
+                        Technology and Livelihood Education
+                    </option>
+                </select>
+
+                <div class="search-wrapper">
+                    <input class="search-input" type="text" id="searchInputAssessment" placeholder=" Search assessments...">
                 </div>
+            </div>
                 <table class="styled-table">
                     <thead>
                         <tr>
@@ -74,10 +85,6 @@
                 @endforeach
             </tbody>
         </table>
-        <div class="information-card">
-            <h3>Information</h3>
-            <p>Holds data about all generated assessments, including titles, instructions, question types, creation dates, and their linkage to specific classes and students.</p>
-        </div>
     </div>
 </div>
 <script>

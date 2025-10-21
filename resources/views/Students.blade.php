@@ -14,7 +14,9 @@
         <h3>Students</h3>
         <button class="btn-add btn-add-stud-class"><i class="fas fa-plus"></i> New Student to a Class</button>
         <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputStudent" placeholder="Search students...">
+            <div class="search-wrapper">
+                <input class="search-input" type="text" id="searchInputAssessment" placeholder=" Search Students...">
+            </div>
         </div>
         <table class="styled-table">
             <thead>

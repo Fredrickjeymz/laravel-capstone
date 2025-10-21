@@ -50,6 +50,9 @@
                         <button id="btn-saved" data-url="{{ route('my-saved-assessments') }}">
                             <i class="fas fa-bookmark"></i> Assessments
                         </button>
+                        <button id="btn-uploaded" data-url="{{ route('assigned-ass') }}">
+                            <i class="fas fa-clipboard-list"></i> Uploaded Assessments
+                        </button>
                         <button id="btn-class" data-url="{{ route('classes') }}">
                             <i class="fas fa-school"></i> Classes
                         </button>

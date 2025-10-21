@@ -17,7 +17,7 @@
             </div>
             <div class="stat-card">
                 <div class="con-ti">
-                    <h4>Assigned Assessments </h4>
+                    <h4>Uploaded Assessments </h4>
                     <h4><i class="fas fa-clipboard-list"></i></h4>
                 </div>
                 <h1>{{ $savedAssessmentsCount }}</h1>

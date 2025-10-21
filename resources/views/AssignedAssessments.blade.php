@@ -3,11 +3,12 @@
 @section('content-area')
 <div id="admin-content-area">
     <br>
+    <!--
     <button id="btn-return" class="btn-return" data-url="{{ route('my-saved-assessments') }}">
         Return
-    </button>
+    </button>-->
     <div class="top">
-        <h2>Assigned Assessments</h2>
+        <h2>Uploaded Assessments</h2>
         <p>Manage Assigned Assessments</p>
     </div>
     <div class="table-container">
@@ -15,10 +16,20 @@
             <h3>Information</h3>
             <p>Represents the assessments that have been officially assigned by educators to specific classes or students. This includes assignment metadata such as due dates, time limits, and tracking of student attempts and completion status.</p>
         </div>
-        <h3>Assigned Assessments</h3>
-        <div class="search-bar">
-            <input class="search-input" type="text" id="searchInputAssessment" placeholder="Search Assigned/Uploaded assessments...">
-        </div>
+        <h3>Uploaded Assessments</h3>
+            <div class="search-bar">
+                <select name="filter-quarter" id="filterQuarter" class="search-select">
+                    <option value="" disabled selected>Filter by Quarter</option>
+                    <option value="First Quarter">First Quarter</option>
+                    <option value="Second Quarter">Second Quarter</option>
+                    <option value="Third Quarter">Third Quarter</option>
+                    <option value="Fourth Quarter">Fourth Quarter</option>
+                </select>
+
+                <div class="search-wrapper">
+                    <input class="search-input" type="text" id="searchInputAssessment" placeholder=" Search assessments...">
+                </div>
+            </div>
         <table class="styled-table">
             <thead>
                 <tr>
@@ -95,8 +106,17 @@
             </div>
         </div>
     </div>
-    <script>
+<script>
     $(document).on('input', '#searchInputAssessment', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
+        });
+    });
+</script>
+<script>
+    $(document).on('input', '#filterQuarter', function () {
         let searchText = $(this).val().toLowerCase();
         $('table.styled-table tbody tr').each(function () {
             let rowText = $(this).text().toLowerCase();

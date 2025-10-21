@@ -23,7 +23,9 @@
                 </button>
                 
                 <div class="search-bar">
-                    <input class="search-input" type="text" id="searchClassStudents" placeholder="Search students...">
+                    <div class="search-wrapper">
+                        <input class="search-input" type="text" id="searchInputAssessment" placeholder=" Search Students...">
+                    </div>
                 </div>
             </div>
             <table class="styled-table">

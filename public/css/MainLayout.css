@@ -27,7 +27,12 @@ body, html {
     height: 98.9%;
     margin-top: 0px;
     width: 17%;
+    gap: 0px;
     background-color: #f4f9f4 ;
+}
+
+.navigation{
+    margin-top: -28px;
 }
 .navigation button {
     width: 85%;
@@ -68,6 +73,7 @@ body, html {
 }
 .profile{
     width: 100%;
+    margin-bottom: 0px;
     text-align: center;
     border-radius: 5px;
     height: 30%;
@@ -84,7 +90,6 @@ body, html {
 .myimage{
     min-height: 110;
     border-radius: 50%;
-    margin-top: 10%;
     width: 110;
     background-color: #218838;
     font-family: app;
@@ -98,6 +103,7 @@ body, html {
 }
 .profile p{
     font-weight: 500;
+    margin-bottom: 0px;
     font-size: medium;
     font-size: 1rem;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -718,42 +724,88 @@ input:disabled {
     animation: spin 1s linear infinite;
     margin: 0 auto 10px;
 }
-.search-bar{
-    gap: 10px;
+.search-bar {
     display: flex;
-}
-.search-bar select {
-    padding: 10px;
-    width: 15%;
-    border: 2px solid #85f39f;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 400;
+    gap: 12px;
+    width: 65%;
+    align-items: center;
     background: #ffffff;
-    transition: all 0.3s ease;
+    border-radius: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    flex-wrap: wrap;
+}
+
+/* --- Select & Input Shared Styles --- */
+.search-select,
+.search-input {
+    flex: 1;
+    min-width: 50px;
+    padding: 10px 14px;
+    border: 1.8px solid #c9eecf;
+    border-radius: 12px;
+    font-size: 15px;
+    background: #fdfdfd;
+    color: #333;
+    transition: all 0.25s ease;
     outline: none;
 }
 
-.search-bar input{
-    padding: 10px;
-    width: 30%;
-    border: 2px solid #85f39f;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 400;
-    background: #ffffff;
-    transition: all 0.3s ease;
+/* --- Hover & Focus Styles --- */
+.search-select:hover,
+.search-input:hover {
+    border-color: #4dd17e;
+    box-shadow: 0 3px 8px rgba(77, 209, 126, 0.15);
 }
 
-.search-bar select:focus {
-    border-color: #28a745;
-    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.15);
-    background: #f8fff9;
+.search-select:focus,
+.search-input:focus {
+    border-color: #2ebf74;
+    background: #f6fff9;
+    box-shadow: 0 4px 10px rgba(46, 191, 116, 0.15);
 }
+
+/* --- Input Placeholder --- */
 .search-input::placeholder {
-    color: #9e9e9e;
-    font-weight: 300;
+    color: #999;
+    font-weight: 400;
+    font-style: italic;
 }
+
+/* --- Wrapper for Search Icon (Optional Enhancement) --- */
+.search-wrapper {
+    position: relative;
+    flex: 1.5;
+}
+
+.search-wrapper .search-input {
+    width: 100%;
+    padding-left: 38px;
+}
+
+/* Optional icon (you can use Font Awesome or Unicode) */
+.search-wrapper::before {
+    content: "🔍";
+    position: absolute;
+    top: 50%;
+    left: 12px;
+    transform: translateY(-50%);
+    color: #7f7f7f;
+    font-size: 16px;
+}
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+    .search-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-select,
+    .search-input {
+        width: 100%;
+    }
+}
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }

@@ -462,9 +462,9 @@ input:focus, select:focus {
 .form-card {
   margin: 0 auto;
   background: #fff;
-  padding: 25px 30px;
+  padding: 25px 28px;
   padding-top: 5px;
-  margin-top: 70px;
+  margin-top: 90px;
   border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   width: 100%;
