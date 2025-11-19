@@ -110,6 +110,7 @@ Route::middleware(['teacher'])->group(function () {
     Route::post('/students/classes', [ClassAssignmentController::class, 'store'])->name('assign.student.to.class');
     Route::post('/assessment/upload', [AssessmentUploadController::class, 'store'])->name('assessment.upload');
     Route::get('/assigned-ass', [AssignedAssController::class, 'AssignedAss'])->name('assigned-ass');
+    Route::get('/item-analysis/{assessment_id}/{class_id}', [AssignedAssController::class, 'itemAnalysis'])->name('item.analysis');
     Route::post('/assigned-assessments/{id}/update-time', [AssessmentController::class, 'updateTime']);
     Route::delete('/assigned-assessments/{id}/delete-time', [AssessmentController::class, 'destroyTime'])->name('assigned-assessments.deleteTime');
     Route::get('/classes/{id}/students', [AssignedAssController::class, 'viewStudents'])->name('classes.viewStudents');

@@ -27,6 +27,7 @@ body, html {
     height: 98.9%;
     margin-top: 0px;
     width: 17%;
+    margin-top: 6px;
     gap: 0px;
     background-color: #f4f9f4 ;
 }
@@ -84,7 +85,7 @@ body, html {
     padding-bottom: auto;
     padding-top: auto;
     font-size: 1.5rem;
-    margin-left: 20px;
+    margin-left: 5px;
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 .myimage{
@@ -164,6 +165,17 @@ body, html {
     font-size: 14px; /* Larger font for better readability */
     color: #333; /* Darker text for improved contrast */
     transition: border-color 0.3s, box-shadow 0.3s;
+        outline: none;
+    
+    /* REMOVE default arrow */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23008041' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 6 8 10 12 6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center; /* move arrow inward */
+    background-size: 16px;
 }
 .dropdown-input {
     margin-top: 5px;
@@ -176,6 +188,17 @@ body, html {
     font-size: 14px; /* Larger font for better readability */
     color: #333; /* Darker text for improved contrast */
     transition: border-color 0.3s, box-shadow 0.3s;
+        outline: none;
+    
+    /* REMOVE default arrow */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23008041' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 6 8 10 12 6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center; /* move arrow inward */
+    background-size: 16px;
 }
 .file-input {
     width:1130px;
@@ -750,6 +773,35 @@ input:disabled {
     outline: none;
 }
 
+.search-select {
+    flex: 1;
+    min-width: 50px;
+    padding: 10px 40px 10px 14px; /* extra right padding so arrow isn't at the edge */
+    border: 1.8px solid #c9eecf;
+    border-radius: 12px;
+    font-size: 15px;
+    background: #fdfdfd;
+    color: #333;
+    transition: all 0.25s ease;
+    outline: none;
+    
+    /* REMOVE default arrow */
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23008041' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 6 8 10 12 6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center; /* move arrow inward */
+    background-size: 16px;
+}
+
+/* When focused */
+.search-select:focus {
+    border-color: #9adfa5;
+    box-shadow: 0px 0px 3px rgba(0, 128, 66, 0.25);
+}
+
 /* --- Hover & Focus Styles --- */
 .search-select:hover,
 .search-input:hover {
@@ -779,12 +831,11 @@ input:disabled {
 
 .search-wrapper .search-input {
     width: 100%;
-    padding-left: 38px;
+    padding-left: 15px;
 }
 
 /* Optional icon (you can use Font Awesome or Unicode) */
 .search-wrapper::before {
-    content: "🔍";
     position: absolute;
     top: 50%;
     left: 12px;
@@ -814,14 +865,14 @@ input:disabled {
 .table-container {
     width: 93%;
     margin-left: 1.5%;
-    margin-top: 25px;
+    margin-top: 20px;
     border: 1px solid #dee2e6;
     background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
     padding: 20px;
     overflow-y: scroll;
-    height: 73%;
+    height: 74%;
 }
 .table-container h3{
     margin-bottom: 20px;
@@ -2104,4 +2155,146 @@ input:disabled {
     opacity: 1;
     transform: translateY(0);
   }
+}
+.btn-item-analysis{
+    font-size: 13px;
+}
+.analysis-main-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.sepnas-logo{
+    width: 160px;
+    margin-right: 200px;
+    height: 160px;
+    object-fit: cover;
+}
+.division-logo{
+    margin-top: -13px;
+    width: 152px;
+    margin-left: 200px;
+    height: 150px;
+    object-fit: cover;
+}
+.analysis-header {
+    margin-top: -10px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.analysis-header p{
+    margin: 5px 0;
+}
+
+.excel-table {
+    width: 100%;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: #ffffff;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    border-radius: 4px;
+    border: 1px solid #b7d6b8; /* softer green border */
+    border-collapse: collapse; /* excel-like grid */
+}
+
+/* Header styling */
+.excel-table thead {
+    background-color: #ccf8cc;
+    color: #4d4d4d;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.excel-table th,
+.excel-table td {
+    padding: 6px 8px;
+    border: 1px solid #cfe9d1; /* grid line */
+    text-align: left; /* excel style default */
+    vertical-align: middle;
+}
+
+/* Header font style */
+.excel-table th {
+    font-size: 0.83rem;
+    font-weight: 600;
+    color: #3e513f;
+}
+
+/* Alternating row color */
+.excel-table tbody tr:nth-child(even) {
+    background-color: #edf8ee;
+}
+
+/* Hover effect */
+.excel-table tbody tr:hover {
+    background-color: #eaf2ff;
+    cursor: pointer;
+    outline: 1px solid #88aaff;
+    transition: background-color 0.2s ease, outline 0.2s ease;
+}
+
+/* Left aligned utility class */
+.excel-table tbody td.left {
+    text-align: left !important;
+}
+
+/* Give cells slight Excel look */
+.excel-table td {
+    white-space: nowrap; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* No data row */
+.no-data {
+    background: #fff3cd;
+    color: #856404;
+    font-weight: 600;
+}
+#q-td{
+    max-width: 270px;
+}
+.excel-table-container {
+    width: 93%;
+    margin-left: 1.5%;
+    margin-top: 20px;
+    border: 1px solid #dee2e6;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+    padding: 20px;
+    overflow-y: scroll;
+    height: 68%;
+}
+.p-by{
+    font-size: 14px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+.overall-feedback-box {
+    background: #e9f7ef;
+    border-left: 6px solid #27ae60;
+    padding: 15px 20px;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    margin-top: 25px;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+.overall-feedback-box h3 {
+    margin: 0 0 10px;
+    font-weight: bold;
+    color: #1e824c;
+}
+.school-logo {
+    width: 65px;
+    height: 65px;
+    margin-top: auto;
+    margin-bottom: auto;
+    object-fit: cover;
+    margin-left: 30px;
 }

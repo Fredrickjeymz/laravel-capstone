@@ -31,7 +31,8 @@
     
     <div class="w-container">
         <div class="header">
-            <h1 id="btn-return-home" data-url="{{ route('start') }}"><i i class="fa-solid fa-university"></i> SEPNAS <span class="small-text">Formative Assessment Generator</span></h1>
+            <img src="{{ asset('image/sepnas_logo.png') }}" class="school-logo" alt="school logo">
+            <h1 id="btn-return-home" data-url="{{ route('start') }}"> SEPNAS <span class="small-text">Formative Assessment Generator</span></h1>
         </div>
         <div class="main-container" id="main-area">
         @section('main-area')

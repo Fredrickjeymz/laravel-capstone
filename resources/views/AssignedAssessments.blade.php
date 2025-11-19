@@ -1,8 +1,7 @@
 @extends('MainLayout')
 
 @section('content-area')
-<div id="admin-content-area">
-    <br>
+<div id="content-area">
     <!--
     <button id="btn-return" class="btn-return" data-url="{{ route('my-saved-assessments') }}">
         Return
@@ -34,10 +33,10 @@
             <thead>
                 <tr>
                     <th>Title</th>
-                    <th>Class Assigned</th>
+                    <th>Assigned</th>
                     <th>Due Date</th>
-                    <th>Time Limit</th>
-                    <th>Date Assigned</th>
+                    <th>Time</th>
+                    <!-- <th>Date</th> -->
                     <th>Status</th>
                     <th>Progress</th>
                     <th>Actions</th>
@@ -57,15 +56,29 @@
                             ->whereIn('student_id', $class->students->pluck('id'))
                             ->count();
 
-                        $status = $assignment->due_date && $assignment->due_date->isPast() ? 'Closed' : 'Ongoing';
+                        $status = $assignment->due_date && $assignment->due_date->isPast() ? 'Completed' : 'Ongoing';
+
+                        if ($answeredCount == $totalStudents && $totalStudents > 0) {
+                            $status = 'Completed';
+                        }
                     @endphp
                     <tr data-id="{{ $assignment->id }}">
                         <td>{{ $assessment->title }}</td>
                         <td>{{ $class->class_name }}</td> {{-- Assigned class --}}
                         <td class="due-cell">{{ $assignment->due_date ? $assignment->due_date->format('F d, Y') : 'N/A' }}</td>
                         <td class="time-cell">{{ $assignment->time_limit ? $assignment->time_limit . ' mins' : 'N/A' }}</td>
-                        <td>{{ $assignment->created_at->format('F d, Y') }}</td>
-                        <td>{{ $status }}</td>
+                        <!-- <td>{{ $assignment->created_at->format('F d, Y') }}</td> -->
+                        <td>                               
+                            @if($status == 'Ongoing')
+                                {{ $status }}  
+                            @elseif($status == 'Completed' || $answeredCount == $totalStudents)
+                                <p><button class="btn btn-item-analysis" 
+                                    data-assessment="{{ $assessment->id }}" 
+                                    data-class="{{ $class->id }}">
+                                    Completed - View Item Analysis
+                                </button></p>
+                               
+                            @endif</td>
                         <td>{{ $answeredCount }}/{{ $totalStudents }}</td>
                             <td>
                                 <button class="btn btn-edit-time" data-id="{{ $assignment->id }}" data-due="{{ $assignment->due_date }}" data-limit="{{ $assignment->time_limit }}">
@@ -74,9 +87,9 @@
                                 <button class="btn delete-time-btn" data-id="{{ $assignment->id }}">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
-                                <button class="btn btn-scores-view" data-id="{{ $assessment->id }}">
+                                <!-- <button class="btn btn-scores-view" data-id="{{ $assessment->id }}">
                                         View Scores
-                                </button>
+                                </button> -->
                             </td>
                         </tr>
                 @endforeach

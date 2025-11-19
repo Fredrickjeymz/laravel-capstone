@@ -155,10 +155,12 @@ class QuizViewController extends Controller
         } catch (\Exception $e) {
             Log::warning("Sync evaluation failed, falling back to async: " . $e->getMessage());
             
+            $class_id = $request->input('class_id');
             // Fallback to async processing
             StudentAssessmentScore::create([
                 'student_id' => $student->id,
                 'assessment_id' => $assessment->id,
+                'class_id' => $class_id,
                 'total_score' => 0,
                 'max_score' => 100,
                 'percentage' => 0,

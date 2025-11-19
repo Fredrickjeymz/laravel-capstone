@@ -14,6 +14,7 @@
     
     <div class="w-container">
         <div class="header">
+            <img src="{{ asset('image/sepnas_logo.png') }}" class="school-logo" alt="school logo">
             <h2>SEPNAS Formative Assessment Generator</h2>
         </div>
         <div class="sub-container">

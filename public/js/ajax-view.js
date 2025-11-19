@@ -28,6 +28,33 @@ $(document).on('click', '.view-btn', function (e) {
     $('#btn-saved').addClass('active');
 });
 
+$(document).on('click', '.btn-item-analysis', function (e) {
+    e.preventDefault();
+    const assessmentId = $(this).data('assessment');
+    const classId = $(this).data('class');
+
+    $.ajax({
+        url: `/item-analysis/${assessmentId}/${classId}`,
+        method: 'GET',
+        success: function (response) {
+            console.log("🟢 AJAX Success. Injecting content...");
+            let extracted = $(response).find("#content-area").html();
+            if (extracted) {
+                $("#content-area").fadeOut(150, function () {
+                    $(this).html(extracted).fadeIn(150);
+                });
+            } else {
+                console.log("🔴 No #content-area found in response.");
+                $("#content-area").html("<p style='color:red;'>⚠️ Could not load item analysis.</p>");
+            }
+        },
+        error: function (error) {
+            console.error("❌ Failed to load analysis:", error);
+            $("#content-area").html("<p style='color:red;'>⚠️ Error loading item analysis.</p>");
+        }
+    });
+});
+
 
 $(document).on('click', '.btn-scores-view', function (e) {
     e.preventDefault();

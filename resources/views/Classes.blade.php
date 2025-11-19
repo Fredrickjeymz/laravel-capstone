@@ -44,7 +44,7 @@
                         <i class="fas fa-pen"></i>
                     </button>
                     <button class="btn delete-class-btn" data-id="{{ $class->id }}">
-                        <i class="fas fa-trash"></i>
+                        <i class="fas fa-trash-alt"></i>
                     </button>
                     <button class="btn btn-view-students"
                         data-url="{{ route('classes.viewStudents', $class->id) }}">
