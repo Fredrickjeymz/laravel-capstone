@@ -121,8 +121,7 @@ Route::middleware(['teacher'])->group(function () {
     Route::get('/teacher/change-password', function (){return view('teacher-change-password');})->name('teacher.change-password');
     Route::get('/teacher/activity-log', [ActivityLogController::class, 'index'])->name('teacher.activity-log');
     Route::get('/check-assessment-status/{id}', [AssessmentController::class, 'checkStatus']);
-
-
+    Route::post('/assessment/update', [AssessmentController::class, 'updateAssessment']);
 });
 
 //Admin

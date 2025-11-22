@@ -31,12 +31,13 @@
                         <center>
                         <div class="q-t">
                             @if ($assessment->title)
-                                <p class="text-sm text-gray-600">{{ $assessment->title }}<p>
+                                <p class="text-sm text-gray-600 editable-field" data-field="title">{{ $assessment->title }}</p>
+
                             @endif
                         </div>
                         <div class="q-s">
                             @if ($assessment->subject)
-                                <p class="text-sm text-gray-600">{{ $assessment->subject }}<p>
+                                <p class="text-sm text-gray-600 editable-field" data-field="subject">{{ $assessment->subject }}</p>
                             @endif
                         </div>
                         </center>
@@ -57,9 +58,9 @@
                         @endphp
                             <p class="text-sm text-gray-600">
                                 @if ($assessment->question_type)
-                                    <span class="q-i"> {{ $questionTypeLabels[$assessment->question_type] ?? $assessment->question_type }}: </span>
+                                    <span class="q-i" > {{ $questionTypeLabels[$assessment->question_type] ?? $assessment->question_type }}: </span>
                                 @endif
-                            {{ $assessment->instructions }}</p>
+                            <span class="editable-field" data-field="instructions">{{ $assessment->instructions }}</span></p>
                         @endif
                     </div>
 
@@ -69,16 +70,26 @@
                         @foreach ($assessment->questions as $index => $question)
                             <li>
                                 @php
-                                    $cleaned_text = preg_replace('/^\d+[\.\)]\s*/', '', $question->question_text);
-                                    $question_text = preg_split('/\s*[A-Z]\)[\s]*/', $cleaned_text)[0];
-                                    preg_match_all('/\s*([A-Z])\)[\s]*(.*?)(?=\s*[A-Z]\)|$)/', $question->question_text, $matches);
+                                    // Parse question text to extract question and options
+                                    $raw_text = $question->question_text;
+                                    
+                                    // Extract question text (everything before first option letter)
+                                    preg_match('/^(.*?)(?=\s+[A-Z]\))/s', $raw_text, $q_match);
+                                    $question_text = trim($q_match[1] ?? $raw_text);
+                                    
+                                    // Extract all options (A), B), C), etc.)
+                                    preg_match_all('/\s+([A-Z])\)\s+(.*?)(?=\s+[A-Z]\)|$)/s', $raw_text, $matches);
                                 @endphp
-                                <p>{{ trim($question_text) }}</p>
-                                <p>
-                                    @foreach ($matches[1] as $key => $option_letter)
-                                        <p>{{ $option_letter }}) {{ trim($matches[2][$key]) }}</p>
-                                    @endforeach
+                                <p class="editable-question" data-id="{{ $question->id }}">
+                                    {{ $question_text }}
                                 </p>
+                                @if (!empty($matches[1]))
+                                    <p>
+                                        @foreach ($matches[1] as $key => $option_letter)
+                                            <p class="editable-option" data-id="{{ $question->id }}" data-option="{{ $option_letter }}">{{ $option_letter }}) {{ trim($matches[2][$key]) }}</p>
+                                        @endforeach
+                                    </p>
+                                @endif
                             </li>
                         @endforeach
                         </ol>
@@ -92,7 +103,7 @@
                             <div class="mt-6">
                                 <h4 class="font-semibold">Options</h4>
                                     @foreach ($matchingOptions as $i => $option)
-                                        <p>{{ $option }}</p>
+                                        <p class="editable-option" data-option="{{ $option }}">{{ $option }}</p>
                                     @endforeach
                             </div>
                         @endif
@@ -107,19 +118,21 @@
                                 <div class="mb-4">
                                     @if ($assessment->question_type === 'Enumeration')
                                         @php
-                                            $items = preg_split('/\s*,\s*/', $question->answer_key);
+                                            // Handle both comma and semicolon separation
+                                            $items = preg_split('/\s*[,;]\s*/', trim($question->answer_key));
+                                            $items = array_filter($items); // Remove empty values
                                         @endphp
                                             <p>{{ $index + 1 }}. Answers:
                                             @foreach ($items as $item)
-                                                <p><li><span class="cap">{{ $item }}</span></li></p>
-                                            @endforeach
+                                                <p><li><span class="cap editable-answer" data-id="{{ $question->id }}">{{ $item }}</span></li></p>
+                                            @endforeach 
                                             </p>
                                     @elseif ($assessment->question_type === 'Matching Type')
-                                        <p>
+                                        <p class="answer-key editable-answer" data-id="{{ $question->id }}">
                                             {{ $index + 1 }}. {{ $question->answer_key }}
                                         </p>
                                     @else
-                                        <p class="text-green-800 ml-6"><span>{{ $index + 1 }}. </span><span class="cap">{{ $question->answer_key }}</span></p>
+                                        <p class="text-green-800 ml-6"><span>{{ $index + 1 }}. </span><span class="cap editable-answer" data-id="{{ $question->id }}">{{ $question->answer_key }}</span></p>
                                     @endif
                                 </div>
                             @endforeach
@@ -259,14 +272,17 @@
                     </div>
                 </div>
                 <div class="save-del">
-                <button 
-                    class="eval btn-open-upload-modal"
-                    data-assessment-id="{{ $assessment->id }}">
-                    <i class="fas fa-upload"></i> Upload Assessment
-                </button>
-                <button class="del" data-id="{{ $assessment->id }}">
-                    <i class="fas fa-trash-alt"></i> Delete
-                </button>
+                    <button 
+                        class="eval btn-open-upload-modal"
+                        data-assessment-id="{{ $assessment->id }}">
+                        <i class="fas fa-upload"></i> Upload Assessment
+                    </button>
+                    <button class="del" data-id="{{ $assessment->id }}">
+                        <i class="fas fa-trash-alt"></i> Delete
+                    </button>
+                    <button id="editAssessmentBtn" class="edit-btn">Edit Assessment</button>
+                    <button id="finalizeAssessmentBtn" class="finalize-btn" style="display:none;">Finalize</button>
+
                 <div class="ass-details">
                     <h3>Assessment Details</h3>
                         <div class="det-cons-a">
@@ -298,7 +314,109 @@
 
                         <div class="form-group">
                             <label>Due Date:</label>
-                            <input type="datetime-local" name="due_date" required>
+                            <input type="datetime-local" name="due_date" required step="60">
+                            <script>
+                                (function () {
+                                const modal = document.getElementById('AssessmentUploadModal');
+                                const dueDateInput = modal.querySelector("input[name='due_date']");
+                                let refreshInterval = null;
+
+                                // Format Date -> "YYYY-MM-DDTHH:MM"
+                                function toLocalDateTimeString(dt) {
+                                    const year = dt.getFullYear();
+                                    const month = String(dt.getMonth() + 1).padStart(2, '0');
+                                    const day = String(dt.getDate()).padStart(2, '0');
+                                    const hour = String(dt.getHours()).padStart(2, '0');
+                                    const minute = String(dt.getMinutes()).padStart(2, '0');
+                                    return `${year}-${month}-${day}T${hour}:${minute}`;
+                                }
+
+                                // Set min to current time rounded down to minute (or +0 minutes)
+                                function updateMin() {
+                                    const now = new Date();
+                                    now.setSeconds(0, 0); // drop seconds & ms
+                                    const minStr = toLocalDateTimeString(now);
+
+                                    // Only update if changed to reduce reflows
+                                    if (dueDateInput.min !== minStr) {
+                                    dueDateInput.min = minStr;
+                                    }
+
+                                    // If user already selected a value that is now < min, replace it with min
+                                    if (dueDateInput.value) {
+                                    const selected = new Date(dueDateInput.value);
+                                    if (selected < now) {
+                                        // replace silently so it's not selectable
+                                        dueDateInput.value = minStr;
+                                    }
+                                    }
+                                }
+
+                                // When modal is shown -> start updating min every 10s (keeps it always non-past)
+                                function onModalShow() {
+                                    updateMin();
+                                    // update periodically while modal is open to keep min accurate
+                                    if (!refreshInterval) refreshInterval = setInterval(updateMin, 10000);
+                                }
+
+                                // When modal is hidden -> stop updating
+                                function onModalHide() {
+                                    if (refreshInterval) {
+                                    clearInterval(refreshInterval);
+                                    refreshInterval = null;
+                                    }
+                                }
+
+                                // Prevent manual/paste selection of past date/time
+                                dueDateInput.addEventListener('input', function () {
+                                    if (!this.value) return;
+                                    const now = new Date();
+                                    now.setSeconds(0, 0);
+                                    const selected = new Date(this.value);
+                                    if (selected < now) {
+                                    // snap back to min if user types a past date/time
+                                    this.value = this.min || toLocalDateTimeString(now);
+                                    }
+                                });
+
+                                // Update min whenever user focuses/clicks the input (ensures up-to-date)
+                                dueDateInput.addEventListener('focus', updateMin);
+                                dueDateInput.addEventListener('click', updateMin);
+
+                                // Use a MutationObserver to detect when modal display changes (hidden -> shown)
+                                const mo = new MutationObserver(() => {
+                                    // A modal "shown" in your code seems to be display:block; hidden is display:none
+                                    const style = window.getComputedStyle(modal);
+                                    if (style.display !== 'none') {
+                                    onModalShow();
+                                    } else {
+                                    onModalHide();
+                                    }
+                                });
+
+                                mo.observe(modal, { attributes: true, attributeFilter: ['style', 'class'] });
+
+                                // As a fallback: if your modal is opened by toggling a class, also listen for clicks
+                                // on any element that might open it (optional but harmless)
+                                document.addEventListener('click', function () {
+                                    // small delay so style/class toggles take effect before checking
+                                    setTimeout(() => {
+                                    const style = window.getComputedStyle(modal);
+                                    if (style.display !== 'none') onModalShow();
+                                    else onModalHide();
+                                    }, 10);
+                                });
+
+                                // Clean up on page unload
+                                window.addEventListener('beforeunload', () => {
+                                    mo.disconnect();
+                                    onModalHide();
+                                });
+
+                                // Initialize min at script load in case modal is already visible
+                                updateMin();
+                                })();
+                            </script>   
                         </div>
 
                         <div class="form-group">
@@ -318,6 +436,128 @@
                         <button id="saveAssessmentUploadModal" class="submit-btn">Upload</button>
                 </div>
             </div>
+            <script>
+            document.getElementById("editAssessmentBtn").addEventListener("click", function () {
+
+                document.getElementById("finalizeAssessmentBtn").style.display = "inline-block";
+                this.style.display = "none";
+
+                // Editable fields
+                document.querySelectorAll(".editable-field").forEach(el => {
+                    const value = el.innerText.trim();
+                    el.innerHTML = `<input type="text" class="edit-input" data-field="${el.dataset.field}" value="${value}">`;
+                });
+
+                // Editable questions
+                document.querySelectorAll(".editable-question").forEach(el => {
+                    const value = el.innerText.trim();
+                    el.innerHTML = `<textarea class="edit-textarea" data-id="${el.dataset.id}">${value}</textarea>`;
+                });
+
+                // Editable answer keys
+                document.querySelectorAll(".editable-answer").forEach(el => {
+                    const value = el.innerText.trim();
+                    el.innerHTML = `
+                        <input type="text" 
+                            class="edit-input edit-answer" 
+                            data-type="direct"
+                            data-id="${el.dataset.id}" 
+                            value="${value}">
+                    `;
+                });
+
+                // Editable MCQ options - preserve letter
+                document.querySelectorAll(".editable-option").forEach(el => {
+                    const fullText = el.innerText.trim();
+                    // Extract just the option text (remove "A) ", "B) ", etc.)
+                    const optionText = fullText.replace(/^[A-Z]\)\s*/, '').trim();
+                    const optionLetter = el.dataset.option;
+                    
+                    el.innerHTML = `
+                        <input type="text" 
+                            class="edit-input edit-option"
+                            data-type="option"
+                            data-id="${el.dataset.id}"
+                            data-option="${optionLetter}"
+                            value="${optionText}"
+                            placeholder="${optionLetter}) ">
+                    `;
+                });
+
+            });
+
+
+            document.getElementById("finalizeAssessmentBtn").addEventListener("click", function () {
+
+                const assessmentId = document.getElementById("assessment-content").dataset.id;
+
+                let payload = {
+                    _token: document.getElementById("csrf_token").value,
+                    assessment_id: assessmentId,
+                    fields: {},
+                    questions: [],
+                    answers: []
+                };
+
+                // FIELDS
+                document.querySelectorAll(".edit-input[data-field]").forEach(el => {
+                    payload.fields[el.dataset.field] = el.value.trim();
+                });
+
+                // QUESTIONS
+                document.querySelectorAll(".edit-textarea").forEach(el => {
+                    payload.questions.push({
+                        id: el.dataset.id,
+                        question_text: el.value.trim()
+                    });
+                });
+
+                // MCQ OPTIONS - preserve original structure
+                document.querySelectorAll(".edit-option").forEach(el => {
+                    payload.answers.push({
+                        type: "option",
+                        question_id: el.dataset.id,
+                        option_label: el.dataset.option,
+                        option_text: el.value.trim()
+                    });
+                });
+
+                // DIRECT ANSWER KEYS
+                document.querySelectorAll(".edit-answer").forEach(el => {
+                    payload.answers.push({
+                        type: "direct",
+                        question_id: el.dataset.id,
+                        answer_key: el.value.trim()
+                    });
+                });
+
+                console.log("Sending payload:", payload); // Debug
+
+                fetch("/assessment/update", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": document.getElementById("csrf_token").value
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(r => r.json())
+                .then(res => {
+                    console.log("Response:", res); // Debug
+                    if (res.success) {
+                        alert("Assessment updated successfully!");
+                        location.reload();
+                    } else {
+                        alert("Failed to update assessment: " + (res.message || "Unknown error"));
+                    }
+                })
+                .catch(err => {
+                    console.error("Fetch error:", err);
+                    alert("Error updating assessment: " + err.message);
+                });
+            });
+            </script>
+        </div>
     </div>
 </div>
 @endsection

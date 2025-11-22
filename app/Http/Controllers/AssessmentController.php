@@ -366,5 +366,108 @@ class AssessmentController extends Controller
         }
     }
 
+    public function updateAssessment(Request $request)
+    {
+        try {
+            $assessment = Assessment::findOrFail($request->assessment_id);
 
+            /* UPDATE BASIC FIELDS */
+            if (!empty($request->fields)) {
+                foreach ($request->fields as $field => $value) {
+                    if (in_array($field, $assessment->getFillable())) {
+                        $assessment->$field = $value;
+                    }
+                }
+                $assessment->save();
+            }
+
+            /* UPDATE QUESTIONS & OPTIONS */
+            if (!empty($request->questions)) {
+                foreach ($request->questions as $q) {
+                    AssessmentQuestion::where('id', $q['id'])
+                        ->where('assessment_id', $assessment->id)
+                        ->update([
+                            'question_text' => $q['question_text']
+                        ]);
+                }
+            }
+
+            /* UPDATE MCQ OPTIONS (embedded in question_text) */
+            if (!empty($request->answers)) {
+                // Group by question_id to handle multiple options per question
+                $optionsByQuestion = [];
+                foreach ($request->answers as $a) {
+                    if ($a['type'] === 'option') {
+                        $qId = $a['question_id'];
+                        if (!isset($optionsByQuestion[$qId])) {
+                            $optionsByQuestion[$qId] = [];
+                        }
+                        $optionsByQuestion[$qId][$a['option_label']] = $a['option_text'];
+                    }
+                }
+
+                // Update MCQ options
+                foreach ($optionsByQuestion as $questionId => $optionsMap) {
+                    $question = AssessmentQuestion::where('id', $questionId)
+                        ->where('assessment_id', $assessment->id)
+                        ->first();
+
+                    if ($question) {
+                        $currentText = $question->question_text;
+                        
+                        // Extract current question (without options)
+                        preg_match('/^(.*?)(?=\s+[A-Z]\))/s', $currentText, $q_match);
+                        $questionPart = trim($q_match[1] ?? $currentText);
+
+                        // Parse existing options
+                        preg_match_all('/\s+([A-Z])\)\s+(.*?)(?=\s+[A-Z]\)|$)/s', $currentText, $matches);
+                        $existingOptions = [];
+                        if (!empty($matches[1])) {
+                            foreach ($matches[1] as $idx => $letter) {
+                                $existingOptions[$letter] = trim($matches[2][$idx]);
+                            }
+                        }
+
+                        // Merge with updated options
+                        $allOptions = array_merge($existingOptions, $optionsMap);
+                        ksort($allOptions); // Sort A, B, C, D...
+
+                        // Rebuild question_text
+                        $rebuiltText = $questionPart;
+                        foreach ($allOptions as $letter => $text) {
+                            $rebuiltText .= " " . $letter . ") " . $text;
+                        }
+
+                        // Also rebuild options column for backup/evaluation purposes
+                        $optionsColumn = '';
+                        foreach ($allOptions as $letter => $text) {
+                            $optionsColumn .= $letter . ") " . $text . " ";
+                        }
+
+                        $question->update([
+                            'question_text' => trim($rebuiltText),
+                            'options' => trim($optionsColumn)  // ← Also update options column
+                        ]);
+                    }
+                }
+
+                // Update direct answer keys (non-MCQ)
+                foreach ($request->answers as $a) {
+                    if ($a['type'] === 'direct') {
+                        AssessmentQuestion::where('id', $a['question_id'])
+                            ->where('assessment_id', $assessment->id)
+                            ->update([
+                                'answer_key' => $a['answer_key']
+                            ]);
+                    }
+                }
+            }
+
+            return response()->json(['success' => true, 'message' => 'Assessment updated successfully']);
+
+        } catch (\Exception $e) {
+            Log::error('Assessment update error: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    }
 }

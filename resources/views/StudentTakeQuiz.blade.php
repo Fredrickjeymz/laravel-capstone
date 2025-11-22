@@ -32,6 +32,8 @@
             <form id="quiz-form">
                 @csrf
                 <input type="hidden" name="assessment_id" value="{{ $assessment->id }}">
+                <input type="hidden" name="class_id" value="{{ $class->id }}">
+                <input type="hidden" name="student_id" value="{{ auth()->guard('student')->user()->id }}">
 
                 @foreach ($assessment->questions as $index => $question)
                     <div class="quiz-form">

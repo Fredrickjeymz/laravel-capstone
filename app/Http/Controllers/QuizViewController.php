@@ -116,8 +116,9 @@ class QuizViewController extends Controller
 
         // ✅ Load the related class
         $class = \App\Models\SchoolClass::with('teacher')->find($pivot?->school_class_id);
+        $classId = $pivot?->school_class_id;
 
-        return view('StudentTakeQuiz', compact('assessment', 'time_limit', 'class'));
+        return view('StudentTakeQuiz', compact('assessment', 'time_limit', 'class', 'classId'));
     }
 
     public function evaluateAnswers(Request $request)
@@ -130,12 +131,13 @@ class QuizViewController extends Controller
         $student = auth()->guard('student')->user();
         $assessment = Assessment::with('questions')->findOrFail($request->assessment_id);
         $submittedAnswers = $request->answers;
+        $class_id = $request->input('class_id');
 
         try {
             // Try synchronous evaluation first
             set_time_limit(120); // 2 minutes max
             
-            $evaluator = new EvaluateAnswersJob($assessment, $student, $submittedAnswers);
+            $evaluator = new EvaluateAnswersJob($assessment, $student, $submittedAnswers, $class_id);
             $evaluator->handle();
             
             $score = $evaluator->getEvaluationResult();
@@ -168,7 +170,7 @@ class QuizViewController extends Controller
                 'status' => 'processing',
             ]);
 
-            EvaluateAnswersJob::dispatch($assessment, $student, $submittedAnswers);
+            EvaluateAnswersJob::dispatch($assessment, $student, $submittedAnswers, $class_id);
 
             return response()->json([
                 'message' => '✅ Submission received! AI evaluation in progress.',

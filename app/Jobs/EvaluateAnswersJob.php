@@ -21,15 +21,17 @@ class EvaluateAnswersJob implements ShouldQueue
     public $assessment;
     public $student;
     public $submittedAnswers;
+    public $class_id;
 
     /**
      * Create a new job instance.
      */
-    public function __construct($assessment, $student, $submittedAnswers)
+    public function __construct($assessment, $student, $submittedAnswers, $class_id)
     {
         $this->assessment = $assessment;
         $this->student = $student;
         $this->submittedAnswers = $submittedAnswers;
+         $this->class_id = $class_id;
     }
 
     /**
@@ -140,6 +142,7 @@ class EvaluateAnswersJob implements ShouldQueue
             $score = StudentAssessmentScore::create([
                 'student_id' => $this->student->id,
                 'assessment_id' => $this->assessment->id,
+                'class_id' => $this->class_id,
                 'total_score' => $result['total_score'],
                 'max_score' => $result['max_score'],
                 'percentage' => $result['percentage'],
