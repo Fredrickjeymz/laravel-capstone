@@ -2,7 +2,7 @@
 
 @section('content-area')
 <div class="preview-area">
-    <button class="btn-return btn-scores-view" data-id="{{ $assessment->id }}">
+    <button class="btn-return" id="btn-return" data-url="{{ route('students.classes') }}">
         Return
     </button>
     <div class="top">

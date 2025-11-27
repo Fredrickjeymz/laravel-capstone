@@ -1,4 +1,3 @@
-
 document.addEventListener('click', function (e) {
     if (e.target.closest('#evaluate-btn-show')) {
         const modal = document.getElementById('evaluateModal');
@@ -93,4 +92,86 @@ $(document).ready(function () {
             }
         });
     });
+});
+
+document.addEventListener("click", function(e){
+
+    if (e.target.classList.contains("btn-expand")) {
+        let studentId = e.target.dataset.id;
+        let row = document.getElementById("assessments-" + studentId);
+
+        // Toggle visibility
+        if (row.style.display === "none") {
+            row.style.display = "table-row";
+            loadAssessments(studentId);
+            e.target.textContent = "-";
+        } else {
+            row.style.display = "none";
+            e.target.textContent = "+";
+        }
+    }
+
+});
+
+function loadAssessments(studentId) {
+    let container = document.querySelector("#assessments-" + studentId + " .assessment-container");
+
+    container.innerHTML = "<p>...</p>";
+
+    fetch(`/student/${studentId}/scores`)
+        .then(res => res.json())
+        .then(data => {
+            if (data.length === 0) {
+                container.innerHTML = "<p>No assessment scores yet.</p>";
+                return;
+            }
+
+            let html = "<ul class='assessment-list'>";
+
+            data.forEach(score => {
+                html += `
+                    <div class="score-expansion">
+                        <div class="assessment-list">
+                            <div class="score-item-container">
+                                <div class="score-item" data-score-id="${score.id}">
+                                    <div class="score-item-title">TITLE: ${score.assessment.title}</div>
+                                    <div class="score-item-value">SCORE: ${score.total_score}/${score.max_score}</div>
+                                    <button class="btn-view-score" data-id="${score.id}">View</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += "</ul>";
+
+            container.innerHTML = html;
+        });
+}
+
+//make this an ajax call now to fetch the scoring breakdown view
+
+document.addEventListener("click", function(e){
+    if (e.target.classList.contains("btn-view-score")) {
+        let id = e.target.dataset.id;
+
+        $.ajax({
+            url: `/saved-scoring-result-view/${id}`,
+            type: "GET",
+            success: function (response) {
+                console.log("🟢 AJAX Success. Injecting content...");
+                let extracted = $(response).find("#content-area").html();
+                if (extracted) {
+                        $("#content-area").fadeOut(150, function () {
+                            $(this).html(extracted).fadeIn(150);
+                        });
+                }
+            },
+            error: function () {
+                console.log("🔴 AJAX failed.");
+                $("#breakdown-content").html("<p>Error loading content.</p>");
+            }
+        });
+    }
 });

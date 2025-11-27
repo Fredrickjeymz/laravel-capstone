@@ -87,7 +87,7 @@
                                 <button class="btn delete-time-btn" data-id="{{ $assignment->id }}">
                                     <i class="fas fa-trash-alt"></i>
                                 </button>
-                                <!-- <button class="btn btn-scores-view" data-id="{{ $assessment->id }}">
+                                <!--<button class="btn btn-scores-view" data-id="{{ $assessment->id }}">
                                         View Scores
                                 </button> -->
                             </td>

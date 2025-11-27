@@ -14,15 +14,15 @@
     <div class="excel-table-container">
         <div class="analysis-main-header">
             <div class="logo-one">
-                <img src="{{ asset('image/division_logo.png') }}" class="division-logo" alt="division logo">
+                <img src="{{ asset('image/DEPED.png') }}" class="division-logo" alt="division logo">
             </div>
             <div class="analysis-header">
-                <p>Republic of the Philippines</p>
-                <p>Department of Education</p>
+                <p><strong>Republic of the Philippines</strong></p>
+                <p><strong>Department of Education</strong></p>
                 <p>Region I - Ilocos Region</p>
                 <p>School Divisions of San Carlos City</p>
                 <p><strong>Speaker Eugenio Perez National Agricultural School</strong></p>
-                <p><strong>San Carlos City, Pangasinan</strong></p>
+                <p>San Carlos City, Pangasinan</p>
                 <p><strong>ITEM ANALYSIS -</strong> <span style="text-transform: uppercase">{{ $class->year_level }} {{ $class->subject }}</span></p>
             </div> 
             <div class="logo-two">

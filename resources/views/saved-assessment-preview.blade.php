@@ -12,6 +12,17 @@
         </div>
         <div class="saved-area-con">
         <div class="saved-area">
+                <div class="assessment-header">
+                    <img src="{{ asset('image/DEPED.png') }}" alt="Logo" class="logo-img">
+                    <div class="header-text">
+                        <p><strong>Republic of the Philippines</strong></p>
+                        <p><strong>Department of Education</strong></p>
+                        <p>Region I - Ilocos Region</p>
+                        <p>School Divisions of San Carlos City</p>
+                        <p><strong>Speaker Eugenio Perez National Agricultural School</strong></p>
+                    </div>
+                    <img src="{{ asset('image/sepnas_logo.png') }}" alt="Logo" class="logo-img">
+                </div>
             <div class="gen-del" data-id="{{ $assessment->id }}">
                 <div class="mb-6 text-center">
                     <center>

@@ -263,7 +263,7 @@ class AssessmentController extends Controller
         return view('savedscores', compact('assessment', 'scores'));
     }
 
-    public function viewSavedResult($id)
+    public function QuestionsBreakdown($id)
     {
 
         try {
@@ -273,7 +273,7 @@ class AssessmentController extends Controller
                 'assessment.questions'       // ← lowercase 'assessment' as defined in your model
             ])->findOrFail($id);
           
-            return view('saved-scoring-result-preview', [
+            return view('students-question-breakdown', [
                 'score' => $score,
                 'assessment' => $score->Assessment
             ]);            
@@ -282,6 +282,17 @@ class AssessmentController extends Controller
             abort(404);
         }
     }
+
+    public function fetchScores($id)
+    {
+        $scores = StudentAssessmentScore::with('assessment')
+            ->where('student_id', $id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json($scores);
+    }
+
 
     public function scoredestroy($id)
     {

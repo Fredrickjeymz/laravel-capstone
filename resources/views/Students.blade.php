@@ -21,6 +21,7 @@
         <table class="styled-table">
             <thead>
                 <tr>
+                    <th></th> <!-- expand button -->
                     <th>Student's LRN</th>
                     <th>Student Name</th>
                     <th>Email</th>
@@ -29,9 +30,13 @@
                     <th>Classes Enrolled</th>
                 </tr>
             </thead>
+
             <tbody class="student-table">
             @foreach ($students as $student)
-                <tr data-id="{{ $student->id }}">
+                <tr class="student-row" data-id="{{ $student->id }}">
+                    <td>
+                        <button class="btn-expand" data-id="{{ $student->id }}" >+</button>
+                    </td>
                     <td>{{ $student->lrn }}</td>
                     <td>{{ $student->fname }} {{ $student->mname }} {{ $student->lname }}</td>
                     <td>{{ $student->email }}</td>
@@ -43,19 +48,25 @@
                         @else
                             <ul style="margin: 0; padding-left: 20px;">
                                 @foreach ($student->classes as $class)
-                                    <li>
-                                        {{ $class->class_name }} ({{ $class->year_level }})
-                                        {{-- Optional remove link --}}
-                                        {{-- <button data-student="{{ $student->id }}" data-class="{{ $class->id }}" class="btn-remove-student">Remove</button> --}}
-                                    </li>
+                                    <li>{{ $class->class_name }} ({{ $class->year_level }})</li>
                                 @endforeach
-                            </ul>
-                        @endif
-                    </td>    
+                            @endif
+                    </td>
+                </tr>
+
+                <!-- Hidden assessment scores row -->
+                <tr class="assessment-row" id="assessments-{{ $student->id }}" style="display:none;">
+                    <td colspan="7">
+                        <div class="assessment-container">
+                        </div>
+                    </td>
                 </tr>
             @endforeach
             </tbody>
         </table>
+        <div id="breakdown-modal" class="modal" style="display:none;">
+            <div class="modal-content" id="breakdown-content"></div>
+        </div>
        <div id="addModalClassStudent" class="custom-modal" style="display: none;">
             <div class="custom-modal-content">
                 <span class="close-btn" id="closeAddModalClassStudent">&times;</span>

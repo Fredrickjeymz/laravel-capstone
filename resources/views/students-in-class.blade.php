@@ -31,6 +31,7 @@
             <table class="styled-table">
                 <thead>
                     <tr>
+                        <th></th>
                         <th>Student's LRN</th>
                         <th>Full Name</th>
                         <th>Email</th>
@@ -41,7 +42,10 @@
                 </thead>
                 <tbody class="student-table">
                     @forelse($students as $student)
-                        <tr data-id="{{ $student->id }}">
+                        <tr class="student-row" data-id="{{ $student->id }}">
+                            <td>
+                                <button class="btn-expand" data-id="{{ $student->id }}" >+</button>
+                            </td>
                             <td>{{ $student->lrn }}</td>
                             <td>{{ $student->fname }} {{ $student->mname }} {{ $student->lname }}</td>
                             <td>{{ $student->email }}</td>
@@ -54,6 +58,12 @@
                                 data-class-id="{{ $class->id }}">
                                 Remove
                                 </button>
+                            </td>
+                        </tr>
+                        <tr class="assessment-row" id="assessments-{{ $student->id }}" style="display:none;">
+                            <td colspan="7">
+                                <div class="assessment-container">
+                                </div>
                             </td>
                         </tr>
                     @empty

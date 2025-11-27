@@ -99,7 +99,7 @@ Route::middleware(['teacher'])->group(function () {
     Route::post('/saved-evaluate-answers', [SavedAssessmentScoringController::class, 'evaluateAnswers']);
     Route::get('/saved-scoring-result/{score}', [SavedAssessmentScoringController::class, 'scoringResult'])->name('saved-scoring-result');
     Route::get('/assessments/{assessment}/scores', [AssessmentController::class, 'showScores'])->name('assessment.scores');
-    Route::get('/saved-scoring-result-view/{id}', [AssessmentController::class, 'viewSavedResult']);
+    Route::get('/saved-scoring-result-view/{id}', [AssessmentController::class, 'QuestionsBreakdown'])->name('saved-scoring-result-view');
     Route::delete('/score-destroy/{id}', [AssessmentController::class, 'scoredestroy'])->name('score-destroy');
     Route::get('/generateassessment', [AssessmentController::class, 'showAssessmentForm'])->name('generateassessment');
     Route::get('/classes', [ClassController::class, 'index'])->name('classes');
@@ -122,6 +122,8 @@ Route::middleware(['teacher'])->group(function () {
     Route::get('/teacher/activity-log', [ActivityLogController::class, 'index'])->name('teacher.activity-log');
     Route::get('/check-assessment-status/{id}', [AssessmentController::class, 'checkStatus']);
     Route::post('/assessment/update', [AssessmentController::class, 'updateAssessment']);
+    Route::get('/student/{id}/scores', [AssessmentController::class, 'fetchScores']);
+
 });
 
 //Admin

@@ -25,6 +25,17 @@
                 </div>
             
             <div class="generated-area" >
+                <div class="assessment-header">
+                    <img src="{{ asset('image/DEPED.png') }}" alt="Logo" class="logo-img">
+                    <div class="header-text">
+                        <p><strong>Republic of the Philippines</strong></p>
+                        <p><strong>Department of Education</strong></p>
+                        <p>Region I - Ilocos Region</p>
+                        <p>School Divisions of San Carlos City</p>
+                        <p><strong>Speaker Eugenio Perez National Agricultural School</strong></p>
+                    </div>
+                    <img src="{{ asset('image/sepnas_logo.png') }}" alt="Logo" class="logo-img">
+                </div>
                 <div class="gen-del" data-id="{{ $assessment->id }}">
                 <div id="assessment-content" data-id="{{ $assessment->id }}" data-assessment-status="{{ $assessment->status }}">
                     <div class="mb-6">
@@ -280,8 +291,8 @@
                     <button class="del" data-id="{{ $assessment->id }}">
                         <i class="fas fa-trash-alt"></i> Delete
                     </button>
-                    <button id="editAssessmentBtn" class="edit-btn">Edit Assessment</button>
-                    <button id="finalizeAssessmentBtn" class="finalize-btn" style="display:none;">Finalize</button>
+                    <button id="editAssessmentBtn" class="edit-btn"><i class="fas fa-pen"></i> Edit Assessment</button>
+                    <button id="finalizeAssessmentBtn" class="finalize-btn" style="display:none;"><i class="fa-solid fa-floppy-disk"></i> Save</button>
 
                 <div class="ass-details">
                     <h3>Assessment Details</h3>
@@ -445,13 +456,13 @@
                 // Editable fields
                 document.querySelectorAll(".editable-field").forEach(el => {
                     const value = el.innerText.trim();
-                    el.innerHTML = `<input type="text" class="edit-input" data-field="${el.dataset.field}" value="${value}">`;
+                    el.innerHTML = `<input type="text" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc; " class="edit-input" data-field="${el.dataset.field}" value="${value}">`;
                 });
 
                 // Editable questions
                 document.querySelectorAll(".editable-question").forEach(el => {
                     const value = el.innerText.trim();
-                    el.innerHTML = `<textarea class="edit-textarea" data-id="${el.dataset.id}">${value}</textarea>`;
+                    el.innerHTML = `<textarea class="edit-textarea" style="padding: 5px; border-radius: 5px; border: 1px solid #ccc; " data-id="${el.dataset.id}">${value}</textarea>`;
                 });
 
                 // Editable answer keys
@@ -460,6 +471,7 @@
                     el.innerHTML = `
                         <input type="text" 
                             class="edit-input edit-answer" 
+                            style="padding: 5px; border-radius: 5px; border: 1px solid #ccc; "
                             data-type="direct"
                             data-id="${el.dataset.id}" 
                             value="${value}">
@@ -476,6 +488,7 @@
                     el.innerHTML = `
                         <input type="text" 
                             class="edit-input edit-option"
+                            style="padding: 5px; border-radius: 5px; border: 1px solid #ccc; "
                             data-type="option"
                             data-id="${el.dataset.id}"
                             data-option="${optionLetter}"
@@ -545,19 +558,214 @@
                 .then(res => {
                     console.log("Response:", res); // Debug
                     if (res.success) {
-                        alert("Assessment updated successfully!");
-                        location.reload();
+                        // Update fields in-place
+                        Object.entries(payload.fields).forEach(([field, value]) => {
+                            document.querySelectorAll(`.editable-field[data-field="${field}"]`).forEach(el => el.textContent = value);
+                        });
+
+                        // Update questions text
+                        payload.questions.forEach(q => {
+                            const qEl = document.querySelector(`.editable-question[data-id="${q.id}"]`);
+                            if (qEl) qEl.textContent = q.question_text;
+                        });
+
+                        // Update MCQ options and direct answers
+                        payload.answers.forEach(a => {
+                            if (a.type === "option") {
+                                const opt = document.querySelector(`.editable-option[data-id="${a.question_id}"][data-option="${a.option_label}"]`);
+                                if (opt) opt.textContent = `${a.option_label}) ${a.option_text}`;
+                            } else if (a.type === "direct") {
+                                const ans = document.querySelector(`.editable-answer[data-id="${a.question_id}"]`);
+                                if (ans) ans.textContent = a.answer_key;
+                            }
+                        });
+
+                        // Update assessment details panel (title/subject if changed)
+                        if (payload.fields.title) {
+                            document.querySelectorAll('.det-cons-a').forEach(div => {
+                                const label = div.querySelector('p:first-child');
+                                if (label && label.textContent.trim().toLowerCase().startsWith('title')) {
+                                    const v = div.querySelector('p.v'); if (v) v.textContent = payload.fields.title;
+                                }
+                            });
+                        }
+                        if (payload.fields.subject) {
+                            document.querySelectorAll('.det-cons-a').forEach(div => {
+                                const label = div.querySelector('p:first-child');
+                                if (label && label.textContent.trim().toLowerCase().startsWith('subject')) {
+                                    const v = div.querySelector('p.v'); if (v) v.textContent = payload.fields.subject;
+                                }
+                            });
+                        }
+
+                        // Exit edit mode: replace inputs with text nodes where applicable
+                        document.querySelectorAll(".edit-input[data-field]").forEach(el => {
+                            const field = el.dataset.field;
+                            const display = document.createElement('span');
+                            display.className = 'editable-field';
+                            display.dataset.field = field;
+                            display.textContent = payload.fields[field] ?? el.value;
+                            el.parentNode.replaceChild(display, el);
+                        });
+
+                        document.querySelectorAll(".edit-textarea").forEach(el => {
+                            const id = el.dataset.id;
+                            const p = document.createElement('p');
+                            p.className = 'editable-question';
+                            p.dataset.id = id;
+                            p.textContent = el.value;
+                            el.parentNode.replaceChild(p, el);
+                        });
+
+                        document.querySelectorAll(".edit-option").forEach(el => {
+                            const id = el.dataset.id;
+                            const letter = el.dataset.option;
+                            const p = document.createElement('p');
+                            p.className = 'editable-option';
+                            p.dataset.id = id;
+                            p.dataset.option = letter;
+                            p.textContent = `${letter}) ${el.value}`;
+                            el.parentNode.replaceChild(p, el);
+                        });
+
+                        document.querySelectorAll(".edit-answer").forEach(el => {
+                            const id = el.dataset.id;
+                            const p = document.createElement('p');
+                            p.className = 'editable-answer';
+                            p.dataset.id = id;
+                            p.textContent = el.value;
+                            el.parentNode.replaceChild(p, el);
+                        });
+
+                        // Toggle buttons
+                        document.getElementById("finalizeAssessmentBtn").style.display = "none";
+                        document.getElementById("editAssessmentBtn").style.display = "inline-block";
+
+                        // Use SweetAlert instead of alert
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Updated',
+                            text: 'Assessment updated successfully',
+                            timer: 1500,
+                            showConfirmButton: false,
+                            toast: true,
+                            position: 'top-end'
+                        });
                     } else {
-                        alert("Failed to update assessment: " + (res.message || "Unknown error"));
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Update failed',
+                            text: res.message || 'Unknown error',
+                            confirmButtonText: 'OK'
+                        });
                     }
                 })
                 .catch(err => {
                     console.error("Fetch error:", err);
-                    alert("Error updating assessment: " + err.message);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: err.message || 'An unexpected error occurred',
+                        confirmButtonText: 'OK'
+                    });
                 });
             });
             </script>
         </div>
     </div>
 </div>
+
+<style>
+:root { --focus-color: #2563eb; } /* change this hex to pick a different focus color */
+
+.__autosize_measure { position: absolute; left: -9999px; top: -9999px; visibility: hidden; white-space: pre; }
+.edit-input { width: auto; min-width: 220px; max-width: 100%; box-sizing: content-box; }
+.edit-textarea { height: auto; min-height: 48px; max-height: 800px; overflow: hidden; resize: none; width: 100%; box-sizing: border-box; }
+
+/* Focus styles (modern, accessible) */
+.edit-input:focus,
+.edit-textarea:focus {
+    outline: none;
+    border-color: var(--focus-color);
+    box-shadow: 0 6px 18px rgba(37,99,235,0.12), 0 0 0 4px rgba(37,99,235,0.10);
+    transition: box-shadow .12s ease, border-color .12s ease;
+}
+
+/* optional: visible focus for keyboard users */
+.edit-input:focus-visible,
+.edit-textarea:focus-visible {
+    box-shadow: 0 6px 18px rgba(37,99,235,0.16), 0 0 0 6px rgba(37,99,235,0.12);
+}
+</style>
+
+<div id="__autosize_measure" class="__autosize_measure" aria-hidden="true"></div>
+
+<script>
+(function(){
+    const meas = document.getElementById('__autosize_measure');
+
+    function applyMeasureStyle(fromEl){
+        const s = window.getComputedStyle(fromEl);
+        meas.style.font = s.font;
+        meas.style.fontSize = s.fontSize;
+        meas.style.fontWeight = s.fontWeight;
+        meas.style.letterSpacing = s.letterSpacing;
+        meas.style.padding = s.padding;
+    }
+
+    function autosizeInput(el){
+        if(!el) return;
+        applyMeasureStyle(el);
+        const val = el.value || el.placeholder || '';
+        meas.textContent = val.replace(/ /g, '\u00a0');
+        const padLeft = parseFloat(window.getComputedStyle(el).paddingLeft) || 0;
+        const padRight = parseFloat(window.getComputedStyle(el).paddingRight) || 0;
+        const padding = padLeft + padRight;
+        const parentWidth = el.parentElement ? el.parentElement.clientWidth - 20 : 1200;
+        const target = Math.min(parentWidth, meas.offsetWidth + padding + 18);
+        el.style.width = target + 'px';
+    }
+
+    function autosizeTextarea(el){
+        if(!el) return;
+        el.style.height = 'auto';
+        const newH = Math.min(800, el.scrollHeight);
+        el.style.height = (newH + 4) + 'px';
+    }
+
+    function wire(el){
+        if(!el) return;
+        if(el.tagName === 'INPUT' && el.type === 'text') {
+            autosizeInput(el);
+            el.addEventListener('input', () => autosizeInput(el));
+            window.addEventListener('resize', () => autosizeInput(el));
+        } else if(el.tagName === 'TEXTAREA') {
+            autosizeTextarea(el);
+            el.addEventListener('input', () => autosizeTextarea(el));
+            window.addEventListener('resize', () => autosizeTextarea(el));
+        }
+    }
+
+    // Observe DOM for dynamically added edit inputs/textareas (when entering edit mode)
+    const mo = new MutationObserver(mutations => {
+        for (const m of mutations) {
+            if (!m.addedNodes) continue;
+            m.addedNodes.forEach(node => {
+                if (node.nodeType !== 1) return;
+                if (node.matches && (node.matches('.edit-input') || node.matches('.edit-textarea'))) wire(node);
+                if (node.querySelectorAll) node.querySelectorAll('.edit-input, .edit-textarea').forEach(wire);
+            });
+        }
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+
+    // Initialize existing inputs/textareas on load
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.edit-input, .edit-textarea').forEach(wire);
+    });
+
+    // Expose helpers in case existing edit handler wants to call explicitly
+    window.__autosize = { wire, autosizeInput, autosizeTextarea };
+})();
+</script>
 @endsection

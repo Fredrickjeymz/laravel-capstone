@@ -16,8 +16,7 @@ class ActivityLogController extends Controller
         $logs = ActivityLog::where('user_id', $teacher->id)
             ->where('user_type', 'Teacher') // ✅ so admins don’t show up
             ->latest()
-            ->get();
-
+            ->paginate(15);
         return view('teacher-activity-log', compact('logs'));
     }
 
@@ -26,7 +25,7 @@ class ActivityLogController extends Controller
         // ✅ Fetch ALL logs
         $logs = ActivityLog::orderBy('created_at', 'desc')
             ->latest()
-            ->get();
+            ->paginate(15);
 
         return view('admin-activity-log', compact('logs'));
     }
@@ -39,7 +38,7 @@ class ActivityLogController extends Controller
         $logs = ActivityLog::where('user_id', $teacher->id)
             ->where('user_type', 'Student') // ✅ so admins don’t show up
             ->latest()
-            ->get();
+            ->paginate(15);
 
         return view('student-activity-log', compact('logs'));
     }
