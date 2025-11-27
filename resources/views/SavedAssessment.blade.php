@@ -26,6 +26,7 @@
             <div class="search-bar">
                 <select name="filter-quarter" id="filterQuarter" class="search-select">
                     <option value="" disabled selected>Filter by Quarter</option>
+                    <option value="All">Show All</option>
                     <option value="First Quarter">First Quarter</option>
                     <option value="Second Quarter">Second Quarter</option>
                     <option value="Third Quarter">Third Quarter</option>
@@ -34,6 +35,7 @@
 
                 <select name="subject" id="filterSubject" class="search-select" required>
                     <option value="" disabled selected>Filter by Subject</option>
+                    <option value="All">Show All</option>
                     <option value="Filipino">Filipino</option>
                     <option value="Science">Science</option>
                     <option value="English">English</option>
@@ -97,12 +99,16 @@
     });
 </script>
 <script>
+    //add unfilter option
     $(document).on('input', '#filterQuarter', function () {
         let searchText = $(this).val().toLowerCase();
         $('table.styled-table tbody tr').each(function () {
             let rowText = $(this).text().toLowerCase();
             $(this).toggle(rowText.indexOf(searchText) > -1);
         });
+        if (searchText === 'all') {
+            $('table.styled-table tbody tr').show();
+        }
     });
 </script>
 <script>
@@ -112,6 +118,9 @@
             let rowText = $(this).text().toLowerCase();
             $(this).toggle(rowText.indexOf(searchText) > -1);
         });
+        if (searchText === 'all') {
+            $('table.styled-table tbody tr').show();
+        }
     });
 </script>
 @endsection

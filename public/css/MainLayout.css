@@ -3,6 +3,7 @@ body, html {
     padding: 0;
     width: 100%;
     height: 100vh;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 .w-container{
     height: 100%;
@@ -1600,7 +1601,6 @@ input:disabled {
     font-family: Arial, Helvetica, sans-serif;
     padding: 2cm 2.54cm 2.54cm;
     box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.2), 0 6px 15px 0 rgba(0, 0, 0, 0.19);
-    border-radius: 15px;
     background-color: white;
     page-break-after: always;
     margin-bottom: 150px;
@@ -1614,73 +1614,169 @@ input:disabled {
     border: #9a9c9a solid 1px;
     border-radius: 10px;
 }
-.score-summary-con{
-    width: 24%;
-    margin-left: 35px;
-    height: 610px;
-    padding-left: 30px;
-    padding-right: 30px;
-    background-color: white;
-    box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.2), 0 6px 15px 0 rgba(0, 0, 0, 0.19);
-    border-radius: 10px;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+.result-card {
+    margin-left: 3%;
+    width: 29%;
+    background: #ffffff;
+    border-radius: 12px;
+    height: 45%;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #333;
 }
-.sum-header{
-    background-color: #ccf8cc;
-    color: #27ae60;
-    width: 100%;
-    height: 50px;
-    border-radius: 7px;
+
+.card-header {
+  background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);
+  color: white;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
-.title-sum{
-    padding-top: 10.5px;
+
+.header-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
 }
-.score-summary-con h3{
-    margin-top: 25px;
-    margin-left: 4px;
+
+.card-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
-.score-summary-con p{
-    margin-top: 1px;
-    margin-left: 4px;
-    font-size: small;
+
+.card-body {
+  padding: 20px;
 }
-.score-summary-con i{
-    color: #27ae60;
-    border-radius: 3px;
-    padding: 7px;
+
+.info-section, .action-section {
+  margin-bottom: 28px;
 }
-.det-cons{
-    justify-content: space-between;
-    display: flex;
-    margin-right: 7px;
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
 }
-.det-cons button{
-    border: none;
-    padding: 10px;
-    width: 48.5%;
-    border-radius: 5px;
+
+.section-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: #f0f7ff;
+  border-radius: 8px;
+  color: #27ae60;
 }
-.pdf-sr{
-    border: #ff0000 solid 1px;
-    color:#ff0000;
+
+.info-section h3, .action-section h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
 }
-.pdf-sr i{
-    color: #ff0000;
+
+.info-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
-.pdf-sr:hover{
-    background-color: #d1d5db;
-    transition: 0.3s ease-in-out;
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #f8fafc;
+  border-radius: 8px;
+  border-left: 3px solid #27ae60;
 }
-.img-sr{
-    border: #0aac8c solid 1px;
-    color: #0aac8c;
+
+.info-label {
+  font-weight: 500;
+  color: #64748b;
 }
-.img-sr i{
-    color: #0aac8c;
+
+.info-value {
+  font-weight: 600;
+  color: #1e293b;
 }
-.img-sr:hover{
-    background-color: #d1d5db;
-    transition: 0.3s ease-in-out;
+
+.info-value.percentage {
+  color: #27ae60;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.action-buttons .btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  justify-content: center;
+}
+.btn-pdf {
+  background: #fff5f5;
+  color: #e53e3e;
+  border: 1px solid #fed7d7;
+}
+
+.btn-pdf:hover {
+  background: #e53e3e;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(229, 62, 62, 0.3);
+}
+
+.btn-image {
+  background: #f0fff4;
+  color: #38a169;
+  border: 1px solid #c6f6d5;
+}
+
+.btn-image:hover {
+  background: #38a169;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(56, 161, 105, 0.3);
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .result-card {
+    margin: 10px;
+    border-radius: 12px;
+  }
+  
+  .card-header {
+    padding: 20px;
+  }
+  
+  .card-body {
+    padding: 20px;
+  }
+  
+  .action-buttons {
+    flex-direction: column;
+  }
 }
 .custom-modal {
     display: none;

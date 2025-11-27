@@ -45,9 +45,7 @@
                         </div>
                     @elseif ($isDue)
                         <button class="pends-due due" disabled>Over Due</button>
-                        <div class="score-rem">
-                            <p class="overdue-msg">⏰ Your quiz deadline has passed. Please contact your teacher if you need to retake it.</p>
-                        </div>
+                            <button class="pends remarks" disabled>⏰ Your quiz deadline has passed. Please contact your teacher if you need to retake it.</button>
                     @else
                         <button class="pends" disabled>Pending</button>
                         <button class="view-btn take-quiz-btn" data-id="{{ $assessment->id }}">
@@ -58,9 +56,10 @@
             </div>
         @empty   
         <div class="empty-state">
-            <p>No quizzes assigned yet for this class.</p>
+            <div class="empty-icon">📭</div>
+            <p>No quizzes available for this class yet.</p>
+            <span class="empty-hint">Please check again later or ask your teacher for updates.</span>
         </div>
-            
         @endforelse
     </div>
 

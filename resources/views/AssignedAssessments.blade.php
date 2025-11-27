@@ -19,6 +19,7 @@
             <div class="search-bar">
                 <select name="filter-quarter" id="filterQuarter" class="search-select">
                     <option value="" disabled selected>Filter by Quarter</option>
+                    <option value="all">Show All</option>
                     <option value="First Quarter">First Quarter</option>
                     <option value="Second Quarter">Second Quarter</option>
                     <option value="Third Quarter">Third Quarter</option>
@@ -107,6 +108,108 @@
                 <div class="form-group">
                     <label>Due Date:</label>
                     <input type="datetime-local" id="due_date" required>
+                    <script>
+                        (function () {
+                            const modal = document.getElementById('EditModalTime');
+                            const dueDateInput = modal.querySelector("input[id='due_date']");
+                                let refreshInterval = null;
+
+                                // Format Date -> "YYYY-MM-DDTHH:MM"
+                                function toLocalDateTimeString(dt) {
+                                    const year = dt.getFullYear();
+                                    const month = String(dt.getMonth() + 1).padStart(2, '0');
+                                    const day = String(dt.getDate()).padStart(2, '0');
+                                    const hour = String(dt.getHours()).padStart(2, '0');
+                                    const minute = String(dt.getMinutes()).padStart(2, '0');
+                                    return `${year}-${month}-${day}T${hour}:${minute}`;
+                                }
+
+                                // Set min to current time rounded down to minute (or +0 minutes)
+                                function updateMin() {
+                                    const now = new Date();
+                                    now.setSeconds(0, 0); // drop seconds & ms
+                                    const minStr = toLocalDateTimeString(now);
+
+                                    // Only update if changed to reduce reflows
+                                    if (dueDateInput.min !== minStr) {
+                                    dueDateInput.min = minStr;
+                                    }
+
+                                    // If user already selected a value that is now < min, replace it with min
+                                    if (dueDateInput.value) {
+                                    const selected = new Date(dueDateInput.value);
+                                    if (selected < now) {
+                                        // replace silently so it's not selectable
+                                        dueDateInput.value = minStr;
+                                    }
+                                    }
+                                }
+
+                                // When modal is shown -> start updating min every 10s (keeps it always non-past)
+                                function onModalShow() {
+                                    updateMin();
+                                    // update periodically while modal is open to keep min accurate
+                                    if (!refreshInterval) refreshInterval = setInterval(updateMin, 10000);
+                                }
+
+                                // When modal is hidden -> stop updating
+                                function onModalHide() {
+                                    if (refreshInterval) {
+                                    clearInterval(refreshInterval);
+                                    refreshInterval = null;
+                                    }
+                                }
+
+                                // Prevent manual/paste selection of past date/time
+                                dueDateInput.addEventListener('input', function () {
+                                    if (!this.value) return;
+                                    const now = new Date();
+                                    now.setSeconds(0, 0);
+                                    const selected = new Date(this.value);
+                                    if (selected < now) {
+                                    // snap back to min if user types a past date/time
+                                    this.value = this.min || toLocalDateTimeString(now);
+                                    }
+                                });
+
+                                // Update min whenever user focuses/clicks the input (ensures up-to-date)
+                                dueDateInput.addEventListener('focus', updateMin);
+                                dueDateInput.addEventListener('click', updateMin);
+
+                                // Use a MutationObserver to detect when modal display changes (hidden -> shown)
+                                const mo = new MutationObserver(() => {
+                                    // A modal "shown" in your code seems to be display:block; hidden is display:none
+                                    const style = window.getComputedStyle(modal);
+                                    if (style.display !== 'none') {
+                                    onModalShow();
+                                    } else {
+                                    onModalHide();
+                                    }
+                                });
+
+                                mo.observe(modal, { attributes: true, attributeFilter: ['style', 'class'] });
+
+                                // As a fallback: if your modal is opened by toggling a class, also listen for clicks
+                                // on any element that might open it (optional but harmless)
+                                document.addEventListener('click', function () {
+                                    // small delay so style/class toggles take effect before checking
+                                    setTimeout(() => {
+                                    const style = window.getComputedStyle(modal);
+                                    if (style.display !== 'none') onModalShow();
+                                    else onModalHide();
+                                    }, 10);
+                                });
+
+                                // Clean up on page unload
+                                window.addEventListener('beforeunload', () => {
+                                    mo.disconnect();
+                                    onModalHide();
+                                });
+
+                                // Initialize min at script load in case modal is already visible
+                                updateMin();
+                                })();
+                            </script>   
                 </div>
 
                 <div class="form-group">
@@ -135,6 +238,9 @@
             let rowText = $(this).text().toLowerCase();
             $(this).toggle(rowText.indexOf(searchText) > -1);
         });
+        if (searchText === 'all') {
+            $('table.styled-table tbody tr').show();
+        }
     });
 </script>
 </div>

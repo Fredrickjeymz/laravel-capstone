@@ -11,6 +11,135 @@
         <p>Item Analysis for <strong>{{ $assessment->title }}</strong></p>
     </div>
 
+
+    <script>
+        document.getElementById('btn-download-analysis').addEventListener('click', function() {
+    // Get the table container
+    const tableContainer = document.querySelector('.excel-table-container');
+    
+    // Create HTML with adjusted styles for Excel
+    const htmlContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <style>
+            body {
+                margin: 0;
+                padding: 20px;
+                font-family: Arial, sans-serif;
+            }
+            .analysis-main-header{
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            .sepnas-logo{
+                width: 100px;
+                height: 100px;
+                object-fit: contain;
+            }
+            .division-logo{
+                width: 100px;
+                height: 100px;
+                object-fit: contain;
+            }
+            .analysis-header {
+                font-size: 14px;
+                text-align: center;
+                flex-grow: 1;
+                margin: 0 20px;
+            }
+            .analysis-header p{
+                margin: 3px 0;
+            }
+            .excel-table {
+                width: 100%;
+                background-color: #ffffff;
+                margin: 20px 0;
+                font-size: 12px;
+                border: 1px solid #b7d6b8;
+                border-collapse: collapse;
+            }
+            .excel-table thead {
+                background-color: #ccf8cc;
+                color: #4d4d4d;
+            }
+            .excel-table th,
+            .excel-table td {
+                padding: 6px 8px;
+                border: 1px solid #cfe9d1;
+                text-align: left;
+            }
+            .excel-table th {
+                font-weight: 600;
+                color: #3e513f;
+            }
+            .excel-table tbody tr:nth-child(even) {
+                background-color: #edf8ee;
+            }
+            #q-td{
+                max-width: 250px;
+                word-wrap: break-word;
+            }
+            .excel-table-container {
+                width: 100%;
+                background-color: #ffffff;
+                padding: 20px;
+            }
+            .p-by{
+                font-size: 14px;
+                margin-top: 30px;
+                margin-bottom: 10px;
+            }
+            .overall-feedback-box {
+                background: #e9f7ef;
+                border-left: 6px solid #27ae60;
+                padding: 15px 20px;
+                margin-top: 25px;
+                border-radius: 6px;
+                font-size: 14px;
+            }
+            .overall-feedback-box h3 {
+                margin: 0 0 10px;
+                font-weight: bold;
+                color: #1e824c;
+            }
+            .total-row, .summary-row {
+                background-color: #e9f7ef !important;
+                font-weight: bold;
+            }
+            .logo-one, .logo-two {
+                width: 120px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        ${tableContainer.innerHTML}
+    </body>
+    </html>
+    `;
+    
+    // Create and download the file
+    const blob = new Blob([htmlContent], { type: 'application/vnd.ms-excel' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    // Get subject name for filename
+    const subjectSpan = document.querySelector('.analysis-header span');
+    const subjectName = subjectSpan ? subjectSpan.textContent.trim() : 'ItemAnalysis';
+    const fileName = `Item_Analysis_${subjectName.replace(/\s+/g, '_')}.xls`;
+    
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+});
+    </script>
     <div class="excel-table-container">
         <div class="analysis-main-header">
             <div class="logo-one">

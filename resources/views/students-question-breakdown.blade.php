@@ -110,43 +110,94 @@
                 @endforeach
             </div>
         </div>
-        <div class="score-summary-con">
-                <div class="sum-header">
-                    <center>
-                    <h3 class="title-sum">Evaluation Result Summary</h3>
-                    </center>
+        <div class="result-card">
+            <div class="card-header">
+                <div class="header-icon">
+                <i class="fas fa-chart-line"></i>
                 </div>
-            <h3><i class="fas fa-user-graduate"></i> Student Information</h3>
-            <div class="det-cons">
-                <p>Name:</p> 
-                <p>{{ $score->student->fname }} {{ $score->student->mname }} {{ $score->student->lname }}</p>
+                <h2 class="card-title">Evaluation Result Summary</h2>
             </div>
-            <h3><i class="fas fa-chart-line"></i> Score Details</h3>
-            <div class="det-cons">
-                <p>Total Score:</p>
-                <p>{{ $score->total_score }}/{{ $score->max_score }}</p>
-            </div>
-            <div class="det-cons">
-                <p>Percentage:</p>
-                <p>{{ round($score->percentage, 2) }}%</p>
-            </div>
-            <h3><i class="fas fa-file-lines"></i> Assessment Details</h3>
-            <div class="det-cons">
-                <p>Title:</p>
-                <p>{{ $assessment->title }}</p>
-            </div>
-            <div class="det-cons">
-                <p>Subject:</p>
-                <p>{{ $assessment->subject }}</p>
-            </div>
-            <h3><i class="fas fa-chart-line"></i> Download</h3>
-            <div class="det-cons">
-            <button class="pdf-sr" id="dl-pdf-prev"><i class="fas fa-file-pdf"></i> PDF</button>
-            <button class="img-sr" id="dl-img-prev"><i class="fas fa-file-image"></i> Image</button>
-            </div>
-         
-
+            
+            <div class="card-body">
+                <div class="info-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                    <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3>Student Information</h3>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                    <span class="info-label">Name:</span>
+                    <span class="info-value">{{ $score->student->fname }} {{ $score->student->mname }} {{ $score->student->lname }}</span>
+                    </div>
+                    <div class="info-item">
+                    <span class="info-label">LRN:</span>
+                    <span class="info-value">{{ $score->student->lrn }}</span>
+                    </div>
+                    <div class="info-item">
+                    <span class="info-label">Class:</span>
+                    <span class="info-value">{{ $score->student->class->class_name ?? 'N/A' }}</span>
+                    </div>
+                </div>
+                </div>
                 
+                <div class="info-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                    <i class="fas fa-check-circle"></i>
+                    </div>
+                    <h3>Score Details</h3>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                    <span class="info-label">Total Score:</span>
+                    <span class="info-value">{{ $score->total_score }}/{{ $score->max_score }}</span>
+                    </div>
+                    <div class="info-item">
+                    <span class="info-label">Percentage:</span>
+                    <span class="info-value percentage">{{ round($score->percentage, 2) }}%</span>
+                    </div>
+                </div>
+                </div>
+                
+                <div class="info-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                    <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Assessment Details</h3>
+                </div>
+                <div class="info-grid">
+                    <div class="info-item">
+                    <span class="info-label">Title: <span class="info-value">{{ $assessment->title }}</span></span>
+                    </div>
+                    <div class="info-item">
+                    <span class="info-label">Subject:</span>
+                    <span class="info-value">{{ $assessment->subject }}</span>
+                    </div>
+                </div>
+                </div>
+                
+                <div class="action-section">
+                <div class="section-header">
+                    <div class="section-icon">
+                    <i class="fas fa-download"></i>
+                    </div>
+                    <h3>Download Results</h3>
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-pdf" id="dl-pdf-prev">
+                    <i class="fas fa-file-pdf"></i>
+                    PDF
+                    </button>
+                    <button class="btn btn-image" id="dl-img-prev">
+                    <i class="fas fa-file-image"></i>
+                    Image
+                    </button>
+                </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
