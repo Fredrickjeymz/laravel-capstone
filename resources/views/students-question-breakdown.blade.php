@@ -135,10 +135,6 @@
                     <span class="info-label">LRN:</span>
                     <span class="info-value">{{ $score->student->lrn }}</span>
                     </div>
-                    <div class="info-item">
-                    <span class="info-label">Class:</span>
-                    <span class="info-value">{{ $score->student->class->class_name ?? 'N/A' }}</span>
-                    </div>
                 </div>
                 </div>
                 

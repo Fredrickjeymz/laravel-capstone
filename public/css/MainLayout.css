@@ -2423,6 +2423,23 @@ input:disabled {
     height: 120px;
     object-fit: cover;
 }
+.dl-con{
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+.download-analysis{
+    background-color: #218838;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+.download-analysis:hover{
+    background-color: #267038;
+    color: white;
+    transition: 0.3s ease-in-out;
+}
 .header-text{
     text-align: center;
     margin-left: -50px;
