@@ -74,7 +74,7 @@ $(document).on('submit', '#quiz-form', function (e) {
                 <div class="processing-message mt-4">
                     <div class="alert alert-info">
                         <h4><i class="fas fa-robot"></i> AI Evaluation in Progress</h4>
-                        <p class="mb-2">🤖 Our AI teacher is carefully reviewing your answers...</p>
+                        <p class="mb-2">🤖 AI is carefully reviewing your answers...</p>
                         <p class="mb-0">This may take 20-30 seconds. Please don't close this page.</p>
                     </div>
                 </div>

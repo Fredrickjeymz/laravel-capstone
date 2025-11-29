@@ -85,10 +85,10 @@
                                 @if(is_array($criteriaScores))
                                     <div class="s-r-criteria">
                                         <div class="rubric-score">
-                                            @foreach($criteriaScores as $criteria => $points)
+                                            @foreach($criteriaScores as $item)
                                                 <div>
-                                                    <span>{{ ucfirst($criteria) }}:</span>
-                                                    <span>{{ $points }} pts</span>
+                                                    <span>{{ $item['criteria'] }}:</span>
+                                                    <span>{{ $item['score'] }} / {{ $item['max_score'] }} pts</span>
                                                 </div>
                                             @endforeach
                                         </div>

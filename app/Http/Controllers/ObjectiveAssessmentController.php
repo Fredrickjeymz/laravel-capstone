@@ -31,7 +31,7 @@ class ObjectiveAssessmentController extends Controller
                 'title' => 'nullable|string|max:255',
                 'instruction' => 'nullable|string|max:1000',
                 'subject' => 'nullable|string|max:255',
-                'bloom_taxonomy' => 'required|json',
+                //'bloom_taxonomy' => 'required|json',
             ]);
 
             // Auto-generate title based on quarter, subject, and count
@@ -46,7 +46,7 @@ class ObjectiveAssessmentController extends Controller
             $nextNumber = $count + 1;
             $autoTitle = "{$quarter}: Assessment {$nextNumber} in {$subject}";
 
-            $bloomTaxonomy = json_decode($request->input('bloom_taxonomy'), true);
+            //$bloomTaxonomy = json_decode($request->input('bloom_taxonomy'), true);
             $file = $request->file('learning_material');
             $text = $this->extractTextFromFile($file);
 
@@ -58,7 +58,7 @@ class ObjectiveAssessmentController extends Controller
             }
 
             $payload = [
-                'bloom_taxonomy' => $request->input('bloom_taxonomy'),
+                //'bloom_taxonomy' => $request->input('bloom_taxonomy'),
                 'question_type' => $request->input('question_type'),
                 'num_items' => (int) $request->input('num_items'),
                 'num_options' => $request->input('num_options'),

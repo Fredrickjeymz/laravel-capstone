@@ -49,19 +49,19 @@ class GenerateAssessmentJob implements ShouldQueue
         $assessment->update(['status' => 'in-progress']);
         Log::info('📊 Assessment status updated to in-progress');
 
-        $bloomTaxonomy = json_decode($this->payload['bloom_taxonomy'], true);
+        //$bloomTaxonomy = json_decode($this->payload['bloom_taxonomy'], true);
         $questionType = $this->payload['question_type'];
         $numItems = (int) $this->payload['num_items'];
         $numOptions = $this->payload['num_options'] ?? null;
 
-        $buildBasePrompt = function(int $count) use ($bloomTaxonomy, $questionType, $numOptions) {
+        $buildBasePrompt = function(int $count) use ($questionType, $numOptions) {
             $basePrompt = "You are an expert teacher. Based on the learning material below, generate exactly :count questions. ";
-            $basePrompt .= "Follow this Bloom's Taxonomy distribution:\n";
-            foreach ($bloomTaxonomy as $level => $percent) {
-                $basePrompt .= ucfirst($level) . ": {$percent}%, ";
-            }
-            $basePrompt .= "\nUse appropriate verbs per level (e.g., remember → list, define; apply → solve, implement).\n";
-            $basePrompt .= "Do NOT label each question by Bloom level, just follow the distribution in structure and style.\n\n";
+            //$basePrompt .= "Follow this Bloom's Taxonomy distribution:\n";
+            //foreach ($bloomTaxonomy as $level => $percent) {
+                //$basePrompt .= ucfirst($level) . ": {$percent}%, ";
+            //}
+            //$basePrompt .= "\nUse appropriate verbs per level (e.g., remember → list, define; apply → solve, implement).\n";
+            //$basePrompt .= "Do NOT label each question by Bloom level, just follow the distribution in structure and style.\n\n";
 
             switch ($questionType) {
                 case 'Multiple Choice':

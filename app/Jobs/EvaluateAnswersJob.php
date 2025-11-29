@@ -84,9 +84,12 @@ class EvaluateAnswersJob implements ShouldQueue
                 $prompt .= "Question ID {$questionId}: {$answer}\n";
             }
 
-            $prompt .= "\nINSTRUCTIONS:\n";
-            $prompt .= "- Return JSON with total_score, max_score, percentage, question_results, and overall_feedback.\n";
-            $prompt .= "- Each question_results[] must have student_answer, score, max_score, feedback.\n";
+            $prompt .= "- Return JSON with question_results and overall_feedback.\n";
+            if (!in_array($this->assessment->question_type, ['Essay', 'Short Answer Questions', 'Critically Thought-out Opinions'])) {
+                $prompt .= "- For each question, return a 'score' of 1 if correct, 0 if incorrect.\n";
+                $prompt .= "- For each question, return 'student_answer' with the normalized student answer.\n";
+            }
+            $prompt .= "- I will calculate total_score, max_score, and percentage myself.\n";
 
             // 🔥 ENHANCED: More specific formatting rules
             if ($this->assessment->question_type === 'Multiple Choice') {
@@ -95,9 +98,31 @@ class EvaluateAnswersJob implements ShouldQueue
                 $prompt .= "- Map student text answers to corresponding letters (e.g., 'Mike De Leon' → 'C').\n";
             } elseif ($this->assessment->question_type === 'True Or False') {
                 $prompt .= "- For True/False: student_answer must be 'True' or 'False' only.\n";
+                $prompt .= "- For True/False: score is 1 if answers match exactly, 0 otherwise.\n";
                 $prompt .= "- Normalize student answers (e.g., 'T' → 'True', 'F' → 'False').\n";
+            } // For subjective questions ONLY - use your proven approach
+            elseif (in_array($this->assessment->question_type, ['Essay', 'Short Answer Questions', 'Critically Thought-out Opinions'])) {
+                $prompt .= "- You MUST evaluate using the rubric provided.\n";
+                $prompt .= "- For EACH QUESTION, convert every rubric criteria into a numeric score.\n";
+                $prompt .= "- The score must be computed using its weight. Example:\n";
+                $prompt .= "    If a criterion has weight 30%, return a max_score of 30.\n";
+                $prompt .= "- You MUST return this EXACT JSON structure for every question:\n";
+                $prompt .= "  \"criteria_scores\": [\n";
+                $prompt .= "       { \"criteria\": \"Content & Development\", \"score\": number, \"max_score\": 30 },\n";
+                $prompt .= "       { \"criteria\": \"Organization\", \"score\": number, \"max_score\": 20 },\n";
+                $prompt .= "       { \"criteria\": \"Grammar and Mechanics\", \"score\": number, \"max_score\": 20 },\n";
+                $prompt .= "       { \"criteria\": \"Critical Thinking\", \"score\": number, \"max_score\": 20 },\n";
+                $prompt .= "       { \"criteria\": \"Clarity & Coherence\", \"score\": number, \"max_score\": 10 }\n";
+                $prompt .= "  ]\n";
+                $prompt .= "- DO NOT return qualitative ratings only. You MUST return numeric scores.\n";
+                $prompt .= "- Without criteria_scores with numeric values, the evaluation is INVALID.\n";
+                $prompt .= "- Also return an overall_feedback for the entire assessment as 'overall_feedback' key outside of 'question_results'.\n";
+                $prompt .= "- JSON only, valid parseable JSON, no extra text or markdown.\n";
             } else {
-                $prompt .= "- For subjective (Essay, Short Answer Questions, or Critically Thought-out Opinions): include rubric-based criteria_scores.\n";
+                // For objectives - use strict matching (your current approach)
+                $prompt .= "- Compare answers exactly or with minor spelling variations only.\n";
+                $prompt .= "- Score is 1 if answers match exactly, 0 otherwise.\n";
+                $prompt .= "- JSON only, valid parseable JSON, no extra text or markdown.\n";
             }
 
             $prompt .= "- Also return a short (1 sentence) overall_feedback summarizing the student's performance.\n";
@@ -138,21 +163,98 @@ class EvaluateAnswersJob implements ShouldQueue
                 throw new \Exception("Invalid JSON: " . json_last_error_msg());
             }
 
+            // === Calculate scores ourselves ===
+            $totalScore = 0;
+            $maxScore = 0;
+
+            // Check if this is a subjective assessment
+            $isSubjective = in_array($this->assessment->question_type, ['Essay', 'Short Answer Questions', 'Critically Thought-out Opinions']);
+
+            if ($isSubjective) {
+                // 🔥 FOR SUBJECTIVE: Use criteria_scores with max_score = 100
+                $totalPercentage = 0;
+                $questionCount = 0;
+                
+                foreach ($result['question_results'] as $index => $r) {
+                    if (isset($r['criteria_scores']) && is_array($r['criteria_scores'])) {
+                        $questionTotal = 0;
+                        $criteriaCount = 0;
+                        
+                        foreach ($r['criteria_scores'] as $criteria) {
+                            $score = $criteria['score'] ?? 0;
+                            $max = $criteria['max_score'] ?? 1;
+                            $questionTotal += ($max > 0) ? ($score / $max) * 100 : 0;
+                            $criteriaCount++;
+                        }
+                        
+                        if ($criteriaCount > 0) {
+                            $questionPercentage = $questionTotal / $criteriaCount;
+                            $totalPercentage += $questionPercentage;
+                            $questionCount++;
+                        }
+                    }
+                }
+                
+                $percentage = $questionCount > 0 ? $totalPercentage / $questionCount : 0;
+                $totalScore = $percentage;
+                $maxScore = 100; // Fixed at 100 for subjective
+
+                $subj_remarks = $result['overall_feedback'] ?? $this->generateSubjectiveRemarks($percentage);
+                
+            } else {
+                // 🔥 FOR OBJECTIVE: Count correct answers
+                $questionCount = count($this->assessment->questions);
+                foreach ($result['question_results'] as $index => $r) {
+                    $questionScore = $r['score'] ?? 0;
+                    $totalScore += $questionScore; // Each correct answer = 1 point
+                }
+                $maxScore = $questionCount; // Max = total questions
+                $percentage = $maxScore > 0 ? ($totalScore / $maxScore) * 100 : 0;
+            }
+
             // === Save results ===
             $score = StudentAssessmentScore::create([
                 'student_id' => $this->student->id,
                 'assessment_id' => $this->assessment->id,
                 'class_id' => $this->class_id,
-                'total_score' => $result['total_score'],
-                'max_score' => $result['max_score'],
-                'percentage' => $result['percentage'],
-                'remarks' => $result['overall_feedback'] ?? null,
+                'total_score' => $totalScore, // ✅ We calculate this
+                'max_score' => $maxScore, // ✅ We calculate this
+                'percentage' => $percentage, // ✅ We calculate this
+                'remarks' => $result['overall_feedback'] ?? $subj_remarks ?? '',
                 'status' => 'completed',
             ]);
 
             $questions = $this->assessment->questions->values();
             foreach ($result['question_results'] as $index => $r) {
                 if (!isset($questions[$index])) continue;
+
+                if (in_array($this->assessment->question_type, [
+                    'Essay',
+                    'Short Answer Questions',
+                    'Critically Thought-out Opinions'
+                ])) {
+
+                    // 1. Student's raw answer from submitted form
+                    $r['student_answer'] = $this->submittedAnswers[$questions[$index]->id] ?? '';
+
+                    // 2. Compute numeric score from criteria_scores
+                    if (isset($r['criteria_scores']) && is_array($r['criteria_scores'])) {
+
+                        $totalPercent = 0;
+                        $count = 0;
+
+                        foreach ($r['criteria_scores'] as $crit) {
+                            if (isset($crit['score']) && isset($crit['max_score'])) {
+                                $totalPercent += ($crit['score'] / $crit['max_score']) * 100;
+                                $count++;
+                            }
+                        }
+
+                        // Final numeric score (0–100)
+                        $r['score'] = $count > 0 ? $totalPercent / $count : 0;
+                        $r['max_score'] = 100; // subjective always 100 scale
+                    }
+                }
 
                 StudentAssessmentQuestionScore::create([
                     'student_assessment_score_id' => $score->id,
@@ -185,6 +287,24 @@ class EvaluateAnswersJob implements ShouldQueue
     public function getEvaluationResult()
     {
         return $this->evaluationResult ?? null;
+    }
+
+    /**
+ * Generate remarks for subjective questions based on percentage
+ */
+    private function generateSubjectiveRemarks(float $percentage): string
+    {
+        if ($percentage >= 90) {
+            return "Outstanding writing! Demonstrates excellent critical thinking, organization, and clarity.";
+        } elseif ($percentage >= 80) {
+            return "Strong writing skills with good organization and clear reasoning. Minor areas for refinement.";
+        } elseif ($percentage >= 70) {
+            return "Good effort with clear ideas. Focus on developing more depth and improving organization.";
+        } elseif ($percentage >= 60) {
+            return "Adequate response. Work on strengthening arguments and improving writing clarity.";
+        } else {
+            return "Needs improvement in organization, clarity, and depth of analysis. Review the rubric criteria.";
+        }
     }
 
 }

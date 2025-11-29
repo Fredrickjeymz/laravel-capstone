@@ -79,8 +79,8 @@
                             <input type="number" class="option-num" placeholder="e.g., 4" min="2" max="10">
                         </div>
                     </div>
-
-                        <div class="blooms-config">
+ 
+                        <!--<div class="blooms-config">
                             <p class="config-title">Bloom's Taxonomy Percentage Configuration</p>
                             <p>Total Allocated Percentage: <span id="total-bloom">0%</span></p>
                             <div class="blooms-inputs">
@@ -132,8 +132,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
-
+                        </div>-->
                     <button id="generate-btn">Generate</button>
             </div>
         </div>

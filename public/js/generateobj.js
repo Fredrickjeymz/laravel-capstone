@@ -118,14 +118,14 @@ $(document).ready(function () {
         const numQuestions = document.querySelector(".number-input").value;
         const questionType = document.querySelector(".dropdown-input").value;
         const numOptions = document.querySelector(".option-num")?.value || null;
-        const bloom = {
-            remember: $("input[name='bloom[remember]']").val(),
-            understand: $("input[name='bloom[understand]']").val(),
-            apply: $("input[name='bloom[apply]']").val(),
-            analyze: $("input[name='bloom[analyze]']").val(),
-            evaluate: $("input[name='bloom[evaluate]']").val(),
-            create: $("input[name='bloom[create]']").val(),
-        };
+        //const bloom = {
+            //remember: $("input[name='bloom[remember]']").val(),
+            //understand: $("input[name='bloom[understand]']").val(),
+            //apply: $("input[name='bloom[apply]']").val(),
+            //analyze: $("input[name='bloom[analyze]']").val(),
+            //evaluate: $("input[name='bloom[evaluate]']").val(),
+            //create: $("input[name='bloom[create]']").val(),
+        //};
 
         if (!file || !numQuestions || !questionType) {
             Swal.fire({
@@ -158,7 +158,7 @@ $(document).ready(function () {
         formData.append("learning_material", file);
         formData.append("question_type", questionType);
         formData.append("num_items", numQuestions);
-        formData.append("bloom_taxonomy", JSON.stringify(bloom));
+        //formData.append("bloom_taxonomy", JSON.stringify(bloom));
         if (questionType === "multiplechoice") {
             formData.append("num_options", numOptions);
         }
