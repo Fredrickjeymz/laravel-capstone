@@ -21,6 +21,11 @@
         </div>
     <h3>All Assessments</h3>
     <div class="search-bar">
+                <select name="sort" id="sort" class="search-select">
+                    <option value="" disabled selected>Sort By</option>
+                    <option value="alphabetical">Alphabetical</option>
+                    <option value="date_created">Date Created</option>
+                </select>
         <input class="search-input" type="text" id="InputArchivedAssessment" placeholder="Search archived assessments...">
     </div>
         <table class="styled-table">
@@ -59,5 +64,30 @@
             $(this).toggle(rowText.indexOf(searchText) > -1);
         });
     });
+</script>
+<script>
+$(document).on('change', '#sort', function () {
+    let sortBy = $(this).val();
+    let $tbody = $('table.styled-table tbody');
+    let $rows = $tbody.find('tr').get();
+    
+    $rows.sort(function(a, b) {
+        let aVal, bVal;
+        
+        switch(sortBy) {
+            case 'alphabetical':
+                aVal = $(a).find('td:eq(0)').text().toLowerCase();
+                bVal = $(b).find('td:eq(0)').text().toLowerCase();
+                return aVal.localeCompare(bVal);
+                
+            case 'date_created':
+                aVal = new Date($(a).find('td:eq(3)').text());
+                bVal = new Date($(b).find('td:eq(3)').text());
+                return aVal - bVal;
+        }
+    });
+    
+    $tbody.empty().append($rows);
+});
 </script>
 @endsection

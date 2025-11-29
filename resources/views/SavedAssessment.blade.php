@@ -50,6 +50,13 @@
                     </option>
                 </select>
 
+                <select name="sort" id="sort" class="search-select">
+                    <option value="" disabled selected>Sort By</option>
+                    <option value="alphabetical">Alphabetical</option>
+                    <option value="date_created">Date Created</option>
+                    <option value="number_of_questions">Number of Questions</option>   
+                </select>
+
                 <div class="search-wrapper">
                     <input class="search-input" type="text" id="searchInputAssessment" placeholder=" Search assessments...">
                 </div>
@@ -122,5 +129,35 @@
             $('table.styled-table tbody tr').show();
         }
     });
+</script>
+<script>
+$(document).on('change', '#sort', function () {
+    let sortBy = $(this).val();
+    let $tbody = $('table.styled-table tbody');
+    let $rows = $tbody.find('tr').get();
+    
+    $rows.sort(function(a, b) {
+        let aVal, bVal;
+        
+        switch(sortBy) {
+            case 'alphabetical':
+                aVal = $(a).find('td:eq(0)').text().toLowerCase();
+                bVal = $(b).find('td:eq(0)').text().toLowerCase();
+                return aVal.localeCompare(bVal);
+                
+            case 'date_created':
+                aVal = new Date($(a).find('td:eq(5)').text());
+                bVal = new Date($(b).find('td:eq(5)').text());
+                return aVal - bVal;
+                
+            case 'number_of_questions':
+                aVal = parseInt($(a).find('td:eq(4)').text()) || 0;
+                bVal = parseInt($(b).find('td:eq(4)').text()) || 0;
+                return aVal - bVal;
+        }
+    });
+    
+    $tbody.empty().append($rows);
+});
 </script>
 @endsection

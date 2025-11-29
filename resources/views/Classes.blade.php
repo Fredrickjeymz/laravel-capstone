@@ -14,6 +14,12 @@
         <h3>Classes</h3>
         <button class="btn-add btn-add-class"><i class="fas fa-plus"></i> New Class</button>
         <div class="search-bar">
+            <select name="sort" id="sort" class="search-select">
+                <option value="" disabled selected>Sort By</option>
+                <option value="alphabetical">Alphabetical</option>
+                <option value="number_of_students">Number of Students</option>   
+                <option value="year_level">Year Level</option>
+            </select>
             <div class="search-wrapper">
                 <input class="search-input" type="text" id="searchInputAssessment" placeholder=" Search Classes...">
             </div>
@@ -130,6 +136,36 @@
             $(this).toggle(rowText.indexOf(searchText) > -1);
         });
     });
+</script>
+<script>
+$(document).on('change', '#sort', function () {
+    let sortBy = $(this).val();
+    let $tbody = $('table.styled-table tbody');
+    let $rows = $tbody.find('tr').get();
+    
+    $rows.sort(function(a, b) {
+        let aVal, bVal;
+        
+        switch(sortBy) {
+            case 'alphabetical':
+                aVal = $(a).find('td:eq(0)').text().toLowerCase();
+                bVal = $(b).find('td:eq(0)').text().toLowerCase();
+                return aVal.localeCompare(bVal);
+                
+            case 'number_of_students':
+                aVal = parseInt($(a).find('td:eq(3)').text()) || 0;
+                bVal = parseInt($(b).find('td:eq(3)').text()) || 0;
+                return aVal - bVal;
+
+            case 'year_level':
+                aVal = $(a).find('td:eq(2)').text().toLowerCase();
+                bVal = $(b).find('td:eq(2)').text().toLowerCase();
+                return aVal.localeCompare(bVal);
+        }
+    });
+    
+    $tbody.empty().append($rows);
+});
 </script>
 @endsection
 

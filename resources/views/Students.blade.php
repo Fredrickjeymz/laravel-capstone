@@ -14,6 +14,11 @@
         <h3>Students</h3>
         <button class="btn-add btn-add-stud-class"><i class="fas fa-plus"></i> New Student to a Class</button>
         <div class="search-bar">
+            <select name="sort" id="sort" class="search-select">
+                <option value="" disabled selected>Sort By</option>
+                <option value="alphabetical">Alphabetical</option>
+                <option value="birthdate">Birthdate</option>
+            </select>
             <div class="search-wrapper">
                 <input class="search-input" type="text" id="searchInputAssessment" placeholder=" Search Students...">
             </div>
@@ -142,6 +147,36 @@
         $('table.styled-table tbody tr').each(function () {
             let rowText = $(this).text().toLowerCase();
             $(this).toggle(rowText.indexOf(searchText) > -1);
+        });
+    });
+</script>
+<script>
+    $(document).on('input', '#sort', function () {
+        let sortBy = $(this).val();
+        let rows = $('table.styled-table tbody tr.student-row').get();
+
+        rows.sort(function (a, b) {
+            let keyA, keyB;
+
+            if (sortBy === 'alphabetical') {
+                keyA = $(a).find('td:nth-child(2)').text().toLowerCase();
+                keyB = $(b).find('td:nth-child(2)').text().toLowerCase();
+            } else if (sortBy === 'birthdate') {
+                aVal = new Date($(a).find('td:eq(4)').text());
+                bVal = new Date($(b).find('td:eq(4)').text());
+                return aVal - bVal;
+            }
+
+            if (keyA < keyB) return -1;
+            if (keyA > keyB) return 1;
+            return 0;
+        });
+
+        $.each(rows, function (index, row) {
+            $('table.styled-table tbody').append(row);
+            let studentId = $(row).data('id');
+            let assessmentRow = $('#assessments-' + studentId);
+            $('table.styled-table tbody').append(assessmentRow);
         });
     });
 </script>
