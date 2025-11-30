@@ -47,6 +47,7 @@ $(document).ready(function () {
 
                 let newRow = `
                     <tr data-id="${s.id}">
+                        <td><button class="btn-expand" data-id="${s.id}" >+</button></td>
                         <td>${s.lrn}</td>
                         <td>${s.fname} ${s.mname ?? ''} ${s.lname}</td>
                         <td>${s.email}</td>
