@@ -3,7 +3,7 @@
 @section('content-area')
 <div id="content-area">
     <div class="top">
-        <h2>Quizzes for {{ $class->class_name }}</h2>
+        <h2>Assessments for {{ $class->class_name }}</h2>
         <p>{{ $class->subject }}, {{ $class->teacher->lname }}, {{ $class->teacher->fname }} {{ $class->teacher->mname }}., {{ $class->teacher->position }}</p>
     </div>
     <button  class="btn-return" id="btn-return-class" data-url="{{ route('student.classes') }}">
@@ -45,11 +45,11 @@
                         </div>
                     @elseif ($isDue)
                         <button class="pends-due due" disabled>Over Due</button>
-                            <button class="pends remarks" disabled>⏰ Your quiz deadline has passed. Please contact your teacher if you need to retake it.</button>
+                            <button class="pends remarks" disabled>⏰ Your assessment deadline has passed. Please contact your teacher if you need to retake it.</button>
                     @else
                         <button class="pends" disabled>Pending</button>
                         <button class="view-btn take-quiz-btn" data-id="{{ $assessment->id }}">
-                            <i class="fas fa-play-circle"></i> Take Quiz
+                            <i class="fas fa-play-circle"></i> Take Assessment
                         </button>
                     @endif
                 </div>
@@ -57,7 +57,7 @@
         @empty   
         <div class="empty-state">
             <div class="empty-icon">📭</div>
-            <p>No quizzes available for this class yet.</p>
+            <p>No assessments available for this class yet.</p>
             <span class="empty-hint">Please check again later or ask your teacher for updates.</span>
         </div>
         @endforelse

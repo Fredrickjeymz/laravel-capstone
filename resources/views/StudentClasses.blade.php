@@ -17,7 +17,7 @@
                         </p>
                         <div class="quiz-stats">
                             <span class="dot blue"></span> 
-                            <strong>{{ $class->total_quizzes }}</strong> Total Quizzes
+                            <strong>{{ $class->total_quizzes }}</strong> Total Assessments
 
                             <span class="dot orange ml-4"></span> 
                             <strong>{{ $class->pending_quizzes }}</strong> Pending/Over Due
@@ -26,7 +26,7 @@
                     <div class="teacher-info">
                         <p><i class="fas fa-chalkboard-teacher"></i> {{ $class->teacher->lname }}, {{ $class->teacher->fname }} {{ $class->teacher->mname }}. {{ $class->teacher->position }}</p>
                             <button class="view-btn view-quizzes-btn" data-id="{{ $class->id }}">
-                                <i class="fas fa-book-reader"></i> View Quizzes
+                                <i class="fas fa-book-reader"></i> View Assessments
                             </button>
                     </div>
                 </div>

@@ -62,7 +62,7 @@
                         <button id="btn-quiz"
                             data-url="{{ route('student.all-quizzes') }}"
                             class="nav-btn {{ request()->routeIs('student.all-quizzes') ? 'active' : '' }}">
-                            <i class="fas fa-question-circle"></i> <span>Quizzes</span>
+                            <i class="fas fa-question-circle"></i> <span>Assessments</span>
                         </button>  
 
                         <button id="btn-logs"

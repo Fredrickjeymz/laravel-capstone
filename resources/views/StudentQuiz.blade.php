@@ -3,8 +3,8 @@
 @section('content-area')
 <div id="content-area">
     <div class="top">
-        <h2>Quizzes</h2>
-        <p>Take you pending quizzes and review those completed quizzes.</p>
+        <h2>Assessments</h2>
+        <p>Take your pending assessments and review those completed assessments.</p>
     </div>
         @foreach ($classes as $class)
     <h3 class="class-header">{{ $class->year_level }} {{ $class->class_name }} - {{ $class->subject }}</h3>
@@ -69,11 +69,11 @@
                         </div>
                     @elseif ($isDue)
                         <button class="pends-due due" disabled>Over Due</button>
-                            <button class="pends remarks" disabled>⏰ Your quiz deadline has passed. Please contact your teacher if you need to retake it.</button>
+                            <button class="pends remarks" disabled>⏰ Your assessment deadline has passed. Please contact your teacher if you need to retake it.</button>
                     @else
                         <button class="pends" disabled>Pending</button>
                         <button class="view-btn take-quiz-btn" data-id="{{ $assessment->id }}">
-                            <i class="fas fa-play-circle"></i> Take Quiz
+                            <i class="fas fa-play-circle"></i> Take Assessment
                         </button>
                     @endif
                 </div>
@@ -81,7 +81,7 @@
         @empty
         <div class="empty-state">
             <div class="empty-icon">📭</div>
-            <p>No quizzes available for this class yet.</p>
+            <p>No assessments available for this class yet.</p>
             <span class="empty-hint">Please check again later or ask your teacher for updates.</span>
         </div>
         @endforelse

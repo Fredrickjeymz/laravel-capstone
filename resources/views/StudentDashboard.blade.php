@@ -43,7 +43,7 @@
 
         <div class="recent-shortcut">
             <div class="recent-activity">
-                <h2>Pending Quizzes</h2>
+                <h2>Pending Assessments</h2>
                 <p class="subtext">Complete these assessments.</p>
 
                 @forelse($pendingQuizList as $quiz)
@@ -69,12 +69,12 @@
                         </div>
                         <div class="take-btn">
                             <button class="take-quiz-btn" data-id="{{ $quiz->id }}">
-                                <i class="fas fa-play-circle"></i> Take Quiz
+                                <i class="fas fa-play-circle"></i> Take Assessment
                             </button>
                         </div>
                     </div>
                 @empty
-                    <p class="subtext">No pending quizzes. 🎉</p>
+                    <p class="subtext">No pending assessments. 🎉</p>
                 @endforelse
             </div>
 
@@ -83,7 +83,7 @@
                 <p>Get started with these common tasks.</p>
                 <div class="shortcut-buttons">
                 <button id="btn-class-quick" data-url="{{ route('student.classes') }}"><span class="icon-circle"><i class="fas fa-chalkboard-teacher"></i></span>View Classes</button>
-                <button id="btn-quiz-quick" data-url="{{ route('student.all-quizzes') }}"><span class="icon-circle"><i class="fas fa-eye"></i></span> View Quizzes</button>
+                <button id="btn-quiz-quick" data-url="{{ route('student.all-quizzes') }}"><span class="icon-circle"><i class="fas fa-eye"></i></span> View Assessments</button>
                 <button class="btn-edit-profile"><span class="icon-circle"><i class="fas fa-user-edit"></i></span> Edit Profile</button>
                 <button class="btn-change-pass"><span class="icon-circle"><i class="fas fa-key"></i></span> Change Password</button>
                 </div>
