@@ -4,7 +4,7 @@
 <div id="content-area">
     <div class="top">
         <h2>My Classes</h2>
-        <p>Select a class to view available quizzes.</p>
+        <p>Select a class to view available assessments.</p>
     </div>
     <div class="class-cards-container">
        @foreach($classes as $class)
