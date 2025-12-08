@@ -37,6 +37,22 @@
                                 <option value="Fourth Quarter">Fourth Quarter</option>
                             </select>
                         </div>
+                        <div class="ti">
+                            <label for="week">Select Week</label>
+                            <select name="week" id="week" required>
+                                <option value="" disabled selected>Select Week</option>
+                                <option value="Week 1">Week 1</option>
+                                <option value="Week 2">Week 2</option>
+                                <option value="Week 3">Week 3</option>
+                                <option value="Week 4">Week 4</option>
+                                <option value="Week 5">Week 5</option>
+                                <option value="Week 6">Week 6</option>
+                                <option value="Week 7">Week 7</option>
+                                <option value="Week 8">Week 8</option>
+                                <option value="Week 9">Week 9</option>
+                                <option value="Week 10">Week 10</option>
+                            </select>
+                        </div>
                         <div class="sub">
                             <label>Subject</label>
                             <select name="subject" id="subject" required>
@@ -53,9 +69,11 @@
                                 <option value="Technology and Livelihood Education">Technology and Livelihood Education</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="ti-in">
                         <div class="in">
                             <label for="instruction">Assessment Instructions</label>
-                            <input type="text" name="instruction" placeholder=" e.g., Answer all the following questions.">
+                            <input type="text" class="instruc"  name="instruction" placeholder=" e.g., Answer all the following questions.">
                         </div> 
                     </div>
                     <label for="fileInput" class="file-label">Upload Learning Material (.Docx, .PDF, .PPT)</label>

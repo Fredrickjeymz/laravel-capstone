@@ -23,7 +23,7 @@
                 <p>Holds data about all generated assessments, including titles, instructions, question types, creation dates, and their linkage to specific classes and students.</p>
             </div>
             <h3>My Assessments</h3>
-            <div class="search-bar">
+            <div class="search-bar-assessments">
                 <select name="filter-quarter" id="filterQuarter" class="search-select">
                     <option value="" disabled selected>Filter by Quarter</option>
                     <option value="All">Show All</option>
@@ -48,6 +48,21 @@
                     <option value="Technology and Livelihood Education">
                         Technology and Livelihood Education
                     </option>
+                </select>
+
+                <select name="week" id="filterWeek" class="search-select" required>
+                    <option value="" disabled selected>Filter by Week</option>
+                    <option value="All">Show All</option>
+                    <option value="Week 1">Week 1</option>
+                    <option value="Week 2">Week 2</option>
+                    <option value="Week 3">Week 3</option>
+                    <option value="Week 4">Week 4</option>
+                    <option value="Week 5">Week 5</option>
+                    <option value="Week 6">Week 6</option>
+                    <option value="Week 7">Week 7</option>
+                    <option value="Week 8">Week 8</option>
+                    <option value="Week 9">Week 9</option>
+                    <option value="Week 10">Week 10</option>
                 </select>
 
                 <select name="sort" id="sort" class="search-select">
@@ -131,33 +146,45 @@
     });
 </script>
 <script>
-$(document).on('change', '#sort', function () {
-    let sortBy = $(this).val();
-    let $tbody = $('table.styled-table tbody');
-    let $rows = $tbody.find('tr').get();
-    
-    $rows.sort(function(a, b) {
-        let aVal, bVal;
+    $(document).on('change', '#sort', function () {
+        let sortBy = $(this).val();
+        let $tbody = $('table.styled-table tbody');
+        let $rows = $tbody.find('tr').get();
         
-        switch(sortBy) {
-            case 'alphabetical':
-                aVal = $(a).find('td:eq(0)').text().toLowerCase();
-                bVal = $(b).find('td:eq(0)').text().toLowerCase();
-                return aVal.localeCompare(bVal);
-                
-            case 'date_created':
-                aVal = new Date($(a).find('td:eq(5)').text());
-                bVal = new Date($(b).find('td:eq(5)').text());
-                return aVal - bVal;
-                
-            case 'number_of_questions':
-                aVal = parseInt($(a).find('td:eq(4)').text()) || 0;
-                bVal = parseInt($(b).find('td:eq(4)').text()) || 0;
-                return aVal - bVal;
+        $rows.sort(function(a, b) {
+            let aVal, bVal;
+            
+            switch(sortBy) {
+                case 'alphabetical':
+                    aVal = $(a).find('td:eq(0)').text().toLowerCase();
+                    bVal = $(b).find('td:eq(0)').text().toLowerCase();
+                    return aVal.localeCompare(bVal);
+                    
+                case 'date_created':
+                    aVal = new Date($(a).find('td:eq(5)').text());
+                    bVal = new Date($(b).find('td:eq(5)').text());
+                    return aVal - bVal;
+                    
+                case 'number_of_questions':
+                    aVal = parseInt($(a).find('td:eq(4)').text()) || 0;
+                    bVal = parseInt($(b).find('td:eq(4)').text()) || 0;
+                    return aVal - bVal;
+            }
+        });
+        
+        $tbody.empty().append($rows);
+    });
+</script>
+<script>
+    $(document).on('input', '#filterWeek', function () {
+        let searchText = $(this).val().toLowerCase();
+        $('table.styled-table tbody tr').each(function () {
+            let rowText = $(this).text().toLowerCase();
+            $(this).toggle(rowText.indexOf(searchText) > -1);
+        });
+        if (searchText === 'all') {
+            $('table.styled-table tbody tr').show();
         }
     });
-    
-    $tbody.empty().append($rows);
-});
 </script>
 @endsection

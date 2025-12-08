@@ -124,18 +124,31 @@ class AssignedAssController extends Controller
             }
 
             // Difficulty and Mastery based on percentage (you asked for M / NYM / NM)
-            if ($percentage >= 75) {
-                $mastery = 'M';
-                $difficulty = 'Easy';
+            // difficulty & mastery based on your new ranges
+            if ($percentage >= 96) {
+                $mastery = 'Highly Mastered'; 
+                $difficulty = 'Very Easy'; 
+                $cause = 'Concept fully mastered';
+            } elseif ($percentage >= 86) {
+                $mastery = 'Mastered'; 
+                $difficulty = 'Easy'; 
                 $cause = 'Concept mastered';
-            } elseif ($percentage >= 50) {
-                $mastery = 'NYM';
-                $difficulty = 'Average';
-                $cause = 'Partial understanding / needs review';
+            } elseif ($percentage >= 66) {
+                $mastery = 'Nearly Mastered'; 
+                $difficulty = 'Average'; 
+                $cause = 'Partial understanding';
+            } elseif ($percentage >= 35) {
+                $mastery = 'Average Mastered'; 
+                $difficulty = 'Average'; 
+                $cause = 'Needs reinforcement';
+            } elseif ($percentage >= 15) {
+                $mastery = 'Low Mastered'; 
+                $difficulty = 'Difficult'; 
+                $cause = 'Lacks understanding';
             } else {
-                $mastery = 'NM';
-                $difficulty = 'Difficult';
-                $cause = 'Lack of understanding or unclear item';
+                $mastery = 'Not Mastered'; 
+                $difficulty = 'Very Difficult'; 
+                $cause = 'Complete misunderstanding';
             }
 
             // choose which examinees count to use: respondents or class size
@@ -235,12 +248,31 @@ class AssignedAssController extends Controller
                 $incorrect = $totalRespondents - $correct;
 
                 // difficulty & mastery (same rules)
-                if ($item_mps >= 75) {
-                    $mastery = 'M'; $difficulty = 'Easy'; $cause = 'Concept mastered';
-                } elseif ($item_mps >= 50) {
-                    $mastery = 'NYM'; $difficulty = 'Average'; $cause = 'Partial understanding / needs review';
+                // difficulty & mastery based on your new ranges
+                if ($item_mps >= 96) {
+                    $mastery = 'Highly Mastered'; 
+                    $difficulty = 'Very Easy'; 
+                    $cause = 'Concept fully mastered';
+                } elseif ($item_mps >= 86) {
+                    $mastery = 'Mastered'; 
+                    $difficulty = 'Easy'; 
+                    $cause = 'Concept mastered';
+                } elseif ($item_mps >= 66) {
+                    $mastery = 'Nearly Mastered'; 
+                    $difficulty = 'Average'; 
+                    $cause = 'Partial understanding';
+                } elseif ($item_mps >= 35) {
+                    $mastery = 'Average Mastered'; 
+                    $difficulty = 'Average'; 
+                    $cause = 'Needs reinforcement';
+                } elseif ($item_mps >= 15) {
+                    $mastery = 'Low Mastered'; 
+                    $difficulty = 'Difficult'; 
+                    $cause = 'Lacks understanding';
                 } else {
-                    $mastery = 'NM'; $difficulty = 'Difficult'; $cause = 'Lack of understanding or unclear item';
+                    $mastery = 'Not Mastered'; 
+                    $difficulty = 'Very Difficult'; 
+                    $cause = 'Complete misunderstanding';
                 }
 
                 $totalCorrectAll += $correct;
@@ -282,16 +314,22 @@ class AssignedAssController extends Controller
                 $mps = ($mean / $totalItems) * 100;
             }
 
+            // 🚨 UPDATE THESE ARRAYS WITH YOUR NEW MASTERY LEVELS:
             $masteryCount = [
-                'M' => 0,
-                'NYM' => 0,
-                'NM' => 0
+                'Highly Mastered' => 0,
+                'Mastered' => 0,
+                'Nearly Mastered' => 0,
+                'Average Mastered' => 0,
+                'Low Mastered' => 0,
+                'Not Mastered' => 0
             ];
 
             $difficultyCount = [
+                'Very Easy' => 0,
                 'Easy' => 0,
                 'Average' => 0,
-                'Difficult' => 0
+                'Difficult' => 0,
+                'Very Difficult' => 0
             ];
 
             foreach ($itemAnalysis as $item) {
@@ -301,10 +339,10 @@ class AssignedAssController extends Controller
 
             // ----- Generate interpretation text -----
 
-            // Mastery Trend
-            if ($masteryCount['M'] / $totalItems >= 0.60) {
+            // Mastery Trend - UPDATE THESE CONDITIONS TOO:
+            if (($masteryCount['Highly Mastered'] + $masteryCount['Mastered']) / $totalItems >= 0.60) {
                 $masteryStatement = "Learners have demonstrated strong mastery of the competencies.";
-            } elseif ($masteryCount['NYM'] / $totalItems >= 0.50) {
+            } elseif (($masteryCount['Nearly Mastered'] + $masteryCount['Average Mastered']) / $totalItems >= 0.50) {
                 $masteryStatement = "Learners show partial mastery, indicating the need for reinforcement activities.";
             } else {
                 $masteryStatement = "Learners exhibit low mastery, requiring reteaching and targeted remediation.";

@@ -45,6 +45,16 @@ class GenerateAssessmentJob implements ShouldQueue
             return;
         }
 
+        // 🆕 ADD THIS: Generate topic and competency FIRST
+        $topicCompetency = $this->generateTopicAndCompetency($this->fileText);
+        Log::info('📌 Generated topic/competency', $topicCompetency);
+
+        // 🆕 UPDATE TOPIC AND COMPETENCY HERE
+        $assessment->update([
+            'topic' => $topicCompetency['topic'] ?? 'I. ' . $assessment->title,
+            'competency' => $topicCompetency['competency'] ?? '1. Learning Objective',
+        ]);
+
         // Mark in-progress immediately
         $assessment->update(['status' => 'in-progress']);
         Log::info('📊 Assessment status updated to in-progress');
@@ -360,5 +370,50 @@ class GenerateAssessmentJob implements ShouldQueue
         if ($assessment) {
             $assessment->update(['status' => 'failed']);
         }
+    }
+
+    private function generateTopicAndCompetency(string $fileText): array
+    {
+        $prompt = "Based on the learning material below, extract:
+        1. MAIN TOPIC in the format 'I. [Topic Name, e.g., Introduction to Biology]'
+        2. PRIMARY LEARNING COMPETENCY in the format '1. [Learning Objective]'
+        
+        Material:
+        {$fileText}
+        
+        Respond EXACTLY in this format:
+        TOPIC: I. [Your topic]
+        COMPETENCY: 1. [Your competency]";
+        
+        $response = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('OPENAI_API_KEY'),
+            'Content-Type' => 'application/json',
+        ])->timeout(60)->post('https://api.openai.com/v1/chat/completions', [
+            'model' => 'gpt-4-turbo',
+            'messages' => [
+                ['role' => 'system', 'content' => 'You are an expert curriculum designer.'],
+                ['role' => 'user', 'content' => $prompt],
+            ],
+            'temperature' => 0.3,
+            'max_tokens' => 500,
+        ]);
+        
+        if ($response->successful()) {
+            $content = $response->json('choices.0.message.content');
+            
+            $topic = '';
+            $competency = '';
+            
+            if (preg_match('/TOPIC:\s*(I\..+)/i', $content, $matches)) {
+                $topic = trim($matches[1]);
+            }
+            if (preg_match('/COMPETENCY:\s*(1\..+)/i', $content, $matches)) {
+                $competency = trim($matches[1]);
+            }
+            
+            return ['topic' => $topic, 'competency' => $competency];
+        }
+        
+        return ['topic' => '', 'competency' => ''];
     }
 }

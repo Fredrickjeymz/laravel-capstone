@@ -37,6 +37,7 @@ class ObjectiveAssessmentController extends Controller
             // Auto-generate title based on quarter, subject, and count
             $quarter = $request->input('quarter');
             $subject = $request->input('subject');
+            $week = $request->input('week');
 
             $count = Assessment::where('teacher_id', Auth::id())
                 ->where('subject', $subject)
@@ -44,7 +45,7 @@ class ObjectiveAssessmentController extends Controller
                 ->count();
 
             $nextNumber = $count + 1;
-            $autoTitle = "{$quarter}: Assessment {$nextNumber} in {$subject}";
+            $autoTitle = "{$quarter} - {$week}: Assessment {$nextNumber} in {$subject}";
 
             //$bloomTaxonomy = json_decode($request->input('bloom_taxonomy'), true);
             $file = $request->file('learning_material');
@@ -89,6 +90,8 @@ class ObjectiveAssessmentController extends Controller
                 'question_type' => $payload['question_type'],
                 'rubric' => $fixedRubric, // ✅ Use the fixed rubric here
                 'status' => 'pending',
+                'topic' => 'I. Topic Pending', // Add placeholder
+                'competency' => '1. Competency Pending', // Add placeholder
             ]);
 
             $teacher = $assessment->teacher;

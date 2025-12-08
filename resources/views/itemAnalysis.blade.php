@@ -147,27 +147,32 @@
                 <img src="{{ asset('image/DEPED.png') }}" class="division-logo" alt="division logo">
             </div>
             <div class="analysis-header">
-                <p><strong>Republic of the Philippines</strong></p>
-                <p><strong>Department of Education</strong></p>
-                <p>Region I - Ilocos Region</p>
+                <p class="big-lil"><strong>Republic of the Philippines</strong></p>
+                <p class="big-t"><strong>Department of Education</strong></p>
+                <p>Region I</p>
                 <p>School Divisions of San Carlos City</p>
-                <p><strong>Speaker Eugenio Perez National Agricultural School</strong></p>
-                <p>San Carlos City, Pangasinan</p>
-                <p><strong>ITEM ANALYSIS -</strong> <span style="text-transform: uppercase">{{ $class->year_level }} {{ $class->subject }}</span></p>
+                <p><strong>SPEAKER AUGENIO PEREZ NATIONAL AGRICULTURAL SCHOOL</strong></p>
+                <p>Roxas Boulevard, San Carlos City, Pangasinan</p>
+                <div class="lineee"></div>
+                <p class="biggest-t"><strong>ITEM ANALYSIS - <span style="text-transform: uppercase">{{ $class->year_level }} {{ $class->subject }}</span></strong></p>
+                <p>School Year: 2025 - 2026</p>
             </div> 
             <div class="logo-two">
                 <img src="{{ asset('image/sepnas_logo.png') }}" class="sepnas-logo" alt="school logo">
             </div>
         </div>
+        <div class="sub-header">
+            <p style="text-transform: uppercase"><strong>QUARTER: {{ $assessment->quarter ?? '' }}</strong></p>
+            <p style="text-transform: uppercase"><strong>CLASS/SECTION: {{ $class->class_name ?? '' }}</strong></p>
+        </div>
         <table class="excel-table">
             <thead>
                 <tr>
-                    <th>#</th>
-                    <th>Question</th>
-                    <th>Correct</th>
-                    <th>Incorrect</th>
+                    <th>ITEM NO.</th>
+                    <th>TOPIC</th>
+                    <th>COMPETENCY</th>
+                    <th>No. of LEARNERS w/ CORRECT ANSWERS</th>
                     <th>Percentage</th>
-                    <th>Difficulty</th>
                     <th>Mastery level</th>
                     <th>Possible Causes for errorneous answers</th>
                 </tr>
@@ -181,63 +186,63 @@
 
                     <!-- Main Row -->
                     <tr class="question-row">
-                        <td>{{ $index + 1 }}</td>
-                        <td id="q-td">{{ $item['question'] }}</td>
-                        <td>{{ $item['correct'] }}</td>
-                        <td>{{ $item['incorrect'] }}</td>
-                        <td>{{ $item['mps'] ?? $item['percentage'] }}%</td>
-                        <td>{{ $item['difficulty'] }}</td>
-                        <td>{{ $item['mastery_level'] }}</td>
-                        <td>{{ $item['cause'] }}</td>
+                        <td class="centered">{{ $index + 1 }}</td>
+                        
+                        {{-- Show topic/competency ONLY in first row, with rowspan --}}
+                        @if($loop->first)
+                            <td class="to-com" rowspan="{{ count($itemAnalysis) }}">{{ $assessment->topic ?? '' }}</td>
+                            <td class="to-com" rowspan="{{ count($itemAnalysis) }}">{{ $assessment->competency ?? '' }}</td>
+                        @endif
+                        
+                        <td class="centered">{{ $item['correct'] }}</td>
+                        <td class="centered">{{ $item['mps'] ?? $item['percentage'] }}%</td>
+                        <td class="centered">{{ $item['mastery_level'] }}</td>
+                        <td class="centered">{{ $item['cause'] }}</td>
                     </tr>
                 @endforeach
 
                 <!-- Excel-style TOTAL ROW -->
                 <tr class="total-row">
-                    <td></td>
-                    <td><strong>Total</strong></td>
+                    <td colspan="3" style="text-align: right;"><strong>Total</strong></td> <!-- Changed from 3 empty cells -->
                     <td><strong>{{ $totalCorrect }}</strong></td>
-                    <td colspan="5"></td>
+                    <td colspan="3"></td> <!-- Adjust colspan from 5 to 3 -->
                 </tr>
 
                 <!-- Number of Examinees -->
                 <tr class="summary-row">
-                    <td></td>
-                    <td><strong>Number of Examinees</strong></td>
+                    <td colspan="3" style="text-align: right;"><strong>N</strong></td>
                     <td><strong>{{ $itemAnalysis[0]['number_of_examinees'] ?? 0 }}</strong></td>
-                    <td colspan="5"></td>
+                    <td colspan="3"></td>
                 </tr>
 
                 <!-- Mean -->
                 <tr class="summary-row">
-                    <td></td>
-                    <td><strong>MEAN</strong></td>
+                    <td colspan="3" style="text-align: right;"><strong>MEAN</strong></td>
                     <td>
                         <strong>
                             {{ $mean }}
                         </strong>
                     </td>
-                    <td colspan="5"></td>
+                    <td colspan="3"></td>
                 </tr>
 
                 <!-- MPS -->
                 <tr class="summary-row">
-                    <td></td>
-                    <td><strong>MPS</strong></td>
+                    <td colspan="3" style="text-align: right;"><strong>MPS</strong></td>
                     <td>
                         <strong>
                             {{ number_format($mps, 2) }}
                         </strong>
                     </td>
-                    <td colspan="5"></td>
+                    <td colspan="3"></td>
                 </tr>
             </tbody>
         </table>
-        <div class="overall-feedback-box">
+        <!--<div class="overall-feedback-box">
             <h3>Overall Assessment Feedback</h3>
             <p>{{ $overallFeedback }}</p>
-        </div>
-        <p class="p-by"><strong>Prepared by:</strong> {{ $itemAnalysis[0]['teachername'] ?? '' }} ({{ $itemAnalysis[0]['teacherposition'] ?? '' }})</p>
+        </div>-->
+        <p class="p-by"><strong>Prepared by:</strong> {{ $itemAnalysis[0]['teachername'] ?? '' }} - {{ $itemAnalysis[0]['teacherposition'] ?? '' }}</p>
     </div>
 </div>
 @endsection

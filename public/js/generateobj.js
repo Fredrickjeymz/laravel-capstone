@@ -140,12 +140,13 @@ $(document).ready(function () {
 
         const quarter = document.querySelector("select[name='quarter']").value;
         const subject = document.querySelector("select[name='subject']").value;
+        const week = document.querySelector("select[name='week']").value;
 
-        if (!quarter || !subject) {
+        if (!quarter || !subject || !week) {
             Swal.fire({
                 icon: 'error',
                 title: 'Invalid!',
-                text: 'Please select both Quarter and Subject.',
+                text: 'Please select Quarter, Subject, and Week.',
                 timer: 2000,
                 showConfirmButton: false
             });
@@ -154,6 +155,7 @@ $(document).ready(function () {
 
         formData.append("quarter", quarter);
         formData.append("subject", subject);
+        formData.append("week", week);
         formData.append("instruction", document.querySelector("input[name='instruction']").value);
         formData.append("learning_material", file);
         formData.append("question_type", questionType);
