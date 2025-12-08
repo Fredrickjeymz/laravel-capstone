@@ -2344,6 +2344,10 @@ input:disabled {
     width: 300px; /* or whatever width fits */
     min-width: 250px;
 }
+.excel-table td:nth-child(2),  /* TOPIC column */
+.excel-table td:nth-child(3) {  /* COMPETENCY column */
+    vertical-align: top;
+}
 .excel-table td {
     white-space: normal !important; /* Allow wrapping */
     word-wrap: break-word;
