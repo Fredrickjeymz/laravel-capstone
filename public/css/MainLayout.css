@@ -2594,3 +2594,93 @@ input:disabled {
     font-size: 11px;
     white-space: nowrap;
 }
+.assessment-navigation {
+    display: flex;
+    justify-content: space-between;
+    width: 40%;
+    align-items: center;
+    background: #f8f9fa;
+    margin-left: 1.5%;
+    padding: 12px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+    border: 1px solid #dee2e6;
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    border: none;
+    background: #27ae60 ;
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.nav-btn:hover:not(.disabled) {
+    background: #218838;
+    color: white;
+    text-decoration: none;
+}
+
+.nav-btn.disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.assessment-info {
+    flex-grow: 1;
+    text-align: center;
+    margin: 0 20px;
+}
+
+.assessment-title {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    color: #333;
+}
+
+.assessment-meta {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin-bottom: 10px;
+}
+
+.assessment-dropdown {
+    width: 100%;
+    max-width: 300px;
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 7px;
+    background: white;
+    font-size: 0.9rem;
+}
+
+.position {
+    background: #4a6fa5;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-right: 10px;
+}
+
+.date {
+    color: #6c757d;
+}
+
+/* Update button disabled styles */
+.nav-btn:disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.6;
+}

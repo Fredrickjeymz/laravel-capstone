@@ -263,20 +263,41 @@ class AssessmentController extends Controller
         return view('savedscores', compact('assessment', 'scores'));
     }
 
-    public function QuestionsBreakdown($id)
+    public function QuestionsBreakdown($id) // $id is StudentAssessmentScore ID
     {
-
         try {
-           $score = StudentAssessmentScore::with([
+            // Get the current score
+            $score = StudentAssessmentScore::with([
                 'student',
-                'questionScores.question',   // ← correct nested relationship
-                'assessment.questions'       // ← lowercase 'assessment' as defined in your model
+                'questionScores.question',
+                'assessment.questions'
             ])->findOrFail($id);
-          
+            
+            // Get ALL scores for this student (for navigation)
+            $studentScores = StudentAssessmentScore::where('student_id', $score->student_id)
+                ->with('assessment')
+                ->orderBy('created_at', 'desc')
+                ->get();
+            
+            // Find current position in the list
+            $currentIndex = $studentScores->search(function($item) use ($id) {
+                return $item->id == $id;
+            });
+            
+            // Get previous and next scores
+            $prevScore = ($currentIndex > 0) ? $studentScores[$currentIndex - 1] : null;
+            $nextScore = ($currentIndex < count($studentScores) - 1) ? $studentScores[$currentIndex + 1] : null;
+            
             return view('students-question-breakdown', [
                 'score' => $score,
-                'assessment' => $score->Assessment
-            ]);            
+                'assessment' => $score->assessment,
+                'studentScores' => $studentScores,
+                'prevScore' => $prevScore,
+                'nextScore' => $nextScore,
+                'currentIndex' => $currentIndex,
+                'totalScores' => count($studentScores)
+            ]);
+                
         } catch (\Exception $e) {
             Log::error("Scoring result error", ['id' => $id, 'error' => $e->getMessage()]);
             abort(404);

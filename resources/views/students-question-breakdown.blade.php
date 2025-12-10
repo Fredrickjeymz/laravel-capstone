@@ -9,6 +9,33 @@
         <h2>Evaluation Results</h2>
         <p>Detailed scoring for {{ $score->student->fname }} {{ $score->student->mname }} {{ $score->student->lname }}'s submission</p>
     </div>
+
+    <div class="assessment-navigation">
+        <!-- Previous Button -->
+        <button id="prev-btn" class="nav-btn prev-btn" 
+                data-url="{{ $prevScore ? route('saved-scoring-result-view', ['id' => $prevScore->id]) : '#' }}"
+                {{ !$prevScore ? 'disabled' : '' }}>
+            <i class="fas fa-chevron-left"></i> Previous
+        </button>
+            
+            <!-- Dropdown for quick navigation -->
+            <select id="assessmentDropdown" class="assessment-dropdown">
+                <option value="">Jump to another assessment...</option>
+                @foreach($studentScores as $studentScore)
+                    <option value="{{ route('saved-scoring-result-view', ['id' => $studentScore->id]) }}"
+                            {{ $studentScore->id == $score->id ? 'selected' : '' }}>
+                        {{ $studentScore->assessment->title }} 
+                        ({{ $studentScore->created_at->format('M d') }})
+                    </option>
+                @endforeach
+            </select>
+
+        <button id="next-btn" class="nav-btn next-btn"
+                data-url="{{ $nextScore ? route('saved-scoring-result-view', ['id' => $nextScore->id]) : '#' }}"
+                {{ !$nextScore ? 'disabled' : '' }}>
+            Next <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
     
     <div class="generated-are-con">
         <div class="score-result-area-prev">
